@@ -2,7 +2,9 @@
   "updated": "2026-11-16",
   "note": "강의관리보드에서 만든 수업 입장 설정. open에 적힌 주차만 '입장'이 열립니다.",
   "open": {
-    "economic-evaluation": [],
+    "economic-evaluation": [
+      "12"
+    ],
     "biostatistics": []
   }
 }
