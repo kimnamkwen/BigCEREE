@@ -19,7 +19,7 @@
     assetDir: "../../../../lessons/econ-06/",   // 슬라이드·PDF·데이터 폴더
     slidePdf: "econ-06-slides.pdf",             // 원본 PDF 파일명
     slidePattern: n => `original-p${String(n).padStart(2, "0")}.webp`, // 슬라이드 이미지 파일명 규칙
-    totalSlides: 22
+    totalSlides: 25
   };
 </script>
 
@@ -93,7 +93,7 @@
       <li>이미 CUA로 평가된 <strong>다른 프로그램과 비교</strong>해야 할 때</li>
       <li>급여·가격 결정 기관이 QALY 기반 근거를 <strong>요구</strong>할 때</li>
     </ul>
-    <details class="slides" data-from="1" data-to="5"><summary>원본 슬라이드 보기</summary></details>
+    <details class="slides" data-from="5" data-to="9"><summary>원본 슬라이드 보기</summary></details>
 
     <!-- ===================== 2. 효용 ===================== -->
     <h2 id="utility">2. 효용</h2>
@@ -116,7 +116,8 @@
       <tr><td>Standard Gamble (SG)</td><td>건강상태 i를 확실히 유지 vs. 완전한 건강(확률 p)·사망(1−p) 도박 사이 무차별점 p를 찾음 → U<sub>i</sub> = p</td><td>기대효용이론에 부합, 응답 부담 큼</td></tr>
       <tr><td>Time Trade-Off (TTO)</td><td>건강상태 i로 t년 vs. 완전한 건강으로 x년 사이 무차별점 → U<sub>i</sub> = x / t</td><td>이해하기 쉬움, 국가 가치세트 산출에 널리 쓰임</td></tr>
     </table>
-    <details class="slides" data-from="6" data-to="11"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">교재 참조(Drummond 4판 Ch.5–6): 원본 슬라이드 15·16·19·20쪽의 표·그림(Table 6.1, 위험 태도 곡선, Fig. 6.2 표준도박, Fig. 6.4 시간교환)은 저작권 보호를 위해 생략했습니다.</p>
+    <details class="slides" data-from="10" data-to="20"><summary>원본 슬라이드 보기</summary></details>
 
     <!-- ===================== 3. MAUI ===================== -->
     <h2 id="maui">3. 다속성건강측정도구(MAUI)</h2>
@@ -128,7 +129,7 @@
       <tr><td>SF-6D</td><td>SF-36/SF-12 문항에서 6차원 도출</td><td>SG 기반 가치세트</td></tr>
       <tr><td>HUI2 / HUI3</td><td>감각, 이동, 정서, 인지, 통증 등</td><td>캐나다 개발, SG 기반</td></tr>
     </table>
-    <details class="slides" data-from="12" data-to="15"><summary>원본 슬라이드 보기</summary></details>
+    <details class="slides" data-from="21" data-to="22"><summary>원본 슬라이드 보기</summary></details>
 
     <!-- ===================== 4. QALY ===================== -->
     <h2 id="qaly">4. Quality-adjusted life-years (QALYs)</h2>
@@ -137,7 +138,8 @@
     <h3>2) 계산</h3>
     <div class="formula">QALY = Σ<sub>t</sub> U<sub>t</sub> × Δt × 1/(1+r)<sup>t</sup> &nbsp;&nbsp;(U: 효용, Δt: 기간, r: 할인율)</div>
     <p>두 중재를 비교할 때 얻은 QALY(QALY gained)는 두 건강 프로파일 곡선 사이의 면적이며, 이를 증분비용과 함께 <strong>ICER = ΔC / ΔQALY</strong>로 요약합니다.</p>
-    <details class="slides" data-from="16" data-to="20"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">교재 참조(Drummond 4판 Ch.5–6): 원본 슬라이드 25쪽의 QALY 계산 그림은 저작권 보호를 위해 생략했습니다.</p>
+    <details class="slides" data-from="23" data-to="25"><summary>원본 슬라이드 보기</summary></details>
 
     <!-- ===================== 실습 ===================== -->
     <h2 id="practice">실습</h2>
@@ -260,7 +262,6 @@ data.frame(lambda, ICER, cost_effective = ICER &lt;= lambda)
       <li>EuroQol. South Korea (5L) value set — <a href="https://euroqol.org/south-korea-5l-kim-tto-2016/" target="_blank" rel="noopener">euroqol.org</a></li>
       <li>건강보험심사평가원. 의약품 경제성평가 지침 — <a href="https://www.hira.or.kr/ebooksc/ebook_617/ebook_617_202012220247334120.pdf" target="_blank" rel="noopener">PDF</a></li>
     </ul>
-    <details class="slides" data-from="21" data-to="22"><summary>원본 슬라이드 보기</summary></details>
   </main>
 </div>
 
