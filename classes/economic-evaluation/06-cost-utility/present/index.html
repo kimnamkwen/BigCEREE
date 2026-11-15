@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>6. 비용효용분석 · 경제성평가 수업 | BigCEREE</title>
+  <link rel="stylesheet" href="../../../../style.css">
+</head>
+<body class="lesson-body">
+<!--
+  ▣ 주차별 수업 페이지 템플릿
+  - 새 수업을 만들 때: 이 폴더(06-cost-utility)를 복사해 07-cost-benefit 처럼 이름을 바꾸고
+    아래 LESSON 설정과 본문을 수정합니다.
+  - 슬라이드 이미지/PDF는 /lessons/econ-06/ 폴더에 넣습니다 (lessons/econ-06/README.md 참고).
+-->
+<script>
+  const LESSON = {
+    assetDir: "../../../../lessons/econ-06/",   // 슬라이드·PDF·데이터 폴더
+    slidePdf: "econ-06-slides.pdf",             // 원본 PDF 파일명
+    slidePattern: n => `original-p${String(n).padStart(2, "0")}.webp`, // 슬라이드 이미지 파일명 규칙
+    totalSlides: 22
+  };
+</script>
+
+<div class="lesson-topbar" id="top">
+  <div class="inner">
+    <a class="back-link" href="../../index.html">← 수업 목록</a>
+    <button class="tool-btn" id="btn-toc" type="button">목차</button>
+    <button class="tool-btn" id="btn-font-down" type="button" aria-label="글자 작게">가−</button>
+    <button class="tool-btn" id="btn-font-up" type="button" aria-label="글자 크게">가+</button>
+    <a class="tool-btn" id="btn-pdf" href="#" target="_blank" rel="noopener">원본 PDF</a>
+    <button class="tool-btn" id="btn-print" type="button">인쇄 / PDF</button>
+  </div>
+</div>
+
+<div class="lesson-layout" id="lesson-layout">
+  <nav class="lesson-toc" aria-label="목차">
+    <h2>목차</h2>
+    <ol>
+      <li><a href="#overview">개요</a></li>
+      <li><a href="#utility">효용</a></li>
+      <li><a href="#maui">다속성건강측정도구(MAUI)</a></li>
+      <li><a href="#qaly">QALYs</a></li>
+      <li><a href="#practice">실습</a>
+        <ol>
+          <li><a href="#eq-practice">EQ-5D 계산</a></li>
+          <li><a href="#qaly-practice">QALY 계산</a></li>
+          <li><a href="#compare">비용과 효과 비교</a></li>
+          <li><a href="#threshold">임계값 적용</a></li>
+        </ol>
+      </li>
+      <li><a href="#refs">참고자료</a></li>
+    </ol>
+  </nav>
+
+  <main class="lesson-main">
+    <div class="breadcrumb">
+      <a href="../../../index.html">수업</a><span class="sep">›</span>
+      <a href="../../index.html">경제성평가</a><span class="sep">›</span>6주차
+    </div>
+    <h1>6. 비용효용분석</h1>
+    <div class="lesson-meta">Cost-Utility Analysis (CUA) · 경제성평가 6주차</div>
+
+    <!-- ===================== 1. 개요 ===================== -->
+    <h2 id="overview">1. 개요</h2>
+
+    <h3>1) CUA vs. CEA</h3>
+    <p>비용효과분석(CEA)은 생존연수, 혈압 감소량, 발견된 환자 수처럼 <strong>단일 자연단위</strong>로 결과를 측정합니다. 비용효용분석(CUA)은 결과를 <strong>질보정수명(QALY)</strong>처럼 삶의 양과 질을 함께 반영한 공통 단위로 측정하므로, 질환이나 중재가 달라도 서로 비교할 수 있습니다.</p>
+    <table>
+      <tr><th></th><th>CEA</th><th>CUA</th></tr>
+      <tr><td>결과 단위</td><td>자연단위 (LYG, mmHg, 사례 수 등)</td><td>QALY (또는 DALY)</td></tr>
+      <tr><td>삶의 질 반영</td><td>제한적</td><td>선호 기반 효용 가중치로 반영</td></tr>
+      <tr><td>비교 범위</td><td>같은 결과지표를 쓰는 중재끼리</td><td>질환·분야를 넘어 비교 가능</td></tr>
+      <tr><td>결과 지표</td><td>ICER (원/자연단위)</td><td>ICER (원/QALY)</td></tr>
+    </table>
+
+    <h3>2) CUA 개발 배경</h3>
+    <p>1970년대에 생존기간만으로는 만성질환 중재의 가치를 충분히 설명하기 어렵다는 문제의식이 커졌습니다. 이에 건강상태에 대한 사람들의 선호를 0(사망)~1(완전한 건강) 척도의 가중치로 측정하고, 이를 생존기간과 곱해 하나의 지표로 만드는 접근이 발전했습니다. 이 흐름이 오늘날 QALY와 CUA의 토대가 되었습니다.</p>
+
+    <h3>3) CUA의 차별성</h3>
+    <ul>
+      <li>결과의 <strong>양(생존)과 질(건강 관련 삶의 질)</strong>을 동시에 반영합니다.</li>
+      <li>건강상태의 가치를 환자·일반인의 <strong>선호(preference)</strong>에 근거해 측정합니다.</li>
+      <li>공통 단위 덕분에 서로 다른 보건의료 프로그램 사이의 <strong>자원배분 비교</strong>가 가능합니다.</li>
+    </ul>
+
+    <h3>4) CUA가 필요한 경우</h3>
+    <ul>
+      <li>건강 관련 삶의 질이 중재의 <strong>핵심 결과</strong>일 때 (예: 관절염 치료)</li>
+      <li>중재가 <strong>사망률과 이환율(삶의 질)</strong>에 동시에 영향을 줄 때</li>
+      <li>결과가 <strong>여러 차원</strong>이어서 하나의 지표로 통합해야 할 때</li>
+      <li>이미 CUA로 평가된 <strong>다른 프로그램과 비교</strong>해야 할 때</li>
+      <li>급여·가격 결정 기관이 QALY 기반 근거를 <strong>요구</strong>할 때</li>
+    </ul>
+    <details class="slides" data-from="1" data-to="5"><summary>원본 슬라이드 보기</summary></details>
+
+    <!-- ===================== 2. 효용 ===================== -->
+    <h2 id="utility">2. 효용</h2>
+
+    <h3>1) 효용 이론 개요</h3>
+    <p>보건경제학에서 효용(utility)은 특정 건강상태에 대해 개인이 부여하는 <strong>바람직함의 정도</strong>를 수치로 나타낸 것입니다. 기대효용이론(von Neumann–Morgenstern)에 따르면 불확실성 아래에서 합리적 개인은 기대효용을 최대화하는 선택을 합니다.</p>
+
+    <h3>2) Utility, Value, Preference</h3>
+    <ul>
+      <li><strong>Preference(선호)</strong>: 건강상태의 바람직함을 나타내는 포괄적 개념</li>
+      <li><strong>Value(가치)</strong>: <em>확실성</em> 하에서 측정한 선호 (예: Rating scale, TTO)</li>
+      <li><strong>Utility(효용)</strong>: <em>불확실성(위험)</em> 하에서 측정한 선호 (예: Standard gamble)</li>
+    </ul>
+    <div class="keybox">위험에 대한 태도(위험회피·위험중립·위험선호)에 따라 같은 건강상태라도 value와 utility 값이 다르게 측정될 수 있습니다.</div>
+
+    <h3>3) Measuring Preference</h3>
+    <table>
+      <tr><th>방법</th><th>원리</th><th>특징</th></tr>
+      <tr><td>Rating Scale (VAS)</td><td>0~100 척도 위에 건강상태를 직접 표시</td><td>쉽고 빠르지만 선택(trade-off)이 없음</td></tr>
+      <tr><td>Standard Gamble (SG)</td><td>건강상태 i를 확실히 유지 vs. 완전한 건강(확률 p)·사망(1−p) 도박 사이 무차별점 p를 찾음 → U<sub>i</sub> = p</td><td>기대효용이론에 부합, 응답 부담 큼</td></tr>
+      <tr><td>Time Trade-Off (TTO)</td><td>건강상태 i로 t년 vs. 완전한 건강으로 x년 사이 무차별점 → U<sub>i</sub> = x / t</td><td>이해하기 쉬움, 국가 가치세트 산출에 널리 쓰임</td></tr>
+    </table>
+    <details class="slides" data-from="6" data-to="11"><summary>원본 슬라이드 보기</summary></details>
+
+    <!-- ===================== 3. MAUI ===================== -->
+    <h2 id="maui">3. 다속성건강측정도구(MAUI)</h2>
+    <h3>1) 개요</h3>
+    <p>MAUI(Multi-Attribute Utility Instrument)는 여러 건강 차원으로 구성된 설문으로 응답자의 건강상태를 분류하고, 미리 추정된 <strong>가치세트(value set, 점수 산출식)</strong>를 적용해 효용값을 계산하는 도구입니다. 연구자가 직접 SG·TTO를 시행하지 않아도 효용을 얻을 수 있습니다.</p>
+    <table>
+      <tr><th>도구</th><th>구성</th><th>비고</th></tr>
+      <tr><td>EQ-5D-3L / 5L</td><td>이동성, 자기관리, 일상활동, 통증/불편, 불안/우울 (3 또는 5수준)</td><td>국내 가치세트 존재, 가장 널리 사용</td></tr>
+      <tr><td>SF-6D</td><td>SF-36/SF-12 문항에서 6차원 도출</td><td>SG 기반 가치세트</td></tr>
+      <tr><td>HUI2 / HUI3</td><td>감각, 이동, 정서, 인지, 통증 등</td><td>캐나다 개발, SG 기반</td></tr>
+    </table>
+    <details class="slides" data-from="12" data-to="15"><summary>원본 슬라이드 보기</summary></details>
+
+    <!-- ===================== 4. QALY ===================== -->
+    <h2 id="qaly">4. Quality-adjusted life-years (QALYs)</h2>
+    <h3>1) 개요</h3>
+    <p>QALY는 각 건강상태에 머문 기간에 그 상태의 효용 가중치를 곱해 합산한 값입니다. 완전한 건강으로 1년을 사는 것이 1 QALY, 효용 0.5인 상태로 2년을 사는 것도 1 QALY입니다.</p>
+    <h3>2) 계산</h3>
+    <div class="formula">QALY = Σ<sub>t</sub> U<sub>t</sub> × Δt × 1/(1+r)<sup>t</sup> &nbsp;&nbsp;(U: 효용, Δt: 기간, r: 할인율)</div>
+    <p>두 중재를 비교할 때 얻은 QALY(QALY gained)는 두 건강 프로파일 곡선 사이의 면적이며, 이를 증분비용과 함께 <strong>ICER = ΔC / ΔQALY</strong>로 요약합니다.</p>
+    <details class="slides" data-from="16" data-to="20"><summary>원본 슬라이드 보기</summary></details>
+
+    <!-- ===================== 실습 ===================== -->
+    <h2 id="practice">실습</h2>
+    <p>그래프 축 이름은 브라우저용 R의 한글 글꼴 문제로 영문으로 표기했습니다. 아래 코드 상자는 브라우저 안에서 바로 실행되는 R(webR)입니다. 코드를 고친 뒤 <strong>실행</strong>을 누르세요. 처음 실행할 때 R을 내려받느라 10~30초쯤 걸리며 인터넷 연결이 필요합니다. 실습 간 변수는 이어서 사용됩니다.</p>
+
+    <h3 id="eq-practice">실습 1. EQ-5D 계산</h3>
+    <p>EQ-5D-5L 응답(예: 21232)을 효용값으로 바꾸는 구조를 익힙니다. <strong>아래 감소 계수는 계산 구조를 보여주기 위한 예시 값</strong>이므로, 실제 분석에서는 국내 가치세트(Kim et al., 2016) 원문 계수로 바꿔 넣어야 합니다.</p>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 1</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+# 차원: MO(이동성) SC(자기관리) UA(일상활동) PD(통증/불편) AD(불안/우울)
+# 수준 2~5에 대한 감소량 (※ 예시 값 — 실제 가치세트 계수로 교체하세요)
+decrement &lt;- list(
+  MO = c(0.05, 0.08, 0.20, 0.30),
+  SC = c(0.04, 0.07, 0.15, 0.20),
+  UA = c(0.04, 0.06, 0.14, 0.18),
+  PD = c(0.05, 0.08, 0.22, 0.30),
+  AD = c(0.05, 0.09, 0.20, 0.26)
+)
+constant &lt;- 0.05   # 1 이외 수준이 하나라도 있을 때 적용하는 상수항 (예시)
+
+eq5d_index &lt;- function(state) {
+  lv &lt;- as.integer(strsplit(as.character(state), "")[[1]])
+  if (all(lv == 1)) return(1)
+  dec &lt;- sum(mapply(function(d, l) if (l == 1) 0 else d[l - 1], decrement, lv))
+  round(1 - constant - dec, 3)
+}
+
+states &lt;- c("11111", "21232", "33333", "55555")
+data.frame(state = states, utility = sapply(states, eq5d_index), row.names = NULL)
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+
+    <h3 id="qaly-practice">실습 2. QALY 계산</h3>
+    <p>연도별 효용값과 할인율로 QALY를 계산합니다. 할인율은 적용하는 경제성평가 지침에 맞춰 바꾸세요.</p>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 2</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+r &lt;- 0.045                                  # 할인율 (지침에 맞게 수정)
+years &lt;- 0:9                                # 10년 (연초 기준)
+u_new &lt;- c(0.80, 0.80, 0.78, 0.76, 0.75, 0.73, 0.72, 0.70, 0.68, 0.66)  # 신규 중재
+u_old &lt;- c(0.80, 0.74, 0.70, 0.66, 0.62, 0.58, 0.55, 0.52, 0.48, 0.45)  # 기존 중재
+
+disc &lt;- 1 / (1 + r)^years
+qaly_new &lt;- sum(u_new * disc)
+qaly_old &lt;- sum(u_old * disc)
+cat(sprintf("QALY (신규) = %.3f\nQALY (기존) = %.3f\nQALY gained = %.3f\n",
+            qaly_new, qaly_old, qaly_new - qaly_old))
+
+matplot(years, cbind(u_new, u_old), type = "s", lwd = 2, col = c("#0369a1", "#9ca3af"),
+        lty = 1, ylim = c(0, 1), xlab = "Year", ylab = "Utility")
+legend("bottomleft", c("New", "Old"), col = c("#0369a1", "#9ca3af"), lwd = 2, bty = "n")
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+
+    <h3 id="compare">실습 3. 비용과 효과 비교</h3>
+    <p>두 중재의 총비용(할인 적용 가정)과 실습 2의 QALY로 증분비용효용비(ICER)를 구합니다.</p>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 3</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+cost_new &lt;- 18500000   # 신규 중재 총비용(원, 예시)
+cost_old &lt;- 11200000   # 기존 중재 총비용(원, 예시)
+if (!exists("qaly_new")) { qaly_new &lt;- 6.10; qaly_old &lt;- 5.10 }  # 실습 2를 건너뛴 경우
+
+d_cost &lt;- cost_new - cost_old
+d_qaly &lt;- qaly_new - qaly_old
+icer   &lt;- d_cost / d_qaly
+cat(sprintf("증분비용 = %s원\n증분효과 = %.3f QALY\nICER = %s원/QALY\n",
+            format(d_cost, big.mark = ","), d_qaly, format(round(icer), big.mark = ",")))
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+
+    <h3 id="threshold">실습 4. 임계값 적용</h3>
+    <p>지불의사 임계값(λ)과 비교해 비용효과성을 판단하고, 순편익(NMB = λ·ΔQALY − ΔC)을 계산합니다. 임계값은 예시이므로 수업에서 다루는 기준으로 바꿔 보세요.</p>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 4</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+if (!exists("d_cost")) { d_cost &lt;- 7300000; d_qaly &lt;- 1.0 }
+lambda &lt;- seq(0, 50e6, by = 1e6)         # 임계값 범위 (원/QALY)
+nmb &lt;- lambda * d_qaly - d_cost
+
+wtp &lt;- 25e6                                 # 판단 기준 임계값 (예시)
+cat(sprintf("λ = %s원일 때 NMB = %s원 → %s\n",
+            format(wtp, big.mark = ",", scientific = FALSE),
+            format(round(wtp * d_qaly - d_cost), big.mark = ","),
+            ifelse(wtp * d_qaly - d_cost &gt; 0, "비용효과적", "비용효과적이지 않음")))
+
+plot(lambda / 1e6, nmb / 1e6, type = "l", lwd = 2, col = "#0369a1",
+     xlab = "Threshold (million KRW / QALY)", ylab = "NMB (million KRW)")
+abline(h = 0, lty = 2, col = "grey50"); abline(v = wtp / 1e6, lty = 3, col = "#dc2626")
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+
+    <!-- ===================== 참고자료 ===================== -->
+    <h2 id="refs">참고자료</h2>
+    <ul class="refs">
+      <li>Drummond MF, Sculpher MJ, Claxton K, Stoddart GL, Torrance GW. <em>Methods for the Economic Evaluation of Health Care Programmes</em>. 4th ed. Oxford University Press; 2015. (Chapter 5–6)</li>
+      <li>Kim SH, et al. The EQ-5D-5L valuation study in Korea. <em>Qual Life Res</em>. 2016. <a href="https://pubmed.ncbi.nlm.nih.gov/26961008/" target="_blank" rel="noopener">PubMed</a></li>
+      <li>EuroQol. South Korea (5L) value set — <a href="https://euroqol.org/south-korea-5l-kim-tto-2016/" target="_blank" rel="noopener">euroqol.org</a></li>
+      <li>건강보험심사평가원. 의약품 경제성평가 지침 — <a href="https://www.hira.or.kr/ebooksc/ebook_617/ebook_617_202012220247334120.pdf" target="_blank" rel="noopener">PDF</a></li>
+    </ul>
+    <details class="slides" data-from="21" data-to="22"><summary>원본 슬라이드 보기</summary></details>
+  </main>
+</div>
+
+<script>
+  // ---------- 원본 슬라이드: 이미지가 없으면 안내 상자 표시 ----------
+  document.querySelectorAll("details.slides").forEach(d => {
+    const grid = document.createElement("div"); grid.className = "slide-grid";
+    for (let n = +d.dataset.from; n <= +d.dataset.to; n++) {
+      const fig = document.createElement("figure"); fig.className = "slide-fig";
+      const img = new Image(); img.loading = "lazy"; img.alt = `슬라이드 ${n}`;
+      img.src = LESSON.assetDir + LESSON.slidePattern(n);
+      img.onerror = () => { img.replaceWith(Object.assign(document.createElement("div"),
+        { className: "slide-missing", textContent: `슬라이드 ${n} 이미지 준비 중 (lessons 폴더에 ${LESSON.slidePattern(n)} 추가)` })); };
+      const cap = document.createElement("figcaption"); cap.textContent = `${n} / ${LESSON.totalSlides}`;
+      fig.append(img, cap); grid.append(fig);
+    }
+    d.append(grid);
+  });
+
+  // ---------- 상단 도구 ----------
+  document.getElementById("btn-pdf").href = LESSON.assetDir + LESSON.slidePdf;
+  document.getElementById("btn-print").onclick = () => window.print();
+  document.getElementById("btn-toc").onclick = () =>
+    document.getElementById("lesson-layout").classList.toggle("toc-hidden");
+  let scale = 1;
+  const applyScale = () => document.querySelector(".lesson-main").style.setProperty("--lesson-scale", scale);
+  document.getElementById("btn-font-up").onclick = () => { scale = Math.min(1.5, scale + 0.1); applyScale(); };
+  document.getElementById("btn-font-down").onclick = () => { scale = Math.max(0.8, scale - 0.1); applyScale(); };
+
+  // ---------- 목차: 현재 위치 강조 ----------
+  const tocLinks = [...document.querySelectorAll(".lesson-toc a")];
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) tocLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id));
+  }), { rootMargin: "-20% 0px -70% 0px" });
+  document.querySelectorAll(".lesson-main h2[id], .lesson-main h3[id]").forEach(h => io.observe(h));
+</script>
+
+<script type="module">
+  // ---------- R 실습 (webR: 브라우저에서 R 실행) ----------
+  let webRPromise = null;
+  function getWebR() {
+    if (!webRPromise) {
+      webRPromise = (async () => {
+        const { WebR } = await import("https://webr.r-wasm.org/latest/webr.mjs");
+        const webR = new WebR();
+        await webR.init();
+        return webR;
+      })();
+    }
+    return webRPromise;
+  }
+
+  document.querySelectorAll(".r-cell").forEach(cell => {
+    const ta = cell.querySelector("textarea");
+    const out = cell.querySelector(".r-out");
+    const original = ta.value;
+    const autosize = () => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + 4 + "px"; };
+    autosize(); ta.addEventListener("input", autosize);
+
+    cell.querySelector(".reset-btn").onclick = () => { ta.value = original; autosize(); out.textContent = ""; cell.querySelectorAll("img.r-plot").forEach(i => i.remove()); };
+
+    cell.querySelector(".run-btn").onclick = async () => {
+      out.textContent = "R 준비 중… (처음 실행 시 10~30초)";
+      cell.querySelectorAll("img.r-plot").forEach(i => i.remove());
+      try {
+        const webR = await getWebR();
+        out.textContent = "실행 중…";
+        const shelter = await new webR.Shelter();
+        try {
+          const res = await shelter.captureR(ta.value, {
+            withAutoprint: true, captureStreams: true, captureConditions: false,
+            captureGraphics: { width: 640, height: 400 }
+          });
+          out.textContent = res.output.map(o => (o.type === "stderr" ? "⚠ " : "") + o.data).join("\n") || "(출력 없음)";
+          for (const bmp of res.images || []) {
+            const canvas = document.createElement("canvas");
+            canvas.width = bmp.width; canvas.height = bmp.height;
+            canvas.getContext("2d").drawImage(bmp, 0, 0);
+            const img = document.createElement("img");
+            img.className = "r-plot"; img.src = canvas.toDataURL("image/png");
+            img.style.cssText = "display:block;max-width:100%;background:#fff;border-top:1px solid #e2e8f0";
+            cell.append(img);
+          }
+        } finally { shelter.purge(); }
+      } catch (e) {
+        out.textContent = "오류: " + (e && e.message ? e.message : e);
+      }
+    };
+  });
+</script>
+</body>
+</html>

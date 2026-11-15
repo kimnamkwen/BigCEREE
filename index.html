@@ -28,6 +28,7 @@
         <div class="menu-item" data-menu="bigdata">빅데이터 분석</div>
         <div class="menu-item" data-menu="economic">경제성평가</div>
         <div class="menu-item" data-menu="lecture">강의</div>
+        <a class="menu-item" href="classes/index.html">수업</a>
         <div class="menu-item" data-menu="project">프로젝트</div>
       </nav>
     </header>
@@ -230,7 +231,7 @@
       lecture: {
         label: "강의",
         submenus: [
-          {key:"school", label:"학교 강의 페이지", content:`<h3>학교 강의 페이지</h3><p>담당 강의별 안내 페이지입니다. 각 페이지는 강의 개요와 자료를 담고 있으며, 추후 강의 관련 논문을 정리한 <strong>LLM Wiki</strong>와 연동될 예정입니다.</p><ul><li><a href="lectures/clinical-research.html" target="_blank">임상연구개론</a></li><li><a href="lectures/economic-evaluation.html" target="_blank">보건의료 경제성평가</a></li><li><a href="lectures/korean-medicine-society.html" target="_blank">현대사회와 한의학</a></li><li><a href="lectures/biostatistics.html" target="_blank">보건의료통계학</a></li><li><a href="lectures/research-methodology.html" target="_blank">과학적 사고와 의학연구방법론</a></li><li><a href="lectures/integrative-medicine.html" target="_blank">통합의료 연구방법론</a></li></ul>`},
+          {key:"school", label:"학교 강의 페이지", content:`<h3>학교 강의 페이지</h3><div class="cta-box"><strong>주차별 수업 자료</strong>는 <a href="classes/index.html">수업</a> 메뉴에서 입장할 수 있습니다. <br><a class="enter-btn" href="classes/index.html">수업 목록으로 →</a></div><p>담당 강의별 안내 페이지입니다. 각 페이지는 강의 개요와 자료를 담고 있으며, 추후 강의 관련 논문을 정리한 <strong>LLM Wiki</strong>와 연동될 예정입니다.</p><ul><li><a href="lectures/clinical-research.html" target="_blank">임상연구개론</a></li><li><a href="lectures/economic-evaluation.html" target="_blank">보건의료 경제성평가</a></li><li><a href="lectures/korean-medicine-society.html" target="_blank">현대사회와 한의학</a></li><li><a href="lectures/biostatistics.html" target="_blank">보건의료통계학</a></li><li><a href="lectures/research-methodology.html" target="_blank">과학적 사고와 의학연구방법론</a></li><li><a href="lectures/integrative-medicine.html" target="_blank">통합의료 연구방법론</a></li></ul>`},
           {key:"schedule", label:"강의 일자", content:`
             <h3>강의 일자</h3>
             <p>
@@ -315,6 +316,8 @@
       Array.from(mainMenuEl.querySelectorAll('.menu-item')).forEach(mi => mi.classList.remove('active'));
       target.classList.add('active');
       const menuKey = target.getAttribute('data-menu');
+      if (!menuKey) return; // 링크형 메뉴(수업)는 페이지 이동
+      history.replaceState(null, '', '#' + menuKey);
       currentMenu = menuKey;
       currentSubKey = menuData[menuKey].submenus[0].key;
       renderSideNav(menuKey);
@@ -334,9 +337,26 @@
     mainMenuEl.addEventListener('click', handleMainMenuClick);
     sideNavEl.addEventListener('click', handleSubMenuClick);
 
+    // 주소의 해시(#lecture 등)로 특정 메뉴를 바로 열 수 있게 함
+    // 예: index.html#lecture  → 수업 페이지 등 하위 페이지의 상단 메뉴에서 사용
+    function openMenuFromHash() {
+      const key = (location.hash || '').replace('#', '');
+      if (!menuData[key]) return false;
+      currentMenu = key;
+      currentSubKey = menuData[key].submenus[0].key;
+      Array.from(mainMenuEl.querySelectorAll('.menu-item')).forEach(mi =>
+        mi.classList.toggle('active', mi.getAttribute('data-menu') === key));
+      renderSideNav(key);
+      renderContent(key, currentSubKey);
+      return true;
+    }
+    window.addEventListener('hashchange', openMenuFromHash);
+
     // 초기 랜더링
-    renderSideNav(currentMenu);
-    renderContent(currentMenu, currentSubKey);
+    if (!openMenuFromHash()) {
+      renderSideNav(currentMenu);
+      renderContent(currentMenu, currentSubKey);
+    }
   </script>
 </body>
 </html>

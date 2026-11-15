@@ -237,3 +237,160 @@ footer {
   padding: 0 4px;
   border-radius: 4px;
 }
+/* =========================================================
+   공통: 링크형 메뉴 (수업 등 별도 페이지로 이동하는 메뉴)
+   ========================================================= */
+.menu-bar a.menu-item { color: inherit; text-decoration: none; }
+.logo-section a.home-link { color: inherit; text-decoration: none; }
+.logo-section a.home-link:hover h1 { color: var(--primary); }
+
+/* 측면 메뉴 하위 항목 */
+.nav-list .nav-sub { list-style: none; margin: 6px 0 0 10px; padding: 0; }
+.nav-list .nav-sub a { font-size: .93rem; color: var(--muted); padding: 2px 0 2px 8px; }
+.nav-list .nav-sub a.active { color: var(--primary); font-weight: 600; }
+
+/* 브레드크럼 */
+.breadcrumb { font-size: .92rem; color: var(--muted); margin-bottom: 14px; }
+.breadcrumb a { color: var(--primary); text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb span.sep { margin: 0 6px; color: #cbd5e1; }
+
+/* =========================================================
+   수업 목록 / 과목 카드 / 주차 목록
+   ========================================================= */
+.course-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.course-card {
+  display: block; text-decoration: none; color: var(--accent);
+  border: 1px solid #e2ecf5; border-radius: var(--radius); padding: 18px 20px;
+  background: #fafcff; transition: box-shadow .15s, border-color .15s;
+}
+a.course-card:hover { border-color: #93c5fd; box-shadow: 0 2px 10px rgba(3,105,161,.10); }
+.course-card .cc-title { font-weight: 700; color: var(--primary); font-size: 1.1rem; }
+.course-card .cc-meta { color: var(--muted); font-size: .92rem; margin-top: 4px; }
+.course-card .cc-count { margin-top: 10px; font-size: .9rem; color: #0f766e; }
+.course-card.is-soon { opacity: .6; }
+
+.course-intro { color: var(--muted); margin: 0 0 22px 0; }
+
+.week-list { list-style: none; margin: 0; padding: 0; }
+.week-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 13px 4px; border-bottom: 1px solid #eef2f7;
+}
+.week-item:last-child { border-bottom: none; }
+.week-no {
+  flex: 0 0 auto; width: 38px; height: 38px; border-radius: 50%;
+  display: grid; place-items: center; font-weight: 700;
+  background: #e0f2fe; color: var(--primary);
+}
+.week-title { flex: 1 1 auto; color: var(--accent); font-weight: 500; }
+.week-title small { display: block; color: var(--muted); font-weight: 400; font-size: .88rem; }
+.enter-btn {
+  flex: 0 0 auto; padding: 6px 16px; border-radius: 999px; font-size: .92rem;
+  background: var(--primary); color: #fff; text-decoration: none; font-weight: 600;
+}
+.enter-btn:hover { background: #075985; }
+.enter-btn.is-disabled { background: #e5e7eb; color: #9ca3af; cursor: default; pointer-events: none; }
+
+/* =========================================================
+   기존 강의 안내 페이지(lectures/*.html) 기본 스타일
+   ========================================================= */
+.lecture-page-wrap { max-width: 900px; margin: 36px auto; padding: 0 20px; }
+.back-link { color: var(--primary); text-decoration: none; font-weight: 500; }
+.lecture-header { margin: 18px 0 20px; }
+.lecture-header h1 { margin: 0; color: var(--primary); }
+.course-meta { color: var(--muted); }
+.wiki-integration { margin-top: 24px; padding: 16px 20px; border: 1px dashed #cbd5e1; border-radius: var(--radius); background: #fff; }
+.wiki-integration h3 { margin: 0 0 6px; }
+.wiki-status { color: var(--muted); margin: 0; }
+.cta-box { margin: 18px 0; padding: 16px 20px; border-radius: var(--radius); background: #eef7fa; border: 1px solid #d4eaf6; }
+.cta-box a.enter-btn { display: inline-block; margin-top: 8px; }
+
+/* =========================================================
+   주차별 수업 페이지 (classes/<과목>/<NN-주제>/present/)
+   ========================================================= */
+.lesson-body { background: var(--bg); }
+.lesson-topbar {
+  position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.96);
+  border-bottom: 1px solid #e6edf3; backdrop-filter: blur(4px);
+}
+.lesson-topbar .inner {
+  max-width: 1200px; margin: 0 auto; padding: 10px 20px;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.lesson-topbar .back-link { margin-right: auto; }
+.tool-btn {
+  border: 1px solid #d6e2ee; background: #fff; color: var(--accent);
+  border-radius: 8px; padding: 5px 11px; font-size: .9rem; cursor: pointer; text-decoration: none;
+  font-family: inherit;
+}
+.tool-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+.lesson-layout { max-width: 1200px; margin: 24px auto; padding: 0 20px; display: grid; grid-template-columns: 240px 1fr; gap: 24px; }
+.lesson-layout.toc-hidden { grid-template-columns: 1fr; }
+.lesson-layout.toc-hidden .lesson-toc { display: none; }
+@media (max-width: 900px) { .lesson-layout { grid-template-columns: 1fr; } .lesson-toc { position: static !important; } }
+
+.lesson-toc {
+  position: sticky; top: 64px; align-self: start; max-height: calc(100vh - 84px); overflow: auto;
+  background: var(--card); border-radius: var(--radius); box-shadow: 0 1px 8px rgba(2,6,23,.05); padding: 18px 16px;
+}
+.lesson-toc h2 { font-size: 1rem; margin: 0 0 10px; color: var(--primary); }
+.lesson-toc ol { margin: 0; padding-left: 18px; font-size: .93rem; }
+.lesson-toc li { margin: 4px 0; }
+.lesson-toc a { color: var(--accent); text-decoration: none; }
+.lesson-toc a:hover, .lesson-toc a.active { color: var(--primary); font-weight: 600; }
+.lesson-toc ol ol { padding-left: 14px; font-size: .9rem; }
+
+.lesson-main {
+  background: var(--card); border-radius: var(--radius); box-shadow: 0 1px 6px rgba(2,6,23,.04);
+  padding: 32px 36px; font-size: calc(1.02rem * var(--lesson-scale, 1));
+}
+.lesson-main h1 { margin: 0 0 6px; color: var(--primary); font-size: 1.8em; }
+.lesson-main .lesson-meta { color: var(--muted); margin-bottom: 26px; }
+.lesson-main h2 {
+  margin: 40px 0 14px; padding-bottom: 8px; border-bottom: 2px solid #e0f2fe;
+  color: var(--primary); font-size: 1.4em; scroll-margin-top: 70px;
+}
+.lesson-main h3 { margin: 26px 0 8px; font-size: 1.12em; scroll-margin-top: 70px; }
+.lesson-main p, .lesson-main li { color: #334155; }
+.lesson-main table { border-collapse: collapse; margin: 10px 0 16px; font-size: .95em; }
+.lesson-main th, .lesson-main td { border: 1px solid #e2e8f0; padding: 6px 10px; text-align: left; }
+.lesson-main th { background: #f1f7fc; }
+.keybox { background: #f0f9ff; border-left: 4px solid var(--primary); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 14px 0; }
+.formula { font-family: "Cambria Math", "Times New Roman", serif; background: #fafafa; border: 1px solid #eee; padding: 10px 14px; border-radius: 8px; margin: 10px 0; }
+
+/* 원본 슬라이드 보기 */
+details.slides { margin: 14px 0; border: 1px solid #e2e8f0; border-radius: 10px; background: #fcfdff; }
+details.slides > summary { cursor: pointer; padding: 9px 14px; color: var(--primary); font-weight: 600; font-size: .93em; }
+.slide-grid { display: grid; gap: 14px; padding: 0 14px 14px; }
+.slide-fig { margin: 0; }
+.slide-fig img { width: 100%; border: 1px solid #e5e7eb; border-radius: 6px; display: block; }
+.slide-fig figcaption { text-align: right; color: var(--muted); font-size: .82em; margin-top: 3px; }
+.slide-missing { border: 1px dashed #cbd5e1; border-radius: 6px; padding: 26px; text-align: center; color: var(--muted); font-size: .9em; }
+
+/* R 실습 셀 */
+.r-cell { border: 1px solid #dbe5ef; border-radius: 10px; margin: 14px 0 20px; overflow: hidden; }
+.r-cell .r-head { display: flex; align-items: center; gap: 8px; padding: 7px 12px; background: #f1f6fb; font-size: .88em; color: var(--muted); }
+.r-cell .r-head .r-label { margin-right: auto; font-weight: 600; color: #1e3a5f; }
+.r-cell textarea {
+  display: block; width: 100%; box-sizing: border-box; border: 0; resize: vertical; min-height: 140px;
+  padding: 12px 14px; font: .9em/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background: #fff; color: #0f172a;
+}
+.r-cell textarea:focus { outline: 2px solid #bae6fd; outline-offset: -2px; }
+.r-cell pre.r-out {
+  margin: 0; padding: 10px 14px; background: #0f172a; color: #e2e8f0; font-size: .86em;
+  white-space: pre-wrap; min-height: 1.4em; max-height: 360px; overflow: auto;
+}
+.r-cell pre.r-out:empty { display: none; }
+.run-btn { background: var(--primary); color: #fff; border-color: var(--primary); }
+.run-btn:hover { background: #075985; color: #fff; }
+
+.refs li { margin-bottom: 6px; }
+
+@media print {
+  .lesson-topbar, .lesson-toc, .r-cell .r-head button { display: none !important; }
+  .lesson-layout { display: block; margin: 0; }
+  .lesson-main { box-shadow: none; padding: 0; }
+  details.slides { display: none; }
+}
