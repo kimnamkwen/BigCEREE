@@ -6,6 +6,7 @@
   <meta name="robots" content="noindex" />
   <title>9. 평균비교 · 보건의료통계학 수업 | BigCEREE</title>
   <link rel="stylesheet" href="../../../../style.css">
+  <script src="../../../../access.js"></script>
 </head>
 <body class="lesson-body">
 <!--
@@ -67,7 +68,7 @@
 </ul>
 <p>정규성은 Shapiro-Wilk 검정(<code>shapiro.test</code>)으로 확인합니다. 예) 참여자의 평균 연령이 특정 나이와 다른가?</p>
     <details class="slides" data-from="4" data-to="16"><summary>원본 슬라이드 보기</summary></details>
-    <p class="textbook-ref">원본 슬라이드 6쪽의 검정 방법 선택 흐름도는 교재 그림 안내로 바꾸었습니다. 원본 슬라이드의 실행 결과는 이전 실습 자료(MMPI 변수) 기준이라 아래 R 실습(vas.csv) 결과와 숫자가 다릅니다.</p>
+    <p class="textbook-ref">원본 슬라이드 6쪽의 검정 방법 선택 흐름도는 교재 그림 안내로 바꾸었습니다. 15쪽의 통계적 결정·결론(|z| = 3.99 &gt; 1.96이므로 귀무가설 기각)과 8쪽의 기준 나이(25살)는 바로잡은 공개본입니다. 원본 슬라이드의 실행 결과는 이전 실습 자료(MMPI 변수) 기준이라 아래 R 실습(vas.csv) 결과와 숫자가 다릅니다.</p>
     <h2 id="two">2. 두 독립집단 평균 차이 검정</h2>
 <p>두 모집단의 평균이 같은지 검정합니다. 모분산을 아는 정규 모집단, 모분산을 모르는 정규 모집단, 정규분포가 아닌 모집단으로 나누어 생각합니다.</p>
 <div class="formula">H<sub>0</sub>: μ<sub>1</sub> − μ<sub>2</sub> = 0, &nbsp; z = {(x̄<sub>1</sub> − x̄<sub>2</sub>) − (μ<sub>1</sub> − μ<sub>2</sub>)<sub>0</sub>} / √(σ<sub>1</sub>²/n<sub>1</sub> + σ<sub>2</sub>²/n<sub>2</sub>)</div>

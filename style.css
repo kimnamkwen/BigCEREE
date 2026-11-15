@@ -442,3 +442,9 @@ input#budget, input#wtp { flex: 1 1 260px; accent-color: var(--primary); }
 .widget input.num-in { width: 100px; font: 600 1em ui-monospace, Menlo, Consolas, monospace; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; }
 .widget input.text-in { flex: 1 1 260px; font: inherit; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; }
 .widget input[type="range"] { flex: 1 1 260px; accent-color: var(--primary); }
+/* 수업 입장 관리(access.js): 설정을 읽는 동안 입장 버튼·본문을 잠시 숨기고, 닫힌 수업은 안내문 표시 */
+html.access-pending .enter-btn, html.access-pending .lesson-layout { visibility: hidden; }
+.access-closed { max-width: 640px; margin: 80px auto; padding: 32px 28px; text-align: center; background: var(--bg); border: 1px solid #e5e7eb; border-radius: 12px; }
+.access-closed h1 { font-size: 1.4em; margin: 0 0 12px; }
+.access-closed p { color: var(--muted); margin: 8px 0; }
+.access-closed .enter-btn { display: inline-block; margin-top: 10px; }

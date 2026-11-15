@@ -6,6 +6,7 @@
   <meta name="robots" content="noindex" />
   <title>14. 비모수검정·표본수 계산 · 보건의료통계학 수업 | BigCEREE</title>
   <link rel="stylesheet" href="../../../../style.css">
+  <script src="../../../../access.js"></script>
 </head>
 <body class="lesson-body">
 <!--
@@ -80,7 +81,9 @@
 <li><strong>부호순위검정(signed rank test)</strong>: 짝지은 자료의 차이에 절댓값 순위를 매기고 부호를 붙여 W<sub>+</sub>, W<sub>−</sub> 중 작은 값을 W로 씁니다. paired t의 비모수 방법</li>
 <li><strong>순위합검정(rank sum test)</strong>: 두 독립군 자료를 합쳐 순위를 매기고 U = min(U<sub>1</sub>, U<sub>2</sub>)로 검정. 독립 t의 비모수 방법</li>
 </ul>
+<p>슬라이드 10쪽 예: W = 7, 기댓값 39, 표준편차 12.73 → z = −2.51, 양측 p = 0.012.</p>
     <details class="slides" data-from="6" data-to="12"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">원본 슬라이드 10쪽의 p값(1.988)은 양측 p = 0.012로 바로잡은 공개본입니다.</p>
     <h2 id="samplesize">3. 표본 수 계산</h2>
 <p>독립된 두 군의 평균 차이를 검정하는 임상시험의 표본 수입니다. 1종 오류(α = 0.05), 2종 오류(β = 0.2, 검정력 80%), 두 군의 추정 평균과 표준편차(선행연구, 예비연구)가 필요합니다.</p>
 <div class="formula">n<sub>1</sub> ≥ 2(z<sub>α/2</sub> + z<sub>β</sub>)² σ² / (μ<sub>1</sub> − μ<sub>2</sub>)², &nbsp; σ<sub>pooled</sub> = √{(SD<sub>1</sub>² + SD<sub>2</sub>²)/2}</div>
