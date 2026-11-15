@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>4. 통계학과 의학연구 · 보건의료통계학 수업 | BigCEREE</title>
+  <link rel="stylesheet" href="../../../../style.css">
+</head>
+<body class="lesson-body">
+<!--
+  ▣ 보건의료통계학 4주차 수업 페이지 (06-cost-utility 형식)
+  - 슬라이드 이미지/PDF: lessons/bios-04/, 실습 자료: lessons/bios-data/vas.csv(합성 자료)
+-->
+<script>
+  const LESSON = {
+    assetDir: "../../../../lessons/bios-04/",
+    slidePdf: "bios-04-slides.pdf",
+    slidePattern: n => `original-p${String(n).padStart(2, "0")}.webp`,
+    totalSlides: 80
+  };
+</script>
+
+<div class="lesson-topbar" id="top">
+  <div class="inner">
+    <a class="back-link" href="../../index.html">← 수업 목록</a>
+    <button class="tool-btn" id="btn-toc" type="button">목차</button>
+    <button class="tool-btn" id="btn-font-down" type="button" aria-label="글자 작게">가−</button>
+    <button class="tool-btn" id="btn-font-up" type="button" aria-label="글자 크게">가+</button>
+    <a class="tool-btn" id="btn-pdf" href="#" target="_blank" rel="noopener">원본 PDF</a>
+    <button class="tool-btn" id="btn-print" type="button">인쇄 / PDF</button>
+  </div>
+</div>
+
+<div class="lesson-layout" id="lesson-layout">
+  <nav class="lesson-toc" aria-label="목차">
+    <h2>목차</h2>
+    <ol>
+      <li><a href="#define">1. 임상연구의 정의와 목적</a></li>
+      <li><a href="#ethics">2. 임상연구의 윤리성</a></li>
+      <li><a href="#science">3. 임상연구의 과학성: 인과관계 추론</a></li>
+      <li><a href="#social">4. 임상연구의 사회성과 역사성</a></li>
+      <li><a href="#types">5. 임상연구의 종류와 근거수준</a></li>
+      <li><a href="#designs">6. 연구 유형별 특징</a></li>
+      <li><a href="#structure">7. 임상연구의 구조</a></li>
+      <li><a href="#analysis">8. 임상연구와 통계분석</a></li>
+      <li><a href="#practice">R 실습</a>
+        <ol>
+          <li><a href="#baseline-practice">실습 1. 군별 기저 특성(연속형 변수)</a></li>
+          <li><a href="#table1-practice">실습 2. 군별 기저 특성(범주형 변수)</a></li>
+        </ol>
+      </li>
+      <li><a href="#refs">참고자료</a></li>
+    </ol>
+  </nav>
+
+  <main class="lesson-main">
+    <div class="breadcrumb">
+      <a href="../../../index.html">수업</a><span class="sep">›</span>
+      <a href="../../index.html">보건의료통계학</a><span class="sep">›</span>4주차
+    </div>
+    <h1>4. 통계학과 의학연구</h1>
+    <div class="lesson-meta">Statistics in clinical research · 보건의료통계학 4주차</div>
+
+    <h2 id="define">1. 임상연구의 정의와 목적</h2>
+<ul>
+<li><strong>임상연구(NIH)</strong>: 개인·인구집단, 인체유래 조직·검체, 행동 현상에 대해 연구자가 살아 있는 사람과 직접 접촉해 수행하는 연구. 환자 지향 연구(질환 기전·치료·임상시험), 역학·행동과학 연구, 결과·보건의료서비스 연구(비교효과연구)를 모두 포함합니다.</li>
+<li><strong>인간대상연구(생명윤리법)</strong>: 사람에게 물리적으로 개입하거나 의사소통·대인 접촉으로 상호작용하는 연구, 또는 개인 식별 정보를 이용하는 연구</li>
+<li><strong>목적</strong>: 원칙의 발견(건강–질병의 이해), 이론의 도출(일반 원칙과 예측), 건강의 향상(새 의술 개발)</li>
+</ul>
+    <details class="slides" data-from="4" data-to="7"><summary>원본 슬라이드 보기</summary></details>
+    <h2 id="ethics">2. 임상연구의 윤리성</h2>
+<p>대표적인 비윤리적 연구로 2차 대전 나치 의사들의 연구, 일본 731부대 실험, 미국 Tuskegee 매독 연구가 있습니다. 이를 막기 위해 헬싱키 선언, IRB(기관생명윤리위원회), ICH-GCP, 생명윤리법·개인정보보호법 같은 장치가 생겼습니다.</p>
+    <details class="slides" data-from="8" data-to="10"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">원본 슬라이드 9쪽의 외부 자료(Wikipedia)는 출처 안내로 바꾸었습니다.</p>
+    <h2 id="science">3. 임상연구의 과학성: 인과관계 추론</h2>
+<p>관찰된 연관성이 참(인과관계)인지 확인하려면 다음을 먼저 배제해야 합니다.</p>
+<ol>
+<li><strong>오차(Error)</strong>: 개인에게서 생기는 참값과의 차이(키, 몸무게 측정)</li>
+<li><strong>바이어스(Bias)</strong>: 연구 설계와 수행 과정의 오류(잘못된 체중계로 비만 측정)</li>
+<li><strong>교란변수(Confounding)</strong>: 원인 변수와 연관되면서 결과에도 영향을 주는 변수(커피 → 심근경색에서 흡연)</li>
+<li><strong>역인과관계</strong>: 원인과 결과가 바뀐 해석(오래 앉아 있는 습관 ↔ 비만)</li>
+</ol>
+<p>해결 방법은 연구 설계 단계에서 RCT, 제한·매칭을 쓰는 것과 분석 단계에서 층화분석, 다변수 보정, 성향점수 매칭을 쓰는 것입니다. 커피–심근경색 예에서 흡연으로 층화하면 각 층의 오즈비가 1이 되어 연관성이 사라지는 것이 교란의 전형입니다.</p>
+    <details class="slides" data-from="11" data-to="17"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">원본 슬라이드 14–16쪽의 층화분석 표는 교재 참조(Hulley 등, Designing Clinical Research) 안내로 바꾸었습니다.</p>
+    <h2 id="social">4. 임상연구의 사회성과 역사성</h2>
+<p>연구 주제와 수행은 사회·역사적 영향을 받습니다. 예) 노예의 도주를 질병으로 본 Cartwright의 Drapetomania, 한약재의 간 손상 영향을 다룬 역학 연구(Oh 등, 2017)와 관련 보도.</p>
+    <details class="slides" data-from="18" data-to="23"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">원본 슬라이드 19–22쪽의 역사 사진과 뉴스 화면은 생략했습니다.</p>
+    <h2 id="types">5. 임상연구의 종류와 근거수준</h2>
+<ul>
+<li><strong>질적 연구</strong>: 참여관찰, 포커스그룹 인터뷰, 심층 인터뷰, 사례연구, 민속지학 연구</li>
+<li><strong>양적 연구</strong>: 기술연구(환자사례보고, 환자군 연구), 분석연구(단면조사, 환자대조군, 코호트, 임상시험)</li>
+<li>그 밖에 2차 자료원(공공 빅데이터) 연구, 진단검사법 연구, 중개연구, 비교효과연구, 경제성평가 연구</li>
+</ul>
+<p>근거수준은 환자사례보고 → 환자군 연구 → 단면조사 → 환자대조군 → 코호트 → 무작위배정 임상시험(RCT) → 체계적 문헌고찰·메타분석 순으로 높아집니다.</p>
+    <details class="slides" data-from="24" data-to="30"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">원본 슬라이드 25·26·28·30쪽의 외부 자료와 논문·교재 그림은 출처 안내로 바꾸었습니다.</p>
+    <h2 id="designs">6. 연구 유형별 특징</h2>
+<table>
+<tr><th>유형</th><th>정의</th><th>장점</th><th>단점</th></tr>
+<tr><td>환자사례보고</td><td>소수 환자의 드문 현상 기술</td><td>단순한 분석·보고</td><td>추정·검정 불가</td></tr>
+<tr><td>환자군 연구</td><td>대조군 없이 한 환자군의 빈도 분석</td><td>바로 시행 가능</td><td>연관성·인과관계·발생률 불가</td></tr>
+<tr><td>단면조사연구</td><td>한 시점에 노출과 질병을 함께 조사(유병률)</td><td>비용 적고 빠름</td><td>시간적 선후 불명, 교란에 취약</td></tr>
+<tr><td>환자대조군 연구</td><td>질병 있는 군과 없는 군의 과거 노출 비교</td><td>저비용, 희귀 질환 가능</td><td>한 결과만, 발생률·유병률 불가, 바이어스에 취약</td></tr>
+<tr><td>코호트 연구</td><td>결과 전에 예측변수 측정 후 추적</td><td>인과관계, 발생률 산출</td><td>비용 많음, 희귀 질환 어려움</td></tr>
+<tr><td>임상시험</td><td>중재와 대조를 전향적으로 비교</td><td>무작위배정·맹검으로 교란·바이어스 통제</td><td>비용·윤리적 제약</td></tr>
+<tr><td>2차 자료원 연구</td><td>정부 제공 원시자료(단면·코호트·비용·사망) 이용</td><td>저비용, 대표성</td><td>내 연구 질문과의 적합성 낮음</td></tr>
+<tr><td>경제성평가</td><td>대안을 비용과 효과로 비교(HTA, CPG, 건강보험)</td><td>새 치료법의 가치 검증</td><td>새 분야로 연구진 부족</td></tr>
+</table>
+<p>임상시험은 연구 주체에 따라 회사 주도(SIT)와 연구자 주도(IIT)로, 허가 단계에 따라 1상(임상약리)·2상·3상·4상(시판 후 조사)으로 나눕니다. 수행 과정은 모집(동의, 선정·제외 기준) → 기저조사 → 무작위 할당 → 처치·추적 → 분석·보고입니다.</p>
+<p>대표 사례: 미국 Framingham Heart Study(1948년, 5,209명, 코호트), 임신 중 DES 복용과 생식기 암(환자대조군), 국민건강영양조사(단면조사·2차 자료), 만성요통 침 협진 경제성평가(Kim 등, 2010).</p>
+    <details class="slides" data-from="31" data-to="61"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">원본 슬라이드의 논문 첫 쪽, 교재 도식(Hulley 등), 외부 사이트 사진은 서지 안내로 바꾸었습니다. 환자 사진이 있는 증례 논문(32쪽)도 원문을 생략했습니다.</p>
+    <h2 id="structure">7. 임상연구의 구조</h2>
+<table>
+<tr><th>구성 요소</th><th>질문</th></tr>
+<tr><td>연구 질문</td><td>어떤 질문을 다룰 것인가? (관심 주제 → 구체적 질문, FINER)</td></tr>
+<tr><td>연구 배경·의의</td><td>왜 중요한가? 선행연구와 밝혀지지 않은 부분, 기여할 점</td></tr>
+<tr><td>연구 디자인</td><td>질적/양적, 관찰/시험, 기술/가설검정. 이어서 무작위배정·맹검·측정 방법 결정</td></tr>
+<tr><td>연구 대상</td><td>누구를 어떻게 선택할 것인가? 선정·제외·탈락 기준, 내적·외적 타당도</td></tr>
+<tr><td>변수</td><td>인구사회학적 변수, 노출(치료), 1차·2차 결과, 교란·효과변경 변수</td></tr>
+<tr><td>통계적 이슈</td><td>귀무·대립가설, 1·2종 오류, 검정력, 표본 수, 효과크기, 분석 프로그램</td></tr>
+</table>
+    <details class="slides" data-from="62" data-to="70"><summary>원본 슬라이드 보기</summary></details>
+    <h2 id="analysis">8. 임상연구와 통계분석</h2>
+<p>연구 과정: 연구 공백·질문 → 가설 → 연구 설계(유형·장소·측정·표본 수) → 승인(IRB 등) → 수행(표본 추출·자료 수집) → 분석 → 해석.</p>
+<p>통계분석 단계: 기술통계 → 가설검정(기저 특성, 상관) → 결측 기전 진단과 처리 → 결과 분석 → 발표. 표본 수는 G*Power로 계산하고(14주차), 분석 계획은 연구계획서에 미리 적습니다.</p>
+<p>연구계획 예시(슬라이드 77–80쪽)는 두 군의 기저 특성표, 주요 연속형 변수의 상관표, 치료 전후 변화의 군간 비교표, 대상자 흐름도로 구성됩니다. 실습은 이 기저 특성표를 vas.csv로 만듭니다.</p>
+    <details class="slides" data-from="71" data-to="80"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">원본 슬라이드 72–75쪽의 논문 화면과 표는 서지 안내로 바꾸었습니다.</p>
+
+    <h2 id="practice">R 실습</h2>
+    <p>각 칸의 <strong>실행</strong>을 누르면 브라우저에서 R(webR)이 실행됩니다. 코드를 고쳐 다시 실행할 수 있고, <strong>처음으로</strong>를 누르면 원래 코드로 돌아갑니다. RStudio에서 쓸 전체 실습 스크립트: <a href="../../../../lessons/bios-04/bios-04.R" download>bios-04.R</a></p>
+    <h3 id="baseline-practice">실습 1. 군별 기저 특성(연속형 변수)</h3>
+    <p>실습 자료 <code>vas.csv</code>는 수업용 <strong>합성(synthetic) 자료</strong>입니다(60명: 대조군 30, 치료군 30 · <a href="../../../../lessons/bios-data/vas.csv" download>CSV 내려받기</a> · <a href="../../../../lessons/bios-data/README.md">변수 설명</a>). RStudio에서는 작업 폴더에 두고 <code>read.csv("vas.csv")</code>로 읽습니다.</p>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 1. 군별 기저 특성(연속형 변수)</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+vas &lt;- read.csv("vas.csv")
+vas$agegrp &lt;- ifelse(vas$age &gt; 25, 1, 0)
+table(vas$agegrp)
+round(tapply(vas$age, vas$treat, mean), 2)
+round(tapply(vas$age, vas$treat, sd), 2)
+round(tapply(vas$qol, vas$treat, mean), 3)
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+    <h3 id="table1-practice">실습 2. 군별 기저 특성(범주형 변수)</h3>
+    <p>각 치료군의 비율 합이 100%가 되도록 <code>margin = 2</code>를 씁니다.</p>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 2. 군별 기저 특성(범주형 변수)</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+vas &lt;- read.csv("vas.csv")
+t_sex &lt;- table(sex = vas$sex, treat = vas$treat)
+t_sex
+round(prop.table(t_sex, margin = 2) * 100, 1)
+t_ses &lt;- table(ses = vas$ses, treat = vas$treat)
+round(prop.table(t_ses, margin = 2) * 100, 1)
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+    <h2 id="refs">참고자료</h2>
+    <ul class="refs">
+      <li>원본 강의 슬라이드: 상단 <strong>원본 PDF</strong> 버튼 (사진·연락처와 저작권이 있는 교재·논문·외부 그림은 서지 안내로 바꾼 공개본)</li>
+      <li>Hulley SB, Cummings SR, Browner WS, Grady DG, Newman TB. <em>Designing Clinical Research</em>. Wolters Kluwer.</li>
+      <li>실습 자료: <a href="../../../../lessons/bios-data/README.md">lessons/bios-data</a> (합성 자료 vas.csv와 생성 코드)</li>
+      <li>R Core Team. <em>R: A Language and Environment for Statistical Computing</em>. https://www.r-project.org · webR: https://docs.r-wasm.org/webr/latest/</li>
+    </ul>
+  </main>
+</div>
+
+<script>
+  // ---------- 원본 슬라이드: 이미지가 없으면 안내 상자 표시 ----------
+  document.querySelectorAll("details.slides").forEach(d => {
+    const grid = document.createElement("div"); grid.className = "slide-grid";
+    for (let n = +d.dataset.from; n <= +d.dataset.to; n++) {
+      const fig = document.createElement("figure"); fig.className = "slide-fig";
+      const img = new Image(); img.loading = "lazy"; img.alt = `슬라이드 ${n}`;
+      img.src = LESSON.assetDir + LESSON.slidePattern(n);
+      img.onerror = () => { img.replaceWith(Object.assign(document.createElement("div"),
+        { className: "slide-missing", textContent: `슬라이드 ${n} 이미지 준비 중` })); };
+      const cap = document.createElement("figcaption"); cap.textContent = `${n} / ${LESSON.totalSlides}`;
+      fig.append(img, cap); grid.append(fig);
+    }
+    d.append(grid);
+  });
+
+  // ---------- 상단 도구 ----------
+  const pdfBtn = document.getElementById("btn-pdf");
+  if (pdfBtn) pdfBtn.href = LESSON.assetDir + LESSON.slidePdf;
+  document.getElementById("btn-print").onclick = () => window.print();
+  document.getElementById("btn-toc").onclick = () =>
+    document.getElementById("lesson-layout").classList.toggle("toc-hidden");
+  let scale = 1;
+  const applyScale = () => document.querySelector(".lesson-main").style.setProperty("--lesson-scale", scale);
+  document.getElementById("btn-font-up").onclick = () => { scale = Math.min(1.5, scale + 0.1); applyScale(); };
+  document.getElementById("btn-font-down").onclick = () => { scale = Math.max(0.8, scale - 0.1); applyScale(); };
+
+  // ---------- 목차: 현재 위치 강조 ----------
+  const tocLinks = [...document.querySelectorAll(".lesson-toc a")];
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) tocLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id));
+  }), { rootMargin: "-20% 0px -70% 0px" });
+  document.querySelectorAll(".lesson-main h2[id], .lesson-main h3[id]").forEach(h => io.observe(h));
+</script>
+
+<!-- webR 준비(공통): vas.csv를 webR 작업 폴더에 넣어 read.csv("vas.csv")로 읽게 함 -->
+<script src="../../../../lessons/bios-data/bios-webr.js"></script>
+<script type="module">
+  document.querySelectorAll(".r-cell").forEach(cell => {
+    const ta = cell.querySelector("textarea");
+    const out = cell.querySelector(".r-out");
+    const original = ta.value;
+    const pkgs = (cell.dataset.pkgs || "").split(",").filter(Boolean);
+    const autosize = () => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + 4 + "px"; };
+    autosize(); ta.addEventListener("input", autosize);
+
+    cell.querySelector(".reset-btn").onclick = () => { ta.value = original; autosize(); out.textContent = ""; cell.querySelectorAll("img.r-plot").forEach(i => i.remove()); };
+
+    cell.querySelector(".run-btn").onclick = async () => {
+      out.textContent = "R 준비 중… (처음 실행 시 10~30초" + (pkgs.length ? ", 패키지 내려받기 포함" : "") + ")";
+      cell.querySelectorAll("img.r-plot").forEach(i => i.remove());
+      try {
+        const webR = await window.getBiosWebR(pkgs);
+        out.textContent = "실행 중…";
+        const shelter = await new webR.Shelter();
+        try {
+          const res = await shelter.captureR(ta.value, {
+            withAutoprint: true, captureStreams: true, captureConditions: false,
+            captureGraphics: { width: 640, height: 400 }
+          });
+          out.textContent = res.output.map(o => (o.type === "stderr" ? "⚠ " : "") + o.data).join("\n") || "(출력 없음)";
+          for (const bmp of res.images || []) {
+            const canvas = document.createElement("canvas");
+            canvas.width = bmp.width; canvas.height = bmp.height;
+            canvas.getContext("2d").drawImage(bmp, 0, 0);
+            const img = document.createElement("img");
+            img.className = "r-plot"; img.src = canvas.toDataURL("image/png");
+            img.style.cssText = "display:block;max-width:100%;background:#fff;border-top:1px solid #e2e8f0";
+            cell.append(img);
+          }
+        } finally { shelter.purge(); }
+      } catch (e) {
+        out.textContent = "오류: " + (e && e.message ? e.message : e);
+      }
+    };
+  });
+</script>
+</body>
+</html>

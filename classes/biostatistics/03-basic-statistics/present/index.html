@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>3. 기초통계학 · 보건의료통계학 수업 | BigCEREE</title>
+  <link rel="stylesheet" href="../../../../style.css">
+</head>
+<body class="lesson-body">
+<!--
+  ▣ 보건의료통계학 3주차 수업 페이지 (06-cost-utility 형식)
+  - 슬라이드 이미지/PDF: lessons/bios-03/, 실습 자료: lessons/bios-data/vas.csv(합성 자료)
+-->
+<script>
+  const LESSON = {
+    assetDir: "../../../../lessons/bios-03/",
+    slidePdf: "bios-03-slides.pdf",
+    slidePattern: n => `original-p${String(n).padStart(2, "0")}.webp`,
+    totalSlides: 45
+  };
+</script>
+
+<div class="lesson-topbar" id="top">
+  <div class="inner">
+    <a class="back-link" href="../../index.html">← 수업 목록</a>
+    <button class="tool-btn" id="btn-toc" type="button">목차</button>
+    <button class="tool-btn" id="btn-font-down" type="button" aria-label="글자 작게">가−</button>
+    <button class="tool-btn" id="btn-font-up" type="button" aria-label="글자 크게">가+</button>
+    <a class="tool-btn" id="btn-pdf" href="#" target="_blank" rel="noopener">원본 PDF</a>
+    <button class="tool-btn" id="btn-print" type="button">인쇄 / PDF</button>
+  </div>
+</div>
+
+<div class="lesson-layout" id="lesson-layout">
+  <nav class="lesson-toc" aria-label="목차">
+    <h2>목차</h2>
+    <ol>
+      <li><a href="#concept">1. 통계학의 개념</a></li>
+      <li><a href="#summary">2. 자료의 정리</a></li>
+      <li><a href="#probability">3. 확률이론</a></li>
+      <li><a href="#bayes">4. Bayes 정리와 진단검사</a></li>
+      <li><a href="#distribution">5. 확률분포</a></li>
+      <li><a href="#rprog">6. R 프로그램</a></li>
+      <li><a href="#practice">R 실습</a>
+        <ol>
+          <li><a href="#dplyr-practice">실습 1. dplyr로 자료 정리하기</a></li>
+          <li><a href="#spread-practice">실습 2. 평균·분산·변동계수</a></li>
+          <li><a href="#bayes-practice">실습 3. 진단검사 사후확률 함수</a></li>
+          <li><a href="#dist-practice">실습 4. 확률분포 계산</a></li>
+        </ol>
+      </li>
+      <li><a href="#refs">참고자료</a></li>
+    </ol>
+  </nav>
+
+  <main class="lesson-main">
+    <div class="breadcrumb">
+      <a href="../../../index.html">수업</a><span class="sep">›</span>
+      <a href="../../index.html">보건의료통계학</a><span class="sep">›</span>3주차
+    </div>
+    <h1>3. 기초통계학</h1>
+    <div class="lesson-meta">Basic statistics and probability · 보건의료통계학 3주차</div>
+
+    <h2 id="concept">1. 통계학의 개념</h2>
+<p>통계학은 자료를 수집·정리·요약하고, 일부 자료(표본)만 보고 전체(모집단)의 특성을 추측하는 학문입니다.</p>
+<ul>
+<li><strong>기술통계학</strong>: 자료를 정리하고 요약 / <strong>추측통계학</strong>: 표본으로 전체를 판단</li>
+<li><strong>변수</strong>: 양적 변수(신장, 체중, 나이), 질적 변수(사회경제적 수준 상·중·하, 진단명)</li>
+<li><strong>확률변수</strong>: 이산형(환자 수, 충치 수처럼 0, 1, 2…), 연속형(신장, 체중)</li>
+<li><strong>모집단과 표본</strong>: 유한·무한 모집단, 표본은 모집단의 일부. 표본에서 구한 값은 <em>통계량</em>, 모집단의 값은 <em>모수</em></li>
+</ul>
+    <details class="slides" data-from="4" data-to="8"><summary>원본 슬라이드 보기</summary></details>
+    <h2 id="summary">2. 자료의 정리</h2>
+<p>자료를 도수분포표와 히스토그램으로 정리하고, 중앙집중성(평균·중앙값·최빈값)과 산포성(분산·표준편차)으로 요약합니다.</p>
+<div class="formula">모분산 σ² = Σ(x<sub>i</sub> − μ)² / N, &nbsp; 표준편차 = √분산, &nbsp; 변동계수 CV = 표준편차 / 평균 × 100</div>
+<p>슬라이드 13쪽 예: A = (2, 3, 4)와 B = (1, 3, 5)는 평균이 모두 3이지만 분산은 0.667과 2.667(N으로 나눈 값)로 B가 더 흩어져 있습니다. R의 <code>var()</code>는 표본분산(n − 1로 나눔)이라 1과 4가 나옵니다(실습 2).</p>
+    <details class="slides" data-from="9" data-to="13"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">원본 슬라이드 9쪽의 표는 이전 실습 자료 화면입니다. 지금은 vas.csv를 씁니다.</p>
+    <h2 id="probability">3. 확률이론</h2>
+<ul>
+<li><strong>기본 성질</strong>: P(E) ≥ 0, 모든 사상의 확률 합 = 1, 배타적이면 P(E<sub>i</sub> 또는 E<sub>j</sub>) = P(E<sub>i</sub>) + P(E<sub>j</sub>)</li>
+<li><strong>경우의 수</strong>: 팩토리얼 n!, 순열 <sub>n</sub>P<sub>r</sub> = n!/(n − r)!, 조합 <sub>n</sub>C<sub>r</sub> = n!/{r!(n − r)!}, 같은 것이 있는 순열 n!/(p!q!)</li>
+<li><strong>조건부확률</strong>: P(B|A) = P(A∩B)/P(A). 예) 의사 50명 중 30세 이상 10명 → 10/50 = 0.2</li>
+<li><strong>가산법칙</strong>: P(A∪B) = P(A) + P(B) − P(A∩B), <strong>승산법칙</strong>: P(A∩B) = P(A|B)·P(B)</li>
+</ul>
+    <details class="slides" data-from="14" data-to="23"><summary>원본 슬라이드 보기</summary></details>
+    <h2 id="bayes">4. Bayes 정리와 진단검사</h2>
+<p>검사 전 확률(사전확률)과 검사의 민감도·특이도로 검사 후 확률(사후확률)을 구합니다.</p>
+<ul>
+<li>민감도(Sensitivity) = P(양성 | 질병 있음), 특이도(Specificity) = P(음성 | 질병 없음)</li>
+</ul>
+<div class="formula">양성일 때 사후확률 P(D|+) = P(D)·Sens / { P(D)·Sens + (1 − P(D))·(1 − Spec) }</div>
+<p>오즈로 계산할 수도 있습니다: 사전 오즈 × 우도비(LR) = 사후 오즈, 오즈 = p/(1 − p), p = 오즈/(1 + 오즈).</p>
+<p><strong>예제 1</strong>: 스트레스와 피로를 호소하는 50세 남성, 경험상 우울증 확률 40%. 민감도 60%, 특이도 80%인 설문에서 양성이면? → 0.24/(0.24 + 0.12) = <strong>66.7%</strong>(실습 3).</p>
+<p><strong>예제 2</strong>: 황달 소견 환자 10명 중 3명이 간질환(사전확률 30%). AST 검사의 민감도·특이도는 <a href="http://getthediagnosis.org/" target="_blank" rel="noopener">getthediagnosis.org</a>에서 찾아 계산합니다. 슬라이드의 함수 예는 <code>postprobdg(0.3, 0.74, 0.92)</code>입니다.</p>
+    <details class="slides" data-from="24" data-to="30"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">원본 슬라이드 30쪽의 외부 사이트 화면은 생략했습니다.</p>
+    <h2 id="distribution">5. 확률분포</h2>
+<ul>
+<li><strong>표본분포와 중심극한정리</strong>: 모집단 평균 μ, 표준편차 σ일 때 표본 수가 충분히 크면(n ≥ 30) 표본평균은 평균 μ, 표준오차 σ/√n인 정규분포를 따릅니다.</li>
+<li><strong>이산확률분포</strong>: 보건간호사가 맡은 50가구의 자녀 수 1·2·3·4·5명이 15·25·5·3·2가구 → 5명일 확률 2/50 = 0.04, 5명보다 적을 누적확률 48/50 = 0.96</li>
+<li><strong>연속확률분포·확률밀도함수</strong>: 곡선 아래 전체 면적이 1이고, 두 값 사이의 면적이 확률입니다.</li>
+<li><strong>이항분포</strong>: 성공 확률 p인 독립 베르누이 시행 n번 중 x번 성공, f(x) = <sub>n</sub>C<sub>x</sub> p<sup>x</sup> q<sup>n−x</sup>. 예) 출생의 52%가 남아일 때 5명 중 3명이 남아일 확률</li>
+<li><strong>포아송분포</strong>: 일정 시간·공간에서 드물게 일어나는 사건 수, f(x) = e<sup>−λ</sup>λ<sup>x</sup>/x!. 예) 응급실 평균 3명(λ = 3)일 때 2명이 올 확률</li>
+<li><strong>정규분포</strong>: 평균 중심 대칭, 평균 = 중앙값 = 최빈값. μ ± σ에 약 68%, ± 2σ에 95%, ± 3σ에 99%. 표준정규분포는 z = (x − μ)/σ</li>
+</ul>
+    <details class="slides" data-from="31" data-to="43"><summary>원본 슬라이드 보기</summary></details>
+    <h2 id="rprog">6. R 프로그램</h2>
+<p>dplyr로 자료를 정리합니다. 행: <code>filter</code>(조건), <code>slice</code>(순서), <code>arrange</code>(정렬) / 열: <code>select</code>(선택), <code>rename</code>(이름 변경), <code>mutate</code>(새 변수), <code>relocate</code>(위치 변경), <code>summarise</code>(요약).</p>
+    <details class="slides" data-from="44" data-to="45"><summary>원본 슬라이드 보기</summary></details>
+
+    <h2 id="practice">R 실습</h2>
+    <p>각 칸의 <strong>실행</strong>을 누르면 브라우저에서 R(webR)이 실행됩니다. 코드를 고쳐 다시 실행할 수 있고, <strong>처음으로</strong>를 누르면 원래 코드로 돌아갑니다. RStudio에서 쓸 전체 실습 스크립트: <a href="../../../../lessons/bios-03/bios-03.R" download>bios-03.R</a></p>
+    <h3 id="dplyr-practice">실습 1. dplyr로 자료 정리하기</h3>
+    <p>RStudio 스크립트는 <code>library(tidyverse)</code>와 lessR의 <code>details()</code>를 씁니다. 브라우저에서는 가벼운 dplyr만 불러옵니다.</p>
+    <div class="r-cell" data-pkgs="dplyr">
+      <div class="r-head"><span class="r-label">R · 실습 1. dplyr로 자료 정리하기</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+library(dplyr)
+vas &lt;- read.csv("vas.csv")
+df &lt;- filter(vas, ses == 1 | ses == 2)      # 사회경제적 수준 1, 2만
+df &lt;- slice(df, 1:30)
+df &lt;- arrange(df, age, desc(cost))
+df &lt;- select(df, id, treat, age, vas_1)
+df &lt;- rename(df, age2 = age)
+df &lt;- mutate(df, agegrp = ifelse(age2 &gt; 25, 1, 0))
+df &lt;- relocate(df, treat, .before = 1)
+head(df)
+summarise(df, meanage = mean(age2, na.rm = TRUE))
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+    <h3 id="spread-practice">실습 2. 평균·분산·변동계수</h3>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 2. 평균·분산·변동계수</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+A &lt;- c(2, 3, 4); B &lt;- c(1, 3, 5)
+popvar &lt;- function(x) mean((x - mean(x))^2)     # N으로 나눈 모분산
+rbind(mean = c(A = mean(A), B = mean(B)),
+      popvar = c(popvar(A), popvar(B)),
+      var_n1 = c(var(A), var(B)))               # R의 var()는 n-1로 나눔
+vas &lt;- read.csv("vas.csv")
+c(cv_cost = sd(vas$cost) / mean(vas$cost) * 100)
+hist(vas$vas_1 - vas$vas_2, main = "통증 개선량(vas_1 - vas_2)", border = "blue")
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+    <h3 id="bayes-practice">실습 3. 진단검사 사후확률 함수</h3>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 3. 진단검사 사후확률 함수</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+postprobdg &lt;- function(prior, sensitivity, specificity) {
+  post &lt;- (prior * sensitivity) / ((prior * sensitivity) + (1 - prior) * (1 - specificity))
+  sprintf("검사 양성인 경우 사후확률은 %.2f%%", post * 100)
+}
+negativedgprob &lt;- function(prior, sensitivity, specificity) {
+  priorodd &lt;- prior / (1 - prior)
+  negativeLR &lt;- (1 - sensitivity) / specificity
+  postodd &lt;- priorodd * negativeLR
+  sprintf("검사 음성인 경우 사후확률은 %.2f%%", postodd / (1 + postodd) * 100)
+}
+postprobdg(0.4, 0.6, 0.8)        # 예제 1: 우울증
+postprobdg(0.3, 0.74, 0.92)      # 슬라이드 함수 예
+negativedgprob(0.3, 0.74, 0.92)
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+    <h3 id="dist-practice">실습 4. 확률분포 계산</h3>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 4. 확률분포 계산</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+kids &lt;- c(15, 25, 5, 3, 2)               # 자녀 1~5명인 가구 수
+c(p5 = kids[5] / sum(kids), p_lt5 = sum(kids[1:4]) / sum(kids))
+dbinom(3, size = 5, prob = 0.52)         # 이항분포: 5명 중 남아 3명
+dpois(2, lambda = 3)                     # 포아송분포: 평균 3명일 때 2명
+pnorm(c(1, 2, 3)) - pnorm(c(-1, -2, -3)) # 정규분포 68-95-99.7 규칙
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+    <h2 id="refs">참고자료</h2>
+    <ul class="refs">
+      <li>원본 강의 슬라이드: 상단 <strong>원본 PDF</strong> 버튼 (사진·연락처와 저작권이 있는 교재·논문·외부 그림은 서지 안내로 바꾼 공개본)</li>
+      <li>실습 자료: <a href="../../../../lessons/bios-data/README.md">lessons/bios-data</a> (합성 자료 vas.csv와 생성 코드)</li>
+      <li>R Core Team. <em>R: A Language and Environment for Statistical Computing</em>. https://www.r-project.org · webR: https://docs.r-wasm.org/webr/latest/</li>
+    </ul>
+  </main>
+</div>
+
+<script>
+  // ---------- 원본 슬라이드: 이미지가 없으면 안내 상자 표시 ----------
+  document.querySelectorAll("details.slides").forEach(d => {
+    const grid = document.createElement("div"); grid.className = "slide-grid";
+    for (let n = +d.dataset.from; n <= +d.dataset.to; n++) {
+      const fig = document.createElement("figure"); fig.className = "slide-fig";
+      const img = new Image(); img.loading = "lazy"; img.alt = `슬라이드 ${n}`;
+      img.src = LESSON.assetDir + LESSON.slidePattern(n);
+      img.onerror = () => { img.replaceWith(Object.assign(document.createElement("div"),
+        { className: "slide-missing", textContent: `슬라이드 ${n} 이미지 준비 중` })); };
+      const cap = document.createElement("figcaption"); cap.textContent = `${n} / ${LESSON.totalSlides}`;
+      fig.append(img, cap); grid.append(fig);
+    }
+    d.append(grid);
+  });
+
+  // ---------- 상단 도구 ----------
+  const pdfBtn = document.getElementById("btn-pdf");
+  if (pdfBtn) pdfBtn.href = LESSON.assetDir + LESSON.slidePdf;
+  document.getElementById("btn-print").onclick = () => window.print();
+  document.getElementById("btn-toc").onclick = () =>
+    document.getElementById("lesson-layout").classList.toggle("toc-hidden");
+  let scale = 1;
+  const applyScale = () => document.querySelector(".lesson-main").style.setProperty("--lesson-scale", scale);
+  document.getElementById("btn-font-up").onclick = () => { scale = Math.min(1.5, scale + 0.1); applyScale(); };
+  document.getElementById("btn-font-down").onclick = () => { scale = Math.max(0.8, scale - 0.1); applyScale(); };
+
+  // ---------- 목차: 현재 위치 강조 ----------
+  const tocLinks = [...document.querySelectorAll(".lesson-toc a")];
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) tocLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id));
+  }), { rootMargin: "-20% 0px -70% 0px" });
+  document.querySelectorAll(".lesson-main h2[id], .lesson-main h3[id]").forEach(h => io.observe(h));
+</script>
+
+<!-- webR 준비(공통): vas.csv를 webR 작업 폴더에 넣어 read.csv("vas.csv")로 읽게 함 -->
+<script src="../../../../lessons/bios-data/bios-webr.js"></script>
+<script type="module">
+  document.querySelectorAll(".r-cell").forEach(cell => {
+    const ta = cell.querySelector("textarea");
+    const out = cell.querySelector(".r-out");
+    const original = ta.value;
+    const pkgs = (cell.dataset.pkgs || "").split(",").filter(Boolean);
+    const autosize = () => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + 4 + "px"; };
+    autosize(); ta.addEventListener("input", autosize);
+
+    cell.querySelector(".reset-btn").onclick = () => { ta.value = original; autosize(); out.textContent = ""; cell.querySelectorAll("img.r-plot").forEach(i => i.remove()); };
+
+    cell.querySelector(".run-btn").onclick = async () => {
+      out.textContent = "R 준비 중… (처음 실행 시 10~30초" + (pkgs.length ? ", 패키지 내려받기 포함" : "") + ")";
+      cell.querySelectorAll("img.r-plot").forEach(i => i.remove());
+      try {
+        const webR = await window.getBiosWebR(pkgs);
+        out.textContent = "실행 중…";
+        const shelter = await new webR.Shelter();
+        try {
+          const res = await shelter.captureR(ta.value, {
+            withAutoprint: true, captureStreams: true, captureConditions: false,
+            captureGraphics: { width: 640, height: 400 }
+          });
+          out.textContent = res.output.map(o => (o.type === "stderr" ? "⚠ " : "") + o.data).join("\n") || "(출력 없음)";
+          for (const bmp of res.images || []) {
+            const canvas = document.createElement("canvas");
+            canvas.width = bmp.width; canvas.height = bmp.height;
+            canvas.getContext("2d").drawImage(bmp, 0, 0);
+            const img = document.createElement("img");
+            img.className = "r-plot"; img.src = canvas.toDataURL("image/png");
+            img.style.cssText = "display:block;max-width:100%;background:#fff;border-top:1px solid #e2e8f0";
+            cell.append(img);
+          }
+        } finally { shelter.purge(); }
+      } catch (e) {
+        out.textContent = "오류: " + (e && e.message ? e.message : e);
+      }
+    };
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>6. 기술통계 2 · 보건의료통계학 수업 | BigCEREE</title>
+  <link rel="stylesheet" href="../../../../style.css">
+</head>
+<body class="lesson-body">
+<!--
+  ▣ 보건의료통계학 6주차 수업 페이지 (06-cost-utility 형식)
+  - 슬라이드 이미지/PDF: lessons/bios-06/, 실습 자료: lessons/bios-data/vas.csv(합성 자료)
+-->
+<script>
+  const LESSON = {
+    assetDir: "../../../../lessons/bios-06/",
+    slidePdf: "bios-06-slides.pdf",
+    slidePattern: n => `original-p${String(n).padStart(2, "0")}.webp`,
+    totalSlides: 21
+  };
+</script>
+
+<div class="lesson-topbar" id="top">
+  <div class="inner">
+    <a class="back-link" href="../../index.html">← 수업 목록</a>
+    <button class="tool-btn" id="btn-toc" type="button">목차</button>
+    <button class="tool-btn" id="btn-font-down" type="button" aria-label="글자 작게">가−</button>
+    <button class="tool-btn" id="btn-font-up" type="button" aria-label="글자 크게">가+</button>
+    <a class="tool-btn" id="btn-pdf" href="#" target="_blank" rel="noopener">원본 PDF</a>
+    <button class="tool-btn" id="btn-print" type="button">인쇄 / PDF</button>
+  </div>
+</div>
+
+<div class="lesson-layout" id="lesson-layout">
+  <nav class="lesson-toc" aria-label="목차">
+    <h2>목차</h2>
+    <ol>
+      <li><a href="#estimation">1. 추정</a></li>
+      <li><a href="#z-ci">2. 모평균의 신뢰구간: z 분포</a></li>
+      <li><a href="#t-ci">3. 모평균의 신뢰구간: t 분포</a></li>
+      <li><a href="#diff-ci">4. 두 모평균 차이의 신뢰구간(모분산을 알 때)</a></li>
+      <li><a href="#prop-ci">5. 모비율과 비율 차이의 신뢰구간</a></li>
+      <li><a href="#practice">R 실습</a>
+        <ol>
+          <li><a href="#norm-practice">실습 1. 정규분포 함수</a></li>
+          <li><a href="#ci-practice">실습 2. 평균의 신뢰구간(stat6_1 ~ stat6_3)</a></li>
+          <li><a href="#prop-practice">실습 3. 비율의 신뢰구간</a></li>
+          <li><a href="#plot-practice">실습 4. 기본 그래프(vas.csv)</a></li>
+        </ol>
+      </li>
+      <li><a href="#refs">참고자료</a></li>
+    </ol>
+  </nav>
+
+  <main class="lesson-main">
+    <div class="breadcrumb">
+      <a href="../../../index.html">수업</a><span class="sep">›</span>
+      <a href="../../index.html">보건의료통계학</a><span class="sep">›</span>6주차
+    </div>
+    <h1>6. 기술통계 2</h1>
+    <div class="lesson-meta">Estimation and confidence intervals · 보건의료통계학 6주차</div>
+
+    <h2 id="estimation">1. 추정</h2>
+<ul>
+<li>통계적 추측은 <strong>추정</strong>과 <strong>가설검정</strong>으로 나뉩니다. 모집단 전체를 관찰하기 어렵거나 비용이 너무 커서 표본으로 추정합니다.</li>
+<li><strong>점추정</strong>: 모수를 하나의 값으로(예: x̄ = Σx/n). <strong>구간추정</strong>: 신뢰수준과 함께 모수를 포함하는 구간</li>
+<li><strong>불편성</strong>: 여러 추정식 중 무엇을 고를지 판단하는 기준</li>
+<li><strong>표본추출 모집단</strong>(실제로 표본이 뽑힌 집단, 예: 특정 병원 환자)과 <strong>대상 모집단</strong>(추측하려는 집단, 예: 모든 류마티즘 환자)을 구분합니다.</li>
+</ul>
+    <details class="slides" data-from="4" data-to="6"><summary>원본 슬라이드 보기</summary></details>
+    <h2 id="z-ci">2. 모평균의 신뢰구간: z 분포</h2>
+<div class="formula">x̄ ± z<sub>1−α/2</sub> · σ/√n &nbsp; (90%: 1.645, 95%: 1.96, 99%: 2.58)</div>
+<p>같은 크기의 표본을 100번 뽑아 구간을 만들면 약 100(1 − α)개가 모평균을 포함한다는 뜻입니다.</p>
+<p><strong>예제(stat6_1)</strong>: 환자 35명의 예약 지체 시간 평균 17.2분, 과거 연구의 표준편차 8분. μ의 90% 신뢰구간은? (모집단이 정규분포가 아니어도 n ≥ 30이라 z 사용)</p>
+    <details class="slides" data-from="7" data-to="8"><summary>원본 슬라이드 보기</summary></details>
+    <h2 id="t-ci">3. 모평균의 신뢰구간: t 분포</h2>
+<p>표본이 작고(30 미만) 모집단이 정규분포이며 모분산을 모를 때 t 분포를 씁니다. t 분포는 평균 0, 좌우 대칭이고, 자유도 n − 1에 따라 모양이 달라지며 자유도가 커지면 정규분포에 가까워집니다.</p>
+<div class="formula">x̄ ± t<sub>(n−1, 1−α/2)</sub> · s/√n</div>
+<p><strong>예제(stat6_2)</strong>: 건강한 15명의 혈청 아밀라아제 평균 96, 표준편차 35(단위/100mL). t(14, 0.025) = 2.144이므로 95% 신뢰구간은 96 ± 2.144 × 9.04 = (76.6, 115.4)</p>
+    <details class="slides" data-from="9" data-to="13"><summary>원본 슬라이드 보기</summary></details>
+    <h2 id="diff-ci">4. 두 모평균 차이의 신뢰구간(모분산을 알 때)</h2>
+<div class="formula">(x̄<sub>1</sub> − x̄<sub>2</sub>) ± z<sub>1−α/2</sub> · √(σ<sub>1</sub>²/n<sub>1</sub> + σ<sub>2</sub>²/n<sub>2</sub>)</div>
+<p><strong>예제(stat6_3)</strong>: 몽골리즘 환자 12명의 혈청 요산 평균 4.5, 정상인 15명 3.4(mg/100mL), 두 모집단 분산 1. 95% 신뢰구간 = (0.34, 1.86)</p>
+    <details class="slides" data-from="14" data-to="15"><summary>원본 슬라이드 보기</summary></details>
+    <h2 id="prop-ci">5. 모비율과 비율 차이의 신뢰구간</h2>
+<div class="formula">p̂ ± z<sub>1−α/2</sub> √{p̂(1 − p̂)/n}, &nbsp; (p̂<sub>1</sub> − p̂<sub>2</sub>) ± z<sub>1−α/2</sub> √{p̂<sub>1</sub>(1 − p̂<sub>1</sub>)/n<sub>1</sub> + p̂<sub>2</sub>(1 − p̂<sub>2</sub>)/n<sub>2</sub>}</div>
+<p><strong>예제</strong>: 성인 300명 중 123명이 1년 내 구강검사를 받음 → p̂ = 0.41, 95% 신뢰구간 (0.354, 0.466).</p>
+<p><strong>예제</strong>: 두 치료법 각 100명에서 3일 내 회복 90명과 78명 → 차이 0.12, 95% 신뢰구간 (0.020, 0.220).</p>
+    <details class="slides" data-from="16" data-to="21"><summary>원본 슬라이드 보기</summary></details>
+
+    <h2 id="practice">R 실습</h2>
+    <p>각 칸의 <strong>실행</strong>을 누르면 브라우저에서 R(webR)이 실행됩니다. 코드를 고쳐 다시 실행할 수 있고, <strong>처음으로</strong>를 누르면 원래 코드로 돌아갑니다. RStudio에서 쓸 전체 실습 스크립트: <a href="../../../../lessons/bios-06/bios-06.R" download>bios-06.R</a></p>
+    <h3 id="norm-practice">실습 1. 정규분포 함수</h3>
+    <p>d(밀도), p(누적확률), q(분위수), r(난수) 함수입니다. t 분포는 dt, pt, qt, rt를 씁니다.</p>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 1. 정규분포 함수</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+dnorm(0)
+pnorm(-1.96)
+qnorm(c(0.5, 0.95, 0.975, 0.025))
+set.seed(1); rnorm(5)
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+    <h3 id="ci-practice">실습 2. 평균의 신뢰구간(stat6_1 ~ stat6_3)</h3>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 2. 평균의 신뢰구간(stat6_1 ~ stat6_3)</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+stat6_1 &lt;- function(n, mean, sigma, cipct) {
+  z &lt;- qnorm(cipct / 100 + (100 - cipct) / 200)
+  c(z = z, lower = mean - z * sigma / sqrt(n), upper = mean + z * sigma / sqrt(n)) }
+stat6_2 &lt;- function(n, mean, s, cipct) {
+  t &lt;- qt(cipct / 100 + (100 - cipct) / 200, n - 1)
+  c(t = t, lower = mean - t * s / sqrt(n), upper = mean + t * s / sqrt(n)) }
+stat6_3 &lt;- function(x1, n1, v1, x2, n2, v2, cipct = 95) {
+  z &lt;- qnorm(cipct / 100 + (100 - cipct) / 200); se &lt;- sqrt(v1 / n1 + v2 / n2)
+  c(lower = (x1 - x2) - z * se, upper = (x1 - x2) + z * se) }
+stat6_1(35, 17.2, 8, 90)     # 예약 지체 시간 90% CI
+stat6_2(15, 96, 35, 95)      # 혈청 아밀라아제 95% CI
+stat6_3(4.5, 12, 1, 3.4, 15, 1)  # 혈청 요산 차이 95% CI
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+    <h3 id="prop-practice">실습 3. 비율의 신뢰구간</h3>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 3. 비율의 신뢰구간</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+z &lt;- qnorm(0.975)
+p &lt;- 123 / 300; se &lt;- sqrt(p * (1 - p) / 300)
+c(p = p, se = se, lower = p - z * se, upper = p + z * se)
+p1 &lt;- 90 / 100; p2 &lt;- 78 / 100
+se2 &lt;- sqrt(p1 * (1 - p1) / 100 + p2 * (1 - p2) / 100)
+c(diff = p1 - p2, se = se2, lower = p1 - p2 - z * se2, upper = p1 - p2 + z * se2)
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+    <h3 id="plot-practice">실습 4. 기본 그래프(vas.csv)</h3>
+    <p>실습 자료 <code>vas.csv</code>는 수업용 <strong>합성(synthetic) 자료</strong>입니다(60명: 대조군 30, 치료군 30 · <a href="../../../../lessons/bios-data/vas.csv" download>CSV 내려받기</a> · <a href="../../../../lessons/bios-data/README.md">변수 설명</a>). RStudio에서는 작업 폴더에 두고 <code>read.csv("vas.csv")</code>로 읽습니다.</p>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 4. 기본 그래프(vas.csv)</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+vas &lt;- read.csv("vas.csv")
+hist(vas$cost, main = "Cost Histogram", xlab = "비용", col = "skyblue")
+boxplot(vas_1 ~ treat, data = vas, names = c("Control", "Treatment"),
+        main = "vas1 for Treatment", col = c("skyblue", "lightgreen"))
+fit &lt;- lm(qol ~ cost, data = vas)
+plot(qol ~ cost, data = vas, main = "QOL vs Cost"); abline(fit, col = "blue", lwd = 2)
+round(coef(fit), 8)
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+    <h2 id="refs">참고자료</h2>
+    <ul class="refs">
+      <li>원본 강의 슬라이드: 상단 <strong>원본 PDF</strong> 버튼 (사진·연락처와 저작권이 있는 교재·논문·외부 그림은 서지 안내로 바꾼 공개본)</li>
+      <li>실습 자료: <a href="../../../../lessons/bios-data/README.md">lessons/bios-data</a> (합성 자료 vas.csv와 생성 코드)</li>
+      <li>R Core Team. <em>R: A Language and Environment for Statistical Computing</em>. https://www.r-project.org · webR: https://docs.r-wasm.org/webr/latest/</li>
+    </ul>
+  </main>
+</div>
+
+<script>
+  // ---------- 원본 슬라이드: 이미지가 없으면 안내 상자 표시 ----------
+  document.querySelectorAll("details.slides").forEach(d => {
+    const grid = document.createElement("div"); grid.className = "slide-grid";
+    for (let n = +d.dataset.from; n <= +d.dataset.to; n++) {
+      const fig = document.createElement("figure"); fig.className = "slide-fig";
+      const img = new Image(); img.loading = "lazy"; img.alt = `슬라이드 ${n}`;
+      img.src = LESSON.assetDir + LESSON.slidePattern(n);
+      img.onerror = () => { img.replaceWith(Object.assign(document.createElement("div"),
+        { className: "slide-missing", textContent: `슬라이드 ${n} 이미지 준비 중` })); };
+      const cap = document.createElement("figcaption"); cap.textContent = `${n} / ${LESSON.totalSlides}`;
+      fig.append(img, cap); grid.append(fig);
+    }
+    d.append(grid);
+  });
+
+  // ---------- 상단 도구 ----------
+  const pdfBtn = document.getElementById("btn-pdf");
+  if (pdfBtn) pdfBtn.href = LESSON.assetDir + LESSON.slidePdf;
+  document.getElementById("btn-print").onclick = () => window.print();
+  document.getElementById("btn-toc").onclick = () =>
+    document.getElementById("lesson-layout").classList.toggle("toc-hidden");
+  let scale = 1;
+  const applyScale = () => document.querySelector(".lesson-main").style.setProperty("--lesson-scale", scale);
+  document.getElementById("btn-font-up").onclick = () => { scale = Math.min(1.5, scale + 0.1); applyScale(); };
+  document.getElementById("btn-font-down").onclick = () => { scale = Math.max(0.8, scale - 0.1); applyScale(); };
+
+  // ---------- 목차: 현재 위치 강조 ----------
+  const tocLinks = [...document.querySelectorAll(".lesson-toc a")];
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) tocLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id));
+  }), { rootMargin: "-20% 0px -70% 0px" });
+  document.querySelectorAll(".lesson-main h2[id], .lesson-main h3[id]").forEach(h => io.observe(h));
+</script>
+
+<!-- webR 준비(공통): vas.csv를 webR 작업 폴더에 넣어 read.csv("vas.csv")로 읽게 함 -->
+<script src="../../../../lessons/bios-data/bios-webr.js"></script>
+<script type="module">
+  document.querySelectorAll(".r-cell").forEach(cell => {
+    const ta = cell.querySelector("textarea");
+    const out = cell.querySelector(".r-out");
+    const original = ta.value;
+    const pkgs = (cell.dataset.pkgs || "").split(",").filter(Boolean);
+    const autosize = () => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + 4 + "px"; };
+    autosize(); ta.addEventListener("input", autosize);
+
+    cell.querySelector(".reset-btn").onclick = () => { ta.value = original; autosize(); out.textContent = ""; cell.querySelectorAll("img.r-plot").forEach(i => i.remove()); };
+
+    cell.querySelector(".run-btn").onclick = async () => {
+      out.textContent = "R 준비 중… (처음 실행 시 10~30초" + (pkgs.length ? ", 패키지 내려받기 포함" : "") + ")";
+      cell.querySelectorAll("img.r-plot").forEach(i => i.remove());
+      try {
+        const webR = await window.getBiosWebR(pkgs);
+        out.textContent = "실행 중…";
+        const shelter = await new webR.Shelter();
+        try {
+          const res = await shelter.captureR(ta.value, {
+            withAutoprint: true, captureStreams: true, captureConditions: false,
+            captureGraphics: { width: 640, height: 400 }
+          });
+          out.textContent = res.output.map(o => (o.type === "stderr" ? "⚠ " : "") + o.data).join("\n") || "(출력 없음)";
+          for (const bmp of res.images || []) {
+            const canvas = document.createElement("canvas");
+            canvas.width = bmp.width; canvas.height = bmp.height;
+            canvas.getContext("2d").drawImage(bmp, 0, 0);
+            const img = document.createElement("img");
+            img.className = "r-plot"; img.src = canvas.toDataURL("image/png");
+            img.style.cssText = "display:block;max-width:100%;background:#fff;border-top:1px solid #e2e8f0";
+            cell.append(img);
+          }
+        } finally { shelter.purge(); }
+      } catch (e) {
+        out.textContent = "오류: " + (e && e.message ? e.message : e);
+      }
+    };
+  });
+</script>
+</body>
+</html>

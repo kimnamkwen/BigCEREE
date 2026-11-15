@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>9. 평균비교 · 보건의료통계학 수업 | BigCEREE</title>
+  <link rel="stylesheet" href="../../../../style.css">
+</head>
+<body class="lesson-body">
+<!--
+  ▣ 보건의료통계학 9주차 수업 페이지 (06-cost-utility 형식)
+  - 슬라이드 이미지/PDF: lessons/bios-09/, 실습 자료: lessons/bios-data/vas.csv(합성 자료)
+-->
+<script>
+  const LESSON = {
+    assetDir: "../../../../lessons/bios-09/",
+    slidePdf: "bios-09-slides.pdf",
+    slidePattern: n => `original-p${String(n).padStart(2, "0")}.webp`,
+    totalSlides: 28
+  };
+</script>
+
+<div class="lesson-topbar" id="top">
+  <div class="inner">
+    <a class="back-link" href="../../index.html">← 수업 목록</a>
+    <button class="tool-btn" id="btn-toc" type="button">목차</button>
+    <button class="tool-btn" id="btn-font-down" type="button" aria-label="글자 작게">가−</button>
+    <button class="tool-btn" id="btn-font-up" type="button" aria-label="글자 크게">가+</button>
+    <a class="tool-btn" id="btn-pdf" href="#" target="_blank" rel="noopener">원본 PDF</a>
+    <button class="tool-btn" id="btn-print" type="button">인쇄 / PDF</button>
+  </div>
+</div>
+
+<div class="lesson-layout" id="lesson-layout">
+  <nav class="lesson-toc" aria-label="목차">
+    <h2>목차</h2>
+    <ol>
+      <li><a href="#one">1. 단일집단 평균 검정</a></li>
+      <li><a href="#two">2. 두 독립집단 평균 차이 검정</a></li>
+      <li><a href="#paired">3. 짝비교 검정(paired t)</a></li>
+      <li><a href="#practice">R 실습</a>
+        <ol>
+          <li><a href="#one-practice">실습 1. 단일집단 t 검정</a></li>
+          <li><a href="#two-practice">실습 2. 두 독립집단 t 검정</a></li>
+          <li><a href="#paired-practice">실습 3. 짝비교 t 검정</a></li>
+        </ol>
+      </li>
+      <li><a href="#refs">참고자료</a></li>
+    </ol>
+  </nav>
+
+  <main class="lesson-main">
+    <div class="breadcrumb">
+      <a href="../../../index.html">수업</a><span class="sep">›</span>
+      <a href="../../index.html">보건의료통계학</a><span class="sep">›</span>9주차
+    </div>
+    <h1>9. 평균비교</h1>
+    <div class="lesson-meta">t-tests · 보건의료통계학 9주차</div>
+
+    <h2 id="one">1. 단일집단 평균 검정</h2>
+<p>한 집단의 평균이 특정 값과 같은지 검정합니다. 모집단의 정규성, 표본 수, 모분산을 아는지에 따라 방법이 정해집니다.</p>
+<ul>
+<li>정규 모집단 또는 표본 수 30 이상이고 모분산을 알 때: <strong>z 검정</strong>, z = (x̄ − μ<sub>0</sub>)/(σ/√n)</li>
+<li>표본 수 30 미만, 정규분포, 모분산을 모를 때: <strong>t 검정</strong></li>
+<li>표본 수 30 미만, 정규분포가 아닐 때: <strong>비모수 검정</strong>(14주차)</li>
+</ul>
+<p>정규성은 Shapiro-Wilk 검정(<code>shapiro.test</code>)으로 확인합니다. 예) 참여자의 평균 연령이 특정 나이와 다른가?</p>
+    <details class="slides" data-from="4" data-to="16"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">원본 슬라이드 6쪽의 검정 방법 선택 흐름도는 교재 그림 안내로 바꾸었습니다. 원본 슬라이드의 실행 결과는 이전 실습 자료(MMPI 변수) 기준이라 아래 R 실습(vas.csv) 결과와 숫자가 다릅니다.</p>
+    <h2 id="two">2. 두 독립집단 평균 차이 검정</h2>
+<p>두 모집단의 평균이 같은지 검정합니다. 모분산을 아는 정규 모집단, 모분산을 모르는 정규 모집단, 정규분포가 아닌 모집단으로 나누어 생각합니다.</p>
+<div class="formula">H<sub>0</sub>: μ<sub>1</sub> − μ<sub>2</sub> = 0, &nbsp; z = {(x̄<sub>1</sub> − x̄<sub>2</sub>) − (μ<sub>1</sub> − μ<sub>2</sub>)<sub>0</sub>} / √(σ<sub>1</sub>²/n<sub>1</sub> + σ<sub>2</sub>²/n<sub>2</sub>)</div>
+<p>먼저 F 검정(<code>var.test</code>)으로 등분산을 확인하고, 등분산이면 <code>var.equal = TRUE</code>(Student t), 아니면 Welch t 검정을 씁니다. 예) 치료군과 대조군의 평균 연령이 다른가?</p>
+    <details class="slides" data-from="17" data-to="22"><summary>원본 슬라이드 보기</summary></details>
+    <h2 id="paired">3. 짝비교 검정(paired t)</h2>
+<p>독립이 아닌 표본: 같은 대상의 처치 전후, 같은 사람의 왼팔·오른팔, 쌍둥이 짝 등. 각 짝의 <strong>차이</strong> d를 하나의 변수로 분석합니다.</p>
+<div class="formula">d̄ = Σd<sub>i</sub>/n, &nbsp; s<sub>d̄</sub> = s<sub>d</sub>/√n, &nbsp; t = (d̄ − μ<sub>d</sub>)/s<sub>d̄</sub> &nbsp;(자유도 n − 1)</div>
+<p>예) 치료 전후 통증 VAS(vas_1, vas_2)가 달라졌는가?</p>
+    <details class="slides" data-from="23" data-to="28"><summary>원본 슬라이드 보기</summary></details>
+
+    <h2 id="practice">R 실습</h2>
+    <p>각 칸의 <strong>실행</strong>을 누르면 브라우저에서 R(webR)이 실행됩니다. 코드를 고쳐 다시 실행할 수 있고, <strong>처음으로</strong>를 누르면 원래 코드로 돌아갑니다. RStudio에서 쓸 전체 실습 스크립트: <a href="../../../../lessons/bios-09/bios-09.R" download>bios-09.R</a></p>
+    <h3 id="one-practice">실습 1. 단일집단 t 검정</h3>
+    <p>실습 자료 <code>vas.csv</code>는 수업용 <strong>합성(synthetic) 자료</strong>입니다(60명: 대조군 30, 치료군 30 · <a href="../../../../lessons/bios-data/vas.csv" download>CSV 내려받기</a> · <a href="../../../../lessons/bios-data/README.md">변수 설명</a>). RStudio에서는 작업 폴더에 두고 <code>read.csv("vas.csv")</code>로 읽습니다.</p>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 1. 단일집단 t 검정</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+vas &lt;- read.csv("vas.csv")
+shapiro.test(vas$age)
+t.test(vas$age, mu = 30)
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+    <h3 id="two-practice">실습 2. 두 독립집단 t 검정</h3>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 2. 두 독립집단 t 검정</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+vas &lt;- read.csv("vas.csv")
+by(vas$age, vas$treat, shapiro.test)
+var.test(age ~ treat, data = vas)
+t.test(age ~ treat, data = vas, var.equal = TRUE)
+boxplot(age ~ treat, data = vas, names = c("Control", "Treatment"))
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+    <h3 id="paired-practice">실습 3. 짝비교 t 검정</h3>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 3. 짝비교 t 검정</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+vas &lt;- read.csv("vas.csv")
+shapiro.test(vas$vas_2 - vas$vas_1)
+t.test(vas$vas_1, vas$vas_2, paired = TRUE)
+boxplot(vas$vas_1, vas$vas_2, names = c("vas_1 (전)", "vas_2 (후)"))
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+    <h2 id="refs">참고자료</h2>
+    <ul class="refs">
+      <li>원본 강의 슬라이드: 상단 <strong>원본 PDF</strong> 버튼 (사진·연락처와 저작권이 있는 교재·논문·외부 그림은 서지 안내로 바꾼 공개본)</li>
+      <li>실습 자료: <a href="../../../../lessons/bios-data/README.md">lessons/bios-data</a> (합성 자료 vas.csv와 생성 코드)</li>
+      <li>R Core Team. <em>R: A Language and Environment for Statistical Computing</em>. https://www.r-project.org · webR: https://docs.r-wasm.org/webr/latest/</li>
+    </ul>
+  </main>
+</div>
+
+<script>
+  // ---------- 원본 슬라이드: 이미지가 없으면 안내 상자 표시 ----------
+  document.querySelectorAll("details.slides").forEach(d => {
+    const grid = document.createElement("div"); grid.className = "slide-grid";
+    for (let n = +d.dataset.from; n <= +d.dataset.to; n++) {
+      const fig = document.createElement("figure"); fig.className = "slide-fig";
+      const img = new Image(); img.loading = "lazy"; img.alt = `슬라이드 ${n}`;
+      img.src = LESSON.assetDir + LESSON.slidePattern(n);
+      img.onerror = () => { img.replaceWith(Object.assign(document.createElement("div"),
+        { className: "slide-missing", textContent: `슬라이드 ${n} 이미지 준비 중` })); };
+      const cap = document.createElement("figcaption"); cap.textContent = `${n} / ${LESSON.totalSlides}`;
+      fig.append(img, cap); grid.append(fig);
+    }
+    d.append(grid);
+  });
+
+  // ---------- 상단 도구 ----------
+  const pdfBtn = document.getElementById("btn-pdf");
+  if (pdfBtn) pdfBtn.href = LESSON.assetDir + LESSON.slidePdf;
+  document.getElementById("btn-print").onclick = () => window.print();
+  document.getElementById("btn-toc").onclick = () =>
+    document.getElementById("lesson-layout").classList.toggle("toc-hidden");
+  let scale = 1;
+  const applyScale = () => document.querySelector(".lesson-main").style.setProperty("--lesson-scale", scale);
+  document.getElementById("btn-font-up").onclick = () => { scale = Math.min(1.5, scale + 0.1); applyScale(); };
+  document.getElementById("btn-font-down").onclick = () => { scale = Math.max(0.8, scale - 0.1); applyScale(); };
+
+  // ---------- 목차: 현재 위치 강조 ----------
+  const tocLinks = [...document.querySelectorAll(".lesson-toc a")];
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) tocLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id));
+  }), { rootMargin: "-20% 0px -70% 0px" });
+  document.querySelectorAll(".lesson-main h2[id], .lesson-main h3[id]").forEach(h => io.observe(h));
+</script>
+
+<!-- webR 준비(공통): vas.csv를 webR 작업 폴더에 넣어 read.csv("vas.csv")로 읽게 함 -->
+<script src="../../../../lessons/bios-data/bios-webr.js"></script>
+<script type="module">
+  document.querySelectorAll(".r-cell").forEach(cell => {
+    const ta = cell.querySelector("textarea");
+    const out = cell.querySelector(".r-out");
+    const original = ta.value;
+    const pkgs = (cell.dataset.pkgs || "").split(",").filter(Boolean);
+    const autosize = () => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + 4 + "px"; };
+    autosize(); ta.addEventListener("input", autosize);
+
+    cell.querySelector(".reset-btn").onclick = () => { ta.value = original; autosize(); out.textContent = ""; cell.querySelectorAll("img.r-plot").forEach(i => i.remove()); };
+
+    cell.querySelector(".run-btn").onclick = async () => {
+      out.textContent = "R 준비 중… (처음 실행 시 10~30초" + (pkgs.length ? ", 패키지 내려받기 포함" : "") + ")";
+      cell.querySelectorAll("img.r-plot").forEach(i => i.remove());
+      try {
+        const webR = await window.getBiosWebR(pkgs);
+        out.textContent = "실행 중…";
+        const shelter = await new webR.Shelter();
+        try {
+          const res = await shelter.captureR(ta.value, {
+            withAutoprint: true, captureStreams: true, captureConditions: false,
+            captureGraphics: { width: 640, height: 400 }
+          });
+          out.textContent = res.output.map(o => (o.type === "stderr" ? "⚠ " : "") + o.data).join("\n") || "(출력 없음)";
+          for (const bmp of res.images || []) {
+            const canvas = document.createElement("canvas");
+            canvas.width = bmp.width; canvas.height = bmp.height;
+            canvas.getContext("2d").drawImage(bmp, 0, 0);
+            const img = document.createElement("img");
+            img.className = "r-plot"; img.src = canvas.toDataURL("image/png");
+            img.style.cssText = "display:block;max-width:100%;background:#fff;border-top:1px solid #e2e8f0";
+            cell.append(img);
+          }
+        } finally { shelter.purge(); }
+      } catch (e) {
+        out.textContent = "오류: " + (e && e.message ? e.message : e);
+      }
+    };
+  });
+</script>
+</body>
+</html>

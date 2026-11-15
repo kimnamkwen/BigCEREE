@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>5. 기술통계 1 · 보건의료통계학 수업 | BigCEREE</title>
+  <link rel="stylesheet" href="../../../../style.css">
+</head>
+<body class="lesson-body">
+<!--
+  ▣ 보건의료통계학 5주차 수업 페이지 (06-cost-utility 형식)
+  - 슬라이드 이미지/PDF: lessons/bios-05/, 실습 자료: lessons/bios-data/vas.csv(합성 자료)
+-->
+<script>
+  const LESSON = {
+    assetDir: "../../../../lessons/bios-05/",
+    slidePdf: "bios-05-slides.pdf",
+    slidePattern: n => `original-p${String(n).padStart(2, "0")}.webp`,
+    totalSlides: 25
+  };
+</script>
+
+<div class="lesson-topbar" id="top">
+  <div class="inner">
+    <a class="back-link" href="../../index.html">← 수업 목록</a>
+    <button class="tool-btn" id="btn-toc" type="button">목차</button>
+    <button class="tool-btn" id="btn-font-down" type="button" aria-label="글자 작게">가−</button>
+    <button class="tool-btn" id="btn-font-up" type="button" aria-label="글자 크게">가+</button>
+    <a class="tool-btn" id="btn-pdf" href="#" target="_blank" rel="noopener">원본 PDF</a>
+    <button class="tool-btn" id="btn-print" type="button">인쇄 / PDF</button>
+  </div>
+</div>
+
+<div class="lesson-layout" id="lesson-layout">
+  <nav class="lesson-toc" aria-label="목차">
+    <h2>목차</h2>
+    <ol>
+      <li><a href="#sample">1. 확률표본과 표본분포</a></li>
+      <li><a href="#mean-dist">2. 표본평균의 분포와 확률 계산</a></li>
+      <li><a href="#diff-dist">3. 두 표본평균 차이의 분포</a></li>
+      <li><a href="#prop-dist">4. 표본비율과 두 표본비율 차이의 분포</a></li>
+      <li><a href="#rprog">5. R 프로그램과 온라인 강의</a></li>
+      <li><a href="#practice">R 실습</a>
+        <ol>
+          <li><a href="#sampling-practice">실습 1. 표본평균의 분포 만들기</a></li>
+          <li><a href="#loop-practice">실습 2. 조건문과 반복문</a></li>
+          <li><a href="#prob-practice">실습 3. 표본분포 확률 계산(stat5_1 ~ stat5_5)</a></li>
+        </ol>
+      </li>
+      <li><a href="#refs">참고자료</a></li>
+    </ol>
+  </nav>
+
+  <main class="lesson-main">
+    <div class="breadcrumb">
+      <a href="../../../index.html">수업</a><span class="sep">›</span>
+      <a href="../../index.html">보건의료통계학</a><span class="sep">›</span>5주차
+    </div>
+    <h1>5. 기술통계 1</h1>
+    <div class="lesson-meta">Sampling distributions · 보건의료통계학 5주차</div>
+
+    <h2 id="sample">1. 확률표본과 표본분포</h2>
+<ul>
+<li><strong>확률표본</strong>: 모집단의 모든 구성요소가 표본에 뽑힐 확률이 같은 표본. 모집단이 작으면 전수조사를 합니다.</li>
+<li><strong>단순확률표본</strong>: 크기 n인 모든 가능한 표본이 뽑힐 확률이 같을 때. 추출법은 복원추출과 비복원추출</li>
+<li><strong>표본분포</strong>: 같은 크기의 가능한 모든 표본에서 구한 통계량 값들의 분포. 모든 표본을 뽑고 → 통계량을 계산하고 → 값과 빈도를 정리합니다.</li>
+</ul>
+    <details class="slides" data-from="4" data-to="7"><summary>원본 슬라이드 보기</summary></details>
+    <h2 id="mean-dist">2. 표본평균의 분포와 확률 계산</h2>
+<p>모집단 (2, 4, 6, 8, 10)에서 크기 2인 표본을 복원추출하면 25개 표본평균의 분포는 가운데가 높은 모양이 되고, 평균은 모평균 6과 같으며 분산은 모분산/n(8/2 = 4)입니다(실습 1).</p>
+<ul>
+<li>정규 모집단: 표본평균 x̄는 정규분포, 평균 μ, 분산 σ²/n</li>
+<li>비정규 모집단: n이 크면 중심극한정리에 따라 근사적으로 정규분포</li>
+<li>비복원추출이고 n/N이 5% 이상이면 유한모집단 보정 (N − n)/(N − 1)을 곱합니다.</li>
+</ul>
+<div class="formula">z = (x̄ − μ) / (σ/√n)</div>
+<p><strong>예제(stat5_1)</strong>: 건강한 남자의 혈청 철분치 평균 120, 표준편차 10(μg/100mL)일 때 100명 표본평균이 118~122일 확률 → 약 0.954</p>
+    <details class="slides" data-from="8" data-to="14"><summary>원본 슬라이드 보기</summary></details>
+    <h2 id="diff-dist">3. 두 표본평균 차이의 분포</h2>
+<div class="formula">평균 μ<sub>1</sub> − μ<sub>2</sub>, 분산 σ<sub>1</sub>²/n<sub>1</sub> + σ<sub>2</sub>²/n<sub>2</sub>, &nbsp; z = {(x̄<sub>1</sub> − x̄<sub>2</sub>) − (μ<sub>1</sub> − μ<sub>2</sub>)} / √(σ<sub>1</sub>²/n<sub>1</sub> + σ<sub>2</sub>²/n<sub>2</sub>)</div>
+<p><strong>예제(stat5_2)</strong>: 두 집단의 지능점수 표준편차 20, 각 15명 표본평균 92와 105. 차이가 없다면 이 이상 차이 날 확률은?</p>
+    <details class="slides" data-from="15" data-to="17"><summary>원본 슬라이드 보기</summary></details>
+    <h2 id="prop-dist">4. 표본비율과 두 표본비율 차이의 분포</h2>
+<p>표본 수가 크면 표본비율도 중심극한정리에 따라 정규분포를 따릅니다(np와 n(1 − p)가 5보다 클 때).</p>
+<div class="formula">z = (p̂ − p) / √{p(1 − p)/n}, &nbsp; 두 비율 차이: z = {(p̂<sub>1</sub> − p̂<sub>2</sub>) − (p<sub>1</sub> − p<sub>2</sub>)} / √{p<sub>1</sub>(1 − p<sub>1</sub>)/n<sub>1</sub> + p<sub>2</sub>(1 − p<sub>2</sub>)/n<sub>2</sub>}</div>
+<p><strong>예제(stat5_3)</strong>: 색맹 비율 0.08인 집단에서 150명을 뽑을 때 표본 비율이 0.15보다 클 확률. <strong>예제(stat5_4)</strong>: 마약류 사용 비율 0.5와 0.33인 두 집단에서 각 100명을 뽑을 때 차이가 0.3 이상일 확률.</p>
+    <details class="slides" data-from="18" data-to="23"><summary>원본 슬라이드 보기</summary></details>
+    <h2 id="rprog">5. R 프로그램과 온라인 강의</h2>
+<p>조건문(<code>if</code>, <code>else if</code>, <code>else</code>, <code>ifelse</code>)과 반복문(<code>for</code>, <code>while</code>, <code>repeat</code>·<code>break</code>, <code>next</code>)으로 함수를 만들어 계산합니다. 과제: <code>gogodan(3)</code>으로 3단이 출력되는 구구단 함수 만들기.</p>
+<p>국립보건연구원 온라인 강의(<a href="https://library.nih.go.kr/spec/main.do" target="_blank" rel="noopener">library.nih.go.kr/spec</a>) 수료도 안내합니다.</p>
+    <details class="slides" data-from="24" data-to="25"><summary>원본 슬라이드 보기</summary></details>
+
+    <h2 id="practice">R 실습</h2>
+    <p>각 칸의 <strong>실행</strong>을 누르면 브라우저에서 R(webR)이 실행됩니다. 코드를 고쳐 다시 실행할 수 있고, <strong>처음으로</strong>를 누르면 원래 코드로 돌아갑니다. RStudio에서 쓸 전체 실습 스크립트: <a href="../../../../lessons/bios-05/bios-05.R" download>bios-05.R</a></p>
+    <h3 id="sampling-practice">실습 1. 표본평균의 분포 만들기</h3>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 1. 표본평균의 분포 만들기</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+alldata &lt;- c(2, 4, 6, 8, 10)
+m &lt;- outer(alldata, alldata, "+") / 2     # 크기 2인 표본 25개(복원추출)의 평균
+table(m)
+popvar &lt;- function(x) mean((x - mean(x))^2)
+c(mean_of_means = mean(m), var_of_means = popvar(m), popvar_over_n = popvar(alldata) / 2)
+hist(m, breaks = seq(1, 11, 1), main = "표본평균의 분포")
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+    <h3 id="loop-practice">실습 2. 조건문과 반복문</h3>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 2. 조건문과 반복문</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+score &lt;- 95
+if (score &gt;= 96) {
+  print("A+ 입니다.")
+} else if (score &gt;= 90) {
+  print("A 입니다.")
+} else {
+  print("B+ 이하입니다.")
+}
+for (i in 1:5) {
+  if (i %% 2 != 0) next
+  print(i)
+}
+gogodan &lt;- function(i) for (j in 1:9) cat(i, "x", j, "=", i * j, "\n")
+gogodan(3)
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+    <h3 id="prob-practice">실습 3. 표본분포 확률 계산(stat5_1 ~ stat5_5)</h3>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 3. 표본분포 확률 계산(stat5_1 ~ stat5_5)</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+stat5_1 &lt;- function(mu, sigma, n, a, b) pnorm(a, mu, sigma / sqrt(n)) - pnorm(b, mu, sigma / sqrt(n))
+stat5_2 &lt;- function(n1, n2, sd1, sd2, dif, x1, x2) {
+  z &lt;- ((x1 - x2) - dif) / sqrt(sd1^2 / n1 + sd2^2 / n2); c(z = z, p = 1 - pnorm(z)) }
+stat5_3 &lt;- function(phat, p, n) { z &lt;- (phat - p) / sqrt(p * (1 - p) / n); c(z = z, p = 1 - pnorm(z)) }
+stat5_4 &lt;- function(p1, p2, n1, n2, diff) {
+  d &lt;- p1 - p2; z &lt;- (diff - d) / sqrt(p1 * (1 - p1) / n1 + p2 * (1 - p2) / n2)
+  c(d = d, z = z, p = 1 - pnorm(z)) }
+stat5_5 &lt;- function(n, x, p) choose(n, x) * p^x * (1 - p)^(n - x)
+stat5_1(120, 10, 100, 122, 118)    # 혈청 철분치
+stat5_2(15, 15, 20, 20, 0, 105, 92) # 지능점수 차이
+stat5_3(0.15, 0.08, 150)            # 색맹 비율
+stat5_4(0.5, 0.33, 100, 100, 0.3)   # 두 비율 차이
+stat5_5(5, 3, 0.52)                 # 이항분포
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+    <h2 id="refs">참고자료</h2>
+    <ul class="refs">
+      <li>원본 강의 슬라이드: 상단 <strong>원본 PDF</strong> 버튼 (사진·연락처와 저작권이 있는 교재·논문·외부 그림은 서지 안내로 바꾼 공개본)</li>
+      <li>실습 자료: <a href="../../../../lessons/bios-data/README.md">lessons/bios-data</a> (합성 자료 vas.csv와 생성 코드)</li>
+      <li>R Core Team. <em>R: A Language and Environment for Statistical Computing</em>. https://www.r-project.org · webR: https://docs.r-wasm.org/webr/latest/</li>
+    </ul>
+  </main>
+</div>
+
+<script>
+  // ---------- 원본 슬라이드: 이미지가 없으면 안내 상자 표시 ----------
+  document.querySelectorAll("details.slides").forEach(d => {
+    const grid = document.createElement("div"); grid.className = "slide-grid";
+    for (let n = +d.dataset.from; n <= +d.dataset.to; n++) {
+      const fig = document.createElement("figure"); fig.className = "slide-fig";
+      const img = new Image(); img.loading = "lazy"; img.alt = `슬라이드 ${n}`;
+      img.src = LESSON.assetDir + LESSON.slidePattern(n);
+      img.onerror = () => { img.replaceWith(Object.assign(document.createElement("div"),
+        { className: "slide-missing", textContent: `슬라이드 ${n} 이미지 준비 중` })); };
+      const cap = document.createElement("figcaption"); cap.textContent = `${n} / ${LESSON.totalSlides}`;
+      fig.append(img, cap); grid.append(fig);
+    }
+    d.append(grid);
+  });
+
+  // ---------- 상단 도구 ----------
+  const pdfBtn = document.getElementById("btn-pdf");
+  if (pdfBtn) pdfBtn.href = LESSON.assetDir + LESSON.slidePdf;
+  document.getElementById("btn-print").onclick = () => window.print();
+  document.getElementById("btn-toc").onclick = () =>
+    document.getElementById("lesson-layout").classList.toggle("toc-hidden");
+  let scale = 1;
+  const applyScale = () => document.querySelector(".lesson-main").style.setProperty("--lesson-scale", scale);
+  document.getElementById("btn-font-up").onclick = () => { scale = Math.min(1.5, scale + 0.1); applyScale(); };
+  document.getElementById("btn-font-down").onclick = () => { scale = Math.max(0.8, scale - 0.1); applyScale(); };
+
+  // ---------- 목차: 현재 위치 강조 ----------
+  const tocLinks = [...document.querySelectorAll(".lesson-toc a")];
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) tocLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id));
+  }), { rootMargin: "-20% 0px -70% 0px" });
+  document.querySelectorAll(".lesson-main h2[id], .lesson-main h3[id]").forEach(h => io.observe(h));
+</script>
+
+<!-- webR 준비(공통): vas.csv를 webR 작업 폴더에 넣어 read.csv("vas.csv")로 읽게 함 -->
+<script src="../../../../lessons/bios-data/bios-webr.js"></script>
+<script type="module">
+  document.querySelectorAll(".r-cell").forEach(cell => {
+    const ta = cell.querySelector("textarea");
+    const out = cell.querySelector(".r-out");
+    const original = ta.value;
+    const pkgs = (cell.dataset.pkgs || "").split(",").filter(Boolean);
+    const autosize = () => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + 4 + "px"; };
+    autosize(); ta.addEventListener("input", autosize);
+
+    cell.querySelector(".reset-btn").onclick = () => { ta.value = original; autosize(); out.textContent = ""; cell.querySelectorAll("img.r-plot").forEach(i => i.remove()); };
+
+    cell.querySelector(".run-btn").onclick = async () => {
+      out.textContent = "R 준비 중… (처음 실행 시 10~30초" + (pkgs.length ? ", 패키지 내려받기 포함" : "") + ")";
+      cell.querySelectorAll("img.r-plot").forEach(i => i.remove());
+      try {
+        const webR = await window.getBiosWebR(pkgs);
+        out.textContent = "실행 중…";
+        const shelter = await new webR.Shelter();
+        try {
+          const res = await shelter.captureR(ta.value, {
+            withAutoprint: true, captureStreams: true, captureConditions: false,
+            captureGraphics: { width: 640, height: 400 }
+          });
+          out.textContent = res.output.map(o => (o.type === "stderr" ? "⚠ " : "") + o.data).join("\n") || "(출력 없음)";
+          for (const bmp of res.images || []) {
+            const canvas = document.createElement("canvas");
+            canvas.width = bmp.width; canvas.height = bmp.height;
+            canvas.getContext("2d").drawImage(bmp, 0, 0);
+            const img = document.createElement("img");
+            img.className = "r-plot"; img.src = canvas.toDataURL("image/png");
+            img.style.cssText = "display:block;max-width:100%;background:#fff;border-top:1px solid #e2e8f0";
+            cell.append(img);
+          }
+        } finally { shelter.purge(); }
+      } catch (e) {
+        out.textContent = "오류: " + (e && e.message ? e.message : e);
+      }
+    };
+  });
+</script>
+</body>
+</html>

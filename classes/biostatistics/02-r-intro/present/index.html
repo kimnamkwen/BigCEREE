@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>2. 통계분석 프로그램 소개 · 보건의료통계학 수업 | BigCEREE</title>
+  <link rel="stylesheet" href="../../../../style.css">
+</head>
+<body class="lesson-body">
+<!--
+  ▣ 보건의료통계학 2주차 수업 페이지 (06-cost-utility 형식)
+  - 슬라이드 이미지/PDF: lessons/bios-02/, 실습 자료: lessons/bios-data/vas.csv(합성 자료)
+-->
+<script>
+  const LESSON = {
+    assetDir: "../../../../lessons/bios-02/",
+    slidePdf: "bios-02-slides.pdf",
+    slidePattern: n => `original-p${String(n).padStart(2, "0")}.webp`,
+    totalSlides: 14
+  };
+</script>
+
+<div class="lesson-topbar" id="top">
+  <div class="inner">
+    <a class="back-link" href="../../index.html">← 수업 목록</a>
+    <button class="tool-btn" id="btn-toc" type="button">목차</button>
+    <button class="tool-btn" id="btn-font-down" type="button" aria-label="글자 작게">가−</button>
+    <button class="tool-btn" id="btn-font-up" type="button" aria-label="글자 크게">가+</button>
+    <a class="tool-btn" id="btn-pdf" href="#" target="_blank" rel="noopener">원본 PDF</a>
+    <button class="tool-btn" id="btn-print" type="button">인쇄 / PDF</button>
+  </div>
+</div>
+
+<div class="lesson-layout" id="lesson-layout">
+  <nav class="lesson-toc" aria-label="목차">
+    <h2>목차</h2>
+    <ol>
+      <li><a href="#excel">1. Excel과 난수로 분석 자료 만들기</a></li>
+      <li><a href="#programs">2. 의학 분야 통계분석 프로그램</a></li>
+      <li><a href="#datatype">3. R의 데이터 종류</a></li>
+      <li><a href="#library">4. 라이브러리(패키지)</a></li>
+      <li><a href="#practice">R 실습</a>
+        <ol>
+          <li><a href="#basic-practice">실습 1. 기초 명령어와 벡터</a></li>
+          <li><a href="#type-practice">실습 2. factor · matrix · data frame · list</a></li>
+          <li><a href="#data-practice">실습 3. 자료 불러오기와 구조 확인</a></li>
+          <li><a href="#plot-practice">실습 4. 간단한 그래프</a></li>
+        </ol>
+      </li>
+      <li><a href="#refs">참고자료</a></li>
+    </ol>
+  </nav>
+
+  <main class="lesson-main">
+    <div class="breadcrumb">
+      <a href="../../../index.html">수업</a><span class="sep">›</span>
+      <a href="../../index.html">보건의료통계학</a><span class="sep">›</span>2주차
+    </div>
+    <h1>2. 통계분석 프로그램 소개</h1>
+    <div class="lesson-meta">Introduction to R · 보건의료통계학 2주차</div>
+
+    <h2 id="excel">1. Excel과 난수로 분석 자료 만들기</h2>
+<p>Excel의 <code>RANDBETWEEN()</code>과 <code>RAND()</code>로 변수별 최솟값·최댓값 범위의 난수를 만들어 연습용 자료를 만들 수 있습니다. 예) 0.5~1 사이 삶의 질: <code>ROUND(0.5 + RAND()*(1-0.5), 3)</code>.</p>
+<p>이 수업의 실습 자료 <code>vas.csv</code>도 같은 생각으로 R 난수로 만든 합성 자료입니다(<a href="../../../../lessons/bios-data/make_vas_synthetic.R">생성 코드</a>).</p>
+    <details class="slides" data-from="4" data-to="5"><summary>원본 슬라이드 보기</summary></details>
+    <h2 id="programs">2. 의학 분야 통계분석 프로그램</h2>
+<p>Excel, SPSS, SAS, STATA, R, Python이 주로 쓰입니다. 이 수업은 무료이고 재현 가능한 분석이 쉬운 <strong>R</strong>을 씁니다.</p>
+<h3>R의 특징</h3>
+<ol>
+<li>데이터의 효율적인 조작과 저장</li>
+<li>배열·행렬 연산</li>
+<li>다양한 데이터 분석 도구</li>
+<li>분석과 표현을 위한 그래픽 도구</li>
+<li>프로그래밍 언어로서 S 언어 지원</li>
+</ol>
+<p>R이라는 이름은 두 저자(Robert Gentleman, Ross Ihaka)의 첫 글자와, 1976년 Bell Lab에서 개발된 S 언어에서 왔습니다. GNU GPL에 따른 자유 소프트웨어로, 어떤 목적으로든 실행하고, 고치고, 다시 배포할 수 있습니다.</p>
+<h3>RStudio와 Posit Cloud</h3>
+<p>RStudio는 스크립트 창(위)과 콘솔 창(아래), 환경·그래프 창으로 구성됩니다. 설치가 어려우면 브라우저에서 쓰는 <a href="https://posit.cloud/" target="_blank" rel="noopener">Posit Cloud</a>를 이용합니다.</p>
+    <details class="slides" data-from="6" data-to="10"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">원본 슬라이드 10쪽의 Posit Cloud 홍보 화면은 생략했습니다.</p>
+    <h2 id="datatype">3. R의 데이터 종류</h2>
+<table>
+<tr><th>종류</th><th>설명</th></tr>
+<tr><td>Vector</td><td>1차원 자료. 숫자형, 문자형, 논리형(logical)</td></tr>
+<tr><td>Factor</td><td>범주형 자료(예: 남성 = 1, 여성 = 0)</td></tr>
+<tr><td>Matrix</td><td>2차원 자료, 행렬 연산용</td></tr>
+<tr><td>Array</td><td>3차원 이상, 배열 연산용(Python의 tensor와 비슷)</td></tr>
+<tr><td>List</td><td>여러 형태가 섞인 묶음</td></tr>
+<tr><td>Data frame</td><td>통계분석에 주로 쓰는 다변량 자료 구조</td></tr>
+</table>
+    <details class="slides" data-from="11" data-to="11"><summary>원본 슬라이드 보기</summary></details>
+    <h2 id="library">4. 라이브러리(패키지)</h2>
+<ul>
+<li><code>search()</code>: 현재 불러온 패키지 확인, <code>install.packages("이름")</code>: 설치, <code>library(이름)</code>: 불러오기</li>
+<li><strong>tidyverse</strong>: dplyr(자료 가공), ggplot2(그래프), readr(자료 읽기), tidyr(자료 정리), purrr, tibble, stringr, forcats, lubridate를 묶은 패키지</li>
+</ul>
+    <details class="slides" data-from="12" data-to="14"><summary>원본 슬라이드 보기</summary></details>
+
+    <h2 id="practice">R 실습</h2>
+    <p>각 칸의 <strong>실행</strong>을 누르면 브라우저에서 R(webR)이 실행됩니다. 코드를 고쳐 다시 실행할 수 있고, <strong>처음으로</strong>를 누르면 원래 코드로 돌아갑니다. RStudio에서 쓸 전체 실습 스크립트: <a href="../../../../lessons/bios-02/bios-02.R" download>bios-02.R</a></p>
+    <h3 id="basic-practice">실습 1. 기초 명령어와 벡터</h3>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 1. 기초 명령어와 벡터</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+(1 + 2) / 3
+10 &lt; 11
+var1 &lt;- c(1, 2, 5, 7, 8)
+var3 &lt;- seq(1, 5)
+var4 &lt;- seq(1, 10, 2)
+var3 + var4
+x &lt;- c(1, 2, 3)
+c(mean = mean(x), max = max(x), min = min(x))
+paste(c("a", "b", "c"), collapse = " ")
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+    <h3 id="type-practice">실습 2. factor · matrix · data frame · list</h3>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 2. factor · matrix · data frame · list</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+review &lt;- c("very low", "low", "middle", "high", "very high")
+review.factor &lt;- as.factor(review)
+levels(review.factor)          # 알파벳 순서로 수준이 정해짐
+as.numeric(review.factor)
+
+mat2 &lt;- matrix(1:12, 3, 4, byrow = TRUE,
+               dimnames = list(c("R1", "R2", "R3"), c("C1", "C2", "C3", "C4")))
+mat2
+mat2[2, 3]
+
+data1 &lt;- data.frame(name = c("k", "l", "n"), math = c(21, 31, 41), eng = c(22, 10, 15))
+data1
+lst1 &lt;- list(title = "List Example", numbers = 1:3)
+lst1$numbers
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+    <h3 id="data-practice">실습 3. 자료 불러오기와 구조 확인</h3>
+    <p>실습 자료 <code>vas.csv</code>는 수업용 <strong>합성(synthetic) 자료</strong>입니다(60명: 대조군 30, 치료군 30 · <a href="../../../../lessons/bios-data/vas.csv" download>CSV 내려받기</a> · <a href="../../../../lessons/bios-data/README.md">변수 설명</a>). RStudio에서는 작업 폴더에 두고 <code>read.csv("vas.csv")</code>로 읽습니다.</p>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 3. 자료 불러오기와 구조 확인</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+vas &lt;- read.csv("vas.csv")
+str(vas)
+summary(vas)
+mean(vas$age)
+table(vas$treat)
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+    <h3 id="plot-practice">실습 4. 간단한 그래프</h3>
+    <p>ggplot2 그래프는 처음 실행할 때 패키지를 내려받아 시간이 조금 더 걸립니다.</p>
+    <div class="r-cell" data-pkgs="ggplot2">
+      <div class="r-head"><span class="r-label">R · 실습 4. 간단한 그래프</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+library(ggplot2)
+vas &lt;- read.csv("vas.csv")
+hist(vas$cost)
+scatter.smooth(y = vas$qol, x = vas$cost)
+ggplot(vas, aes(x = age, y = cost)) + geom_point()
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+    <h2 id="refs">참고자료</h2>
+    <ul class="refs">
+      <li>원본 강의 슬라이드: 상단 <strong>원본 PDF</strong> 버튼 (사진·연락처와 저작권이 있는 교재·논문·외부 그림은 서지 안내로 바꾼 공개본)</li>
+      <li>실습 자료: <a href="../../../../lessons/bios-data/README.md">lessons/bios-data</a> (합성 자료 vas.csv와 생성 코드)</li>
+      <li>R Core Team. <em>R: A Language and Environment for Statistical Computing</em>. https://www.r-project.org · webR: https://docs.r-wasm.org/webr/latest/</li>
+    </ul>
+  </main>
+</div>
+
+<script>
+  // ---------- 원본 슬라이드: 이미지가 없으면 안내 상자 표시 ----------
+  document.querySelectorAll("details.slides").forEach(d => {
+    const grid = document.createElement("div"); grid.className = "slide-grid";
+    for (let n = +d.dataset.from; n <= +d.dataset.to; n++) {
+      const fig = document.createElement("figure"); fig.className = "slide-fig";
+      const img = new Image(); img.loading = "lazy"; img.alt = `슬라이드 ${n}`;
+      img.src = LESSON.assetDir + LESSON.slidePattern(n);
+      img.onerror = () => { img.replaceWith(Object.assign(document.createElement("div"),
+        { className: "slide-missing", textContent: `슬라이드 ${n} 이미지 준비 중` })); };
+      const cap = document.createElement("figcaption"); cap.textContent = `${n} / ${LESSON.totalSlides}`;
+      fig.append(img, cap); grid.append(fig);
+    }
+    d.append(grid);
+  });
+
+  // ---------- 상단 도구 ----------
+  const pdfBtn = document.getElementById("btn-pdf");
+  if (pdfBtn) pdfBtn.href = LESSON.assetDir + LESSON.slidePdf;
+  document.getElementById("btn-print").onclick = () => window.print();
+  document.getElementById("btn-toc").onclick = () =>
+    document.getElementById("lesson-layout").classList.toggle("toc-hidden");
+  let scale = 1;
+  const applyScale = () => document.querySelector(".lesson-main").style.setProperty("--lesson-scale", scale);
+  document.getElementById("btn-font-up").onclick = () => { scale = Math.min(1.5, scale + 0.1); applyScale(); };
+  document.getElementById("btn-font-down").onclick = () => { scale = Math.max(0.8, scale - 0.1); applyScale(); };
+
+  // ---------- 목차: 현재 위치 강조 ----------
+  const tocLinks = [...document.querySelectorAll(".lesson-toc a")];
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) tocLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id));
+  }), { rootMargin: "-20% 0px -70% 0px" });
+  document.querySelectorAll(".lesson-main h2[id], .lesson-main h3[id]").forEach(h => io.observe(h));
+</script>
+
+<!-- webR 준비(공통): vas.csv를 webR 작업 폴더에 넣어 read.csv("vas.csv")로 읽게 함 -->
+<script src="../../../../lessons/bios-data/bios-webr.js"></script>
+<script type="module">
+  document.querySelectorAll(".r-cell").forEach(cell => {
+    const ta = cell.querySelector("textarea");
+    const out = cell.querySelector(".r-out");
+    const original = ta.value;
+    const pkgs = (cell.dataset.pkgs || "").split(",").filter(Boolean);
+    const autosize = () => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + 4 + "px"; };
+    autosize(); ta.addEventListener("input", autosize);
+
+    cell.querySelector(".reset-btn").onclick = () => { ta.value = original; autosize(); out.textContent = ""; cell.querySelectorAll("img.r-plot").forEach(i => i.remove()); };
+
+    cell.querySelector(".run-btn").onclick = async () => {
+      out.textContent = "R 준비 중… (처음 실행 시 10~30초" + (pkgs.length ? ", 패키지 내려받기 포함" : "") + ")";
+      cell.querySelectorAll("img.r-plot").forEach(i => i.remove());
+      try {
+        const webR = await window.getBiosWebR(pkgs);
+        out.textContent = "실행 중…";
+        const shelter = await new webR.Shelter();
+        try {
+          const res = await shelter.captureR(ta.value, {
+            withAutoprint: true, captureStreams: true, captureConditions: false,
+            captureGraphics: { width: 640, height: 400 }
+          });
+          out.textContent = res.output.map(o => (o.type === "stderr" ? "⚠ " : "") + o.data).join("\n") || "(출력 없음)";
+          for (const bmp of res.images || []) {
+            const canvas = document.createElement("canvas");
+            canvas.width = bmp.width; canvas.height = bmp.height;
+            canvas.getContext("2d").drawImage(bmp, 0, 0);
+            const img = document.createElement("img");
+            img.className = "r-plot"; img.src = canvas.toDataURL("image/png");
+            img.style.cssText = "display:block;max-width:100%;background:#fff;border-top:1px solid #e2e8f0";
+            cell.append(img);
+          }
+        } finally { shelter.purge(); }
+      } catch (e) {
+        out.textContent = "오류: " + (e && e.message ? e.message : e);
+      }
+    };
+  });
+</script>
+</body>
+</html>
