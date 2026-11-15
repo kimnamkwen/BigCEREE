@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>10. Decision tree model · 경제성평가 수업 | BigCEREE</title>
+  <link rel="stylesheet" href="../../../../style.css">
+</head>
+<body class="lesson-body">
+<!--
+  ▣ 10주차 수업 페이지 (06-cost-utility 템플릿 기반)
+  - 슬라이드 이미지/PDF는 /lessons/econ-10/ 폴더에 있습니다 (lessons/econ-10/README.md 참고).
+-->
+<script>
+  const LESSON = {
+    assetDir: "../../../../lessons/econ-10/",
+    slidePdf: "econ-10-slides.pdf",
+    slidePattern: n => `original-p${String(n).padStart(2, "0")}.webp`,
+    totalSlides: 24
+  };
+</script>
+
+<div class="lesson-topbar" id="top">
+  <div class="inner">
+    <a class="back-link" href="../../index.html">← 수업 목록</a>
+    <button class="tool-btn" id="btn-toc" type="button">목차</button>
+    <button class="tool-btn" id="btn-font-down" type="button" aria-label="글자 작게">가−</button>
+    <button class="tool-btn" id="btn-font-up" type="button" aria-label="글자 크게">가+</button>
+    <a class="tool-btn" id="btn-pdf" href="#" target="_blank" rel="noopener">원본 PDF</a>
+    <button class="tool-btn" id="btn-print" type="button">인쇄 / PDF</button>
+  </div>
+</div>
+
+<div class="lesson-layout" id="lesson-layout">
+  <nav class="lesson-toc" aria-label="목차">
+    <h2>목차</h2>
+    <ol>
+      <li><a href="#overview">Decision tree 개요</a></li>
+      <li><a href="#case">사례: 일본뇌염</a></li>
+      <li><a href="#analysis">모델링 분석</a>
+        <ol>
+          <li><a href="#structure">문제 구조화</a></li>
+          <li><a href="#build">나무 만들기</a></li>
+          <li><a href="#base">기저분석</a></li>
+          <li><a href="#sens">민감도 분석</a></li>
+          <li><a href="#voi">정보의 가치</a></li>
+        </ol>
+      </li>
+      <li><a href="#practice">실습</a>
+        <ol>
+          <li><a href="#tree-practice">뇌염 의사결정나무</a></li>
+          <li><a href="#evpi-practice">EVPI</a></li>
+        </ol>
+      </li>
+      <li><a href="#refs">참고자료</a></li>
+    </ol>
+  </nav>
+
+  <main class="lesson-main">
+    <div class="breadcrumb">
+      <a href="../../../index.html">수업</a><span class="sep">›</span>
+      <a href="../../index.html">경제성평가</a><span class="sep">›</span>10주차
+    </div>
+    <h1>10. Decision tree model</h1>
+    <div class="lesson-meta">Decision Tree Modelling · 경제성평가 10주차</div>
+
+    <h2 id="overview">1. Decision tree 개요</h2>
+    <p>의사결정나무는 결정 마디·확률 마디·종결 마디와 서로 배타적인 가지로 이루어지고, 경로 확률은 가지의 확률을 곱해 구합니다(9주차). 분석은 ① 문제 구조화 → ② 나무 만들기 → ③ 기저분석(기댓값, 정보의 가치) → ④ 민감도 분석(일원·이원·임계값) 순서입니다.</p>
+    <details class="slides" data-from="5" data-to="9"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">원본 슬라이드 6쪽의 논문 그림(Evans 등)은 논문 참조 안내로 바꾸었습니다.</p>
+
+    <h2 id="case">2. 사례: 일본뇌염 유행 예상 지역의 살충제 살포</h2>
+    <p>이 사례는 Sue Goldie와 Lee의 강의 예제를 바탕으로 합니다.</p>
+    <div class="keybox">
+      <p>모기가 옮기는 뇌염의 유행이 보고되었습니다. 당국은 인구 100,000명 도시에 살충제를 뿌릴지 정해야 합니다.</p>
+      <ul>
+        <li>유행 확률은 20%이며, 유행하면 2주 동안 인구의 2%가 뇌염에 걸립니다. 그중 30%는 사망하고 70%는 후유증을 안고 회복합니다.</li>
+        <li>살충제를 뿌리면 유행하더라도 발병은 0.1%로 줄지만, 살충제 독성으로 노출자의 0.1%가 사망합니다(뇌염 생존자는 살충제로 사망하지 않는다고 가정).</li>
+        <li>유행 여부를 검사하면 확실히 알 수 있지만 1주일이 걸리고, 그동안 인구의 1%가 뇌염에 걸립니다.</li>
+      </ul>
+    </div>
+    <details class="slides" data-from="10" data-to="13"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">원본 슬라이드 10쪽의 질환백과 화면은 자료 참조 안내로 바꾸었습니다.</p>
+
+    <h2 id="analysis">3. Decision tree 모델링 분석</h2>
+    <h3 id="structure">1) 문제 구조화</h3>
+    <table>
+      <tr><th>항목</th><th>내용</th></tr>
+      <tr><td>시작점</td><td>도시의 뇌염 유행 가능성</td></tr>
+      <tr><td>분석 기간</td><td>2주</td></tr>
+      <tr><td>대안</td><td>살포 / 검사 후 결정 / 살포 안 함</td></tr>
+      <tr><td>확률</td><td>유행 0.2, 살포 시 뇌염 0.001, 살포 안 할 때 뇌염 0.02, 검사 기간 중 뇌염 0.01</td></tr>
+      <tr><td>결과(사망 확률)</td><td>뇌염 사망 0.3, 비감염자의 살충제 사망 0.001, 살포하지 않으면 0</td></tr>
+    </table>
+    <p class="widget-help">원본 슬라이드 15쪽의 “살충제 투여 안 하는 경우 뇌염 발생확률 0.2”는 문제(2%)와 18쪽 나무에 맞춰 0.02로 바로잡았습니다.</p>
+    <h3 id="build">2) 나무 만들기</h3>
+    <p>살포·검사·살포 안 함의 세 가지에서 유행/비유행, 뇌염/비뇌염 가지를 그립니다. 검사 가지에서는 유행이면 살포, 비유행이면 살포하지 않습니다. 각 가지 끝에 사망 확률을 붙입니다.</p>
+    <h3 id="base">3) 기저분석</h3>
+    <table>
+      <tr><th>대안</th><th>기대 사망 확률</th><th>기대 사망자 (10만 명)</th></tr>
+      <tr><td>살포</td><td>0.2×(0.001×0.3 + 0.999×0.001) + 0.8×0.001 = 0.0010598</td><td>106명</td></tr>
+      <tr><td>검사</td><td>0.2×(0.01×0.3 + 0.99×0.001) + 0.8×0 = 0.000798</td><td><strong>80명</strong></td></tr>
+      <tr><td>살포 안 함</td><td>0.2×0.02×0.3 = 0.0012</td><td>120명</td></tr>
+    </table>
+    <h3 id="sens">4) 민감도 분석</h3>
+    <p>살충제 사망 확률 p를 바꿔 봅니다(신뢰구간 0.0005–0.002). 살포와 살포 안 함의 사망자가 같아지는 p는 0.00114이며, 세 대안을 함께 보면 <strong>p &lt; 0.00067이면 살포, 0.00067–0.00303이면 검사, p &gt; 0.00303이면 살포 안 함</strong>이 최선입니다(임계값 분석). 실습 1에서 확인합니다.</p>
+    <h3 id="voi">5) 정보의 가치</h3>
+    <p>검사 정보가 정확하다면, 검사로 얻는 정보의 가치는 살포(106명)와 검사(80명)의 차이인 <strong>26명</strong>입니다. 확률적 분석에서는 반복마다 최선의 대안을 골랐을 때의 기대 순편익과, 현재 정보로 고른 대안의 기대 순편익의 차이가 <strong>완전정보의 기대가치(EVPI)</strong>입니다. 실습 2에서 계산합니다.</p>
+    <details class="slides" data-from="14" data-to="24"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">원본 슬라이드 24쪽의 EVPI 예시표는 문헌 참조 안내로 바꾸고, 같은 숫자로 실습 2를 만들었습니다.</p>
+
+    <h2 id="practice">실습</h2>
+    <h3 id="tree-practice">실습 1. 뇌염 의사결정나무와 임계값</h3>
+    <div class="widget">
+      <div class="widget-row"><label for="ps">살충제 사망 확률 p</label><input id="ps" type="range" min="0" max="0.005" step="0.00001" value="0.001"><strong id="ps-value"></strong></div>
+      <table id="tree-table"><thead><tr><th>대안</th><th>기대 사망 확률</th><th>기대 사망자 (10만 명)</th></tr></thead><tbody></tbody></table>
+      <p class="verdict ok" id="tree-verdict" aria-live="polite"></p>
+      <svg id="tree-chart" class="chart" viewBox="0 0 640 320" role="img" aria-label="살충제 사망 확률에 따른 기대 사망 확률"></svg>
+      <p class="widget-help">세 직선은 p에 따른 대안별 기대 사망 확률이고, 세로선은 임계값(0.00067, 0.00303)과 현재 p입니다.</p>
+    </div>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 1</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+tree &lt;- function(p_spray, N = 1e5) {
+  spray &lt;- 0.2 * (0.001 * 0.3 + 0.999 * p_spray) + 0.8 * p_spray
+  test  &lt;- 0.2 * (0.01 * 0.3 + 0.99 * p_spray)
+  none  &lt;- 0.2 * 0.02 * 0.3
+  ev &lt;- c(spray = spray, test = test, no_spray = none)
+  rbind(prob_death = round(ev, 7), deaths = round(ev * N))
+}
+tree(0.001)
+# 임계값: 살포 = 검사, 검사 = 살포 안 함, 살포 = 살포 안 함
+f &lt;- function(p) tree(p)["prob_death", ]
+c(spray_vs_test = uniroot(function(p) f(p)[1] - f(p)[2], c(0, 0.01))$root,
+  test_vs_none  = uniroot(function(p) f(p)[2] - f(p)[3], c(0, 0.01))$root,
+  spray_vs_none = uniroot(function(p) f(p)[1] - f(p)[3], c(0, 0.01))$root)
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+
+    <h3 id="evpi-practice">실습 2. 완전정보의 기대가치(EVPI)</h3>
+    <p>확률적 민감도 분석 5회 반복에서 대안 A–D의 순편익이 아래와 같을 때, 현재 정보로는 기대 순편익이 가장 큰 대안을 고르고, 완전정보가 있으면 반복마다 최선을 고릅니다.</p>
+    <div class="widget">
+      <table id="evpi-table"><thead><tr><th>반복</th><th>A</th><th>B</th><th>C</th><th>D</th><th>최선</th><th>최대 순편익</th><th>기회손실</th></tr></thead><tbody></tbody></table>
+      <p class="verdict ok" id="evpi-verdict"></p>
+    </div>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 2</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+nb &lt;- rbind(c(9, 12, 14, 8), c(12, 10, 8, 7), c(14, 20, 15, 12), c(11, 10, 12, 9), c(14, 13, 11, 10))
+colnames(nb) &lt;- c("A", "B", "C", "D")
+best_now &lt;- which.max(colMeans(nb))            # 현재 정보로 고른 대안
+c(expected_NB = colMeans(nb), choice = best_now)
+c(EV_perfect = mean(apply(nb, 1, max)), EV_current = max(colMeans(nb)),
+  EVPI = mean(apply(nb, 1, max)) - max(colMeans(nb)))
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+    <h2 id="refs">참고자료</h2>
+    <ul class="refs">
+      <li>Drummond MF, Sculpher MJ, Claxton K, Stoddart GL, Torrance GW. <em>Methods for the Economic Evaluation of Health Care Programmes</em>. 4th ed. Oxford University Press; 2015.</li>
+      <li>Briggs A, Claxton K, Sculpher M. <em>Decision Modelling for Health Economic Evaluation</em>. Oxford University Press; 2006.</li>
+      <li>Evans KW 등. Economic evaluation of oral sumatriptan compared with oral caffeine/ergotamine for migraine.</li>
+    </ul>
+  </main>
+</div>
+
+<script>
+  // ---------- 원본 슬라이드: 이미지가 없으면 안내 상자 표시 ----------
+  document.querySelectorAll("details.slides").forEach(d => {
+    const grid = document.createElement("div"); grid.className = "slide-grid";
+    for (let n = +d.dataset.from; n <= +d.dataset.to; n++) {
+      const fig = document.createElement("figure"); fig.className = "slide-fig";
+      const img = new Image(); img.loading = "lazy"; img.alt = `슬라이드 ${n}`;
+      img.src = LESSON.assetDir + LESSON.slidePattern(n);
+      img.onerror = () => { img.replaceWith(Object.assign(document.createElement("div"),
+        { className: "slide-missing", textContent: `슬라이드 ${n} 이미지 준비 중 (lessons 폴더에 ${LESSON.slidePattern(n)} 추가)` })); };
+      const cap = document.createElement("figcaption"); cap.textContent = `${n} / ${LESSON.totalSlides}`;
+      fig.append(img, cap); grid.append(fig);
+    }
+    d.append(grid);
+  });
+
+  // ---------- 상단 도구 ----------
+  document.getElementById("btn-pdf").href = LESSON.assetDir + LESSON.slidePdf;
+  document.getElementById("btn-print").onclick = () => window.print();
+  document.getElementById("btn-toc").onclick = () =>
+    document.getElementById("lesson-layout").classList.toggle("toc-hidden");
+  let scale = 1;
+  const applyScale = () => document.querySelector(".lesson-main").style.setProperty("--lesson-scale", scale);
+  document.getElementById("btn-font-up").onclick = () => { scale = Math.min(1.5, scale + 0.1); applyScale(); };
+  document.getElementById("btn-font-down").onclick = () => { scale = Math.max(0.8, scale - 0.1); applyScale(); };
+
+  // ---------- 목차: 현재 위치 강조 ----------
+  const tocLinks = [...document.querySelectorAll(".lesson-toc a")];
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) tocLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id));
+  }), { rootMargin: "-20% 0px -70% 0px" });
+  document.querySelectorAll(".lesson-main h2[id], .lesson-main h3[id]").forEach(h => io.observe(h));
+</script>
+<script>
+  const fmt = (x, d = 0) => Number(x).toLocaleString("ko-KR", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const $ = id => document.getElementById(id);
+  const NS = "http://www.w3.org/2000/svg";
+  function el(tag, attrs = {}, text) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; return e; }
+  function axes(svg, L, R, T, B, X, Y, xt, yt, xl, yl, yfmt = v => v) {
+    yt.forEach(t => { svg.append(el("line", { x1: L, x2: R, y1: Y(t), y2: Y(t), class: "grid" })); svg.append(el("text", { x: L - 10, y: Y(t) + 4, class: "tick", "text-anchor": "end" }, yfmt(t))); });
+    xt.forEach(t => svg.append(el("text", { x: X(t), y: B + 22, class: "tick", "text-anchor": "middle" }, t)));
+    svg.append(el("line", { x1: L, x2: L, y1: T, y2: B, class: "axis" })); svg.append(el("line", { x1: L, x2: R, y1: B, y2: B, class: "axis" }));
+    svg.append(el("text", { x: (L + R) / 2, y: B + 46, class: "axis-label", "text-anchor": "middle" }, xl));
+    svg.append(el("text", { x: 20, y: (T + B) / 2, class: "axis-label", "text-anchor": "middle", transform: `rotate(-90 20 ${(T + B) / 2})` }, yl));
+  }
+
+  // ---------- 실습 1 ----------
+  const ev = p => ({ spray: 0.2 * (0.001 * 0.3 + 0.999 * p) + 0.8 * p, test: 0.2 * (0.01 * 0.3 + 0.99 * p), none: 0.2 * 0.02 * 0.3 });
+  const T1 = (0.0006 - 0.00006) / (0.9998 - 0.198), T2 = (0.0012 - 0.0006) / 0.198;   // 살포=검사, 검사=살포 안 함
+  const psEl = $("ps"), names = { spray: "살포", test: "검사 후 결정", none: "살포 안 함" };
+  function runTree() {
+    const p = +psEl.value; psEl.style.setProperty("--fill", p / 0.005 * 100 + "%"); $("ps-value").textContent = p.toFixed(5);
+    const e = ev(p), best = Object.keys(e).reduce((a, b) => (e[b] < e[a] ? b : a));
+    $("tree-table").querySelector("tbody").innerHTML = Object.keys(e).map(k =>
+      `<tr><td>${names[k]}${k === best ? " ★" : ""}</td><td>${e[k].toFixed(7)}</td><td>${fmt(Math.round(e[k] * 1e5))}</td></tr>`).join("");
+    $("tree-verdict").textContent = `p = ${p.toFixed(5)}에서 최선: ${names[best]} · 임계값 ${T1.toFixed(5)}(살포↔검사), ${T2.toFixed(5)}(검사↔살포 안 함)`;
+    const svg = $("tree-chart"); svg.replaceChildren();
+    const L = 80, R = 610, T = 20, B = 260, X = q => L + q / 0.005 * (R - L), Y = y => B - y / 0.006 * (B - T);
+    axes(svg, L, R, T, B, X, Y, [0, 0.001, 0.002, 0.003, 0.004, 0.005], [0, 0.002, 0.004, 0.006], "살충제 사망 확률 p", "기대 사망 확률");
+    const line = (k, style) => svg.append(el("line", { x1: X(0), y1: Y(ev(0)[k]), x2: X(0.005), y2: Y(ev(0.005)[k]), class: "line", style }));
+    line("spray", "stroke:#16a34a"); line("test", "stroke:#dc2626"); line("none", "stroke:#1e4f91");
+    [["살포", "spray", "#16a34a"], ["검사", "test", "#dc2626"], ["살포 안 함", "none", "#1e4f91"]].forEach(([t, k, c], i) =>
+      svg.append(el("text", { x: R - 4, y: Y(ev(0.005)[k]) - 6, class: "val", "text-anchor": "end", style: `fill:${c}` }, t)));
+    [T1, T2].forEach(t => svg.append(el("line", { x1: X(t), x2: X(t), y1: T, y2: B, class: "grid", style: "stroke-dasharray:4 4" })));
+    svg.append(el("line", { x1: X(p), x2: X(p), y1: T, y2: B, class: "lambda-line" }));
+  }
+  psEl.oninput = runTree; runTree();
+  // ---------- 실습 2 ----------
+  (function () {
+    const nb = [[9, 12, 14, 8], [12, 10, 8, 7], [14, 20, 15, 12], [11, 10, 12, 9], [14, 13, 11, 10]], L = ["A", "B", "C", "D"];
+    const mean = L.map((_, j) => nb.reduce((s, r) => s + r[j], 0) / nb.length), now = mean.indexOf(Math.max(...mean));
+    let sumMax = 0, sumLoss = 0;
+    const rows = nb.map((r, i) => { const m = Math.max(...r), b = r.indexOf(m); sumMax += m; sumLoss += m - r[now];
+      return `<tr><td>${i + 1}</td>${r.map(v => `<td>${v}</td>`).join("")}<td>${L[b]}</td><td>${m}</td><td>${m - r[now]}</td></tr>`; });
+    rows.push(`<tr><th>기대값</th>${mean.map((v, j) => `<th>${j === now ? "<u>" + v.toFixed(1) + "</u>" : v.toFixed(1)}</th>`).join("")}<th></th><th>${(sumMax / nb.length).toFixed(1)}</th><th>${(sumLoss / nb.length).toFixed(1)}</th></tr>`);
+    $("evpi-table").querySelector("tbody").innerHTML = rows.join("");
+    $("evpi-verdict").textContent = `현재 정보로는 ${L[now]}(기대 순편익 ${mean[now].toFixed(1)}), 완전정보의 기대 순편익 ${(sumMax / nb.length).toFixed(1)} → EVPI = ${(sumMax / nb.length - mean[now]).toFixed(1)} (= 기대 기회손실)`;
+  })();
+
+</script>
+
+<script type="module">
+  const SETUP_R = `invisible(NULL)`;
+  let webRPromise = null;
+  function getWebR() {
+    if (!webRPromise) {
+      webRPromise = (async () => {
+        const { WebR } = await import("https://webr.r-wasm.org/latest/webr.mjs");
+        const webR = new WebR();
+        await webR.init();
+        await webR.evalRVoid(SETUP_R);
+        return webR;
+      })();
+    }
+    return webRPromise;
+  }
+
+  document.querySelectorAll(".r-cell").forEach(cell => {
+    const ta = cell.querySelector("textarea");
+    const out = cell.querySelector(".r-out");
+    const original = ta.value;
+    const autosize = () => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + 4 + "px"; };
+    autosize(); ta.addEventListener("input", autosize);
+
+    cell.querySelector(".reset-btn").onclick = () => { ta.value = original; autosize(); out.textContent = ""; cell.querySelectorAll("img.r-plot").forEach(i => i.remove()); };
+
+    cell.querySelector(".run-btn").onclick = async () => {
+      out.textContent = "R 준비 중… (처음 실행 시 10~30초)";
+      cell.querySelectorAll("img.r-plot").forEach(i => i.remove());
+      try {
+        const webR = await getWebR();
+        out.textContent = "실행 중…";
+        const shelter = await new webR.Shelter();
+        try {
+          const res = await shelter.captureR(ta.value, {
+            withAutoprint: true, captureStreams: true, captureConditions: false,
+            captureGraphics: { width: 640, height: 400 }
+          });
+          out.textContent = res.output.map(o => (o.type === "stderr" ? "⚠ " : "") + o.data).join("\n") || "(출력 없음)";
+          for (const bmp of res.images || []) {
+            const canvas = document.createElement("canvas");
+            canvas.width = bmp.width; canvas.height = bmp.height;
+            canvas.getContext("2d").drawImage(bmp, 0, 0);
+            const img = document.createElement("img");
+            img.className = "r-plot"; img.src = canvas.toDataURL("image/png");
+            img.style.cssText = "display:block;max-width:100%;background:#fff;border-top:1px solid #e2e8f0";
+            cell.append(img);
+          }
+        } finally { shelter.purge(); }
+      } catch (e) {
+        out.textContent = "오류: " + (e && e.message ? e.message : e);
+      }
+    };
+  });
+</script>
+</body>
+</html>

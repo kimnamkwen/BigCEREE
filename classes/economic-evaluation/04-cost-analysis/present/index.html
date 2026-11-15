@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>4. 비용분석연구 · 경제성평가 수업 | BigCEREE</title>
+  <link rel="stylesheet" href="../../../../style.css">
+</head>
+<body class="lesson-body">
+<!--
+  ▣ 4주차 수업 페이지 (06-cost-utility 템플릿 기반)
+  - 슬라이드 이미지/PDF는 /lessons/econ-04/ 폴더에 있습니다.
+-->
+<script>
+  const LESSON = {
+    assetDir: "../../../../lessons/econ-04/",
+    slidePdf: "econ-04-slides.pdf",
+    slidePattern: n => `original-p${String(n).padStart(2, "0")}.webp`,
+    totalSlides: 31
+  };
+</script>
+
+<div class="lesson-topbar" id="top">
+  <div class="inner">
+    <a class="back-link" href="../../index.html">← 수업 목록</a>
+    <button class="tool-btn" id="btn-toc" type="button">목차</button>
+    <button class="tool-btn" id="btn-font-down" type="button" aria-label="글자 작게">가−</button>
+    <button class="tool-btn" id="btn-font-up" type="button" aria-label="글자 크게">가+</button>
+    <a class="tool-btn" id="btn-pdf" href="#" target="_blank" rel="noopener">원본 PDF</a>
+    <button class="tool-btn" id="btn-print" type="button">인쇄 / PDF</button>
+  </div>
+</div>
+
+<div class="lesson-layout" id="lesson-layout">
+  <nav class="lesson-toc" aria-label="목차">
+    <h2>목차</h2>
+    <ol>
+      <li><a href="#concept">비용분석 개념</a></li>
+      <li><a href="#estimate">비용 추정 방법</a></li>
+      <li><a href="#precision">비용 추정 강도</a></li>
+      <li><a href="#practice">실습</a>
+        <ol>
+          <li><a href="#eac-practice">자본비용의 연간등가비용</a></li>
+          <li><a href="#alloc-practice">경상비 배분</a></li>
+        </ol>
+      </li>
+      <li><a href="#refs">참고자료</a></li>
+    </ol>
+  </nav>
+
+  <main class="lesson-main">
+    <div class="breadcrumb">
+      <a href="../../../index.html">수업</a><span class="sep">›</span>
+      <a href="../../index.html">경제성평가</a><span class="sep">›</span>4주차
+    </div>
+    <h1>4. 비용분석연구</h1>
+    <div class="lesson-meta">Cost Analysis · 경제성평가 4주차</div>
+
+    <h2 id="concept">1. 비용분석 개념</h2>
+    <h3>1) 개요</h3>
+    <p>비용분석은 독자적인 경제성평가의 한 분야이면서, 모든 경제성평가에 공통으로 들어가는 분석입니다. 자료의 한계가 있어도 일반 지침에 따라 수행합니다. 특히 세 가지가 쟁점입니다: <strong>경상비(overhead)</strong>, <strong>발생 시점의 차이</strong>(할인, 자본지출의 연간화), <strong>생산성 비용</strong>.</p>
+    <h3>2) 비용 항목의 고려 사항</h3>
+    <ul>
+      <li><strong>과정</strong>: 확인(identification) → 측정(measurement) → 가치화(valuation)</li>
+      <li><strong>발생 영역</strong>: 보건의료 부문, 그 밖의 부문, 생산성 변화</li>
+      <li><strong>분석 관점</strong>: 관점에 따라 포함되는 비용이 달라집니다. 환자의 교통비는 환자 관점에는 들어가지만 보험자 관점에는 빠집니다. 유급 보상은 정부에는 지출, 환자에게는 수입인 <strong>이전지출</strong>이라 사회적 관점에서는 상쇄됩니다.</li>
+      <li><strong>관점의 종류</strong>: 사회적 관점, 복지부·건강보험자 관점, 환자 관점. 다른 관점으로 분석하더라도 <strong>사회적 관점은 반드시 함께 제시</strong>합니다.</li>
+      <li><strong>관점의 영향</strong>: 지역사회 관리 프로그램은 치료비만 보면 비싸지만, 사회적 비용과 환자의 생산성 개선까지 보면 오히려 더 저렴하게 추정될 수 있습니다.</li>
+      <li><strong>조사 범위</strong>: 비교 대안 모두에 공통인 비용은 빼는 것이 효율적이지만, 대안이 추가될 가능성이 있으면 신중히 결정합니다. 결과에 영향이 거의 없는 항목은 생략할 수 있으나, 자원봉사 시간·레저 시간·기부처럼 시장 밖 자원도 넓게 검토해야 합니다.</li>
+    </ul>
+    <details class="slides" data-from="5" data-to="9"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">교재 참조(Drummond 4판 Ch.4): 원본 슬라이드 8쪽의 표는 저작권 보호를 위해 생략했습니다.</p>
+
+    <h2 id="estimate">2. 비용 추정 방법</h2>
+    <h3>1) 비용 = 자원 사용량(q) × 단위비용(p)</h3>
+    <ul>
+      <li><strong>자원 사용량</strong>: 임상시험 병행이면 증례기록서(CRF), 별도 연구면 의무기록 검토나 병원 정형 자료, 방문간호 횟수 같은 항목은 설문이나 환자 일지로 조사합니다.</li>
+      <li><strong>단위비용</strong>: 경제성평가의 비용은 기회비용 관점입니다. 시장가격을 조사하되, 제3자가 일부를 지불하면 시장가격이 전체 비용이 아닐 수 있습니다.</li>
+    </ul>
+    <h3>2) 비시장재의 가치</h3>
+    <p>자원봉사·레저 시간은 시장 임금률로 가치화합니다. 잃어버린 레저 시간을 얼마로 볼지(평소의 2배? 절반?)는 어려운 문제라, 기저분석에서는 레저 시간을 0으로 둡니다. 보호자의 간병 시간이 많이 들거나 새 치료가 환자·보호자의 시간 비용을 줄인다면 반영합니다.</p>
+    <h3>3) 시장가격의 보정</h3>
+    <p>보건의료 시장은 불완전해서 병원비(독점, 교차보조), 의사 수가(기술·시간 반영 불충분), 약가(협상으로 결정)가 기회비용을 완전히 반영하지 못합니다. 그래도 시장가격을 쓰는 것이 원칙이며, <strong>① 시장가격이 확실히 편향되어 있고 ② 명확하고 객관적인 보정 방법이 있을 때만</strong> 보정합니다. 예) 병원 수준·부서별 <strong>비용/청구비 비(CCR = cost / charges)</strong>. 부서별 CCR을 쓰면 절대값은 바뀌어도 대안 간 순서는 바뀌지 않는 경우가 많지만, 다기관·다국가 연구에서는 결과에 영향을 줄 수 있습니다.</p>
+    <h3>4) 비용 추적 기간</h3>
+    <p>대상(병원 → 다른 보건기관 → 환자·가족)과 함께 기간(퇴원까지 → 1년 → 평생)을 정해야 합니다. 기간을 잘못 정하면 결과가 틀어집니다. 예) CABG는 퇴원 시점에는 PTCA보다 비싸지만, 추적하면 반복 시술 때문에 두 비용이 비슷해집니다. 한쪽에 유리하게 기간을 정하지 말고, 가능하면 평생 추적으로 관련 비용을 모두 포함합니다. 도입 초기 비용(학습곡선: 약 낭비, 수술시간 연장)을 장기 분석에 그대로 쓰지 않도록 주의합니다.</p>
+    <h3>5) 비교 대안과 관련 없는 미래 비용</h3>
+    <ul>
+      <li>환자가 오래 살아서 생기는 관련 없는 미래 의료비(예: 고혈압 선별검사 비용에 먼 미래의 항암치료비)를 프로그램에 부과하는 것은 부적절하다는 견해가 일반적입니다.</li>
+      <li>판단 원칙: ① 그 추가 의료가 프로그램의 <strong>필연적 결과</strong>인가, ② 자료를 쓸 수 있는가. 예) 패혈증 신약 평가에서 해당 에피소드 치료비, 선별검사로 확진된 질병의 진단·치료비는 포함하고, 고지혈증 신약으로 늘어난 수명 동안 생길 관련 없는 암 치료비는 포함하지 않습니다.</li>
+      <li>관련 비용만 포함한다면 무엇을 왜 뺐는지 밝힙니다. 추가 수명의 연간 의료비는 연령별 의료비 방정식으로 추정해 일차 분석이나 민감도 분석에서 다룹니다.</li>
+      <li>관련 없는 <strong>비보건의료 비용</strong>(생산·소비)은 관점에 따라 다르게 처리합니다. 후생경제학 관점은 포함, 다른 관점은 제외, 의사결정자 관점은 민감도 분석을 선호합니다.</li>
+    </ul>
+    <h3>6) 자본비용(장비, 건물, 토지)</h3>
+    <p>자본비용은 한 번 투자해 여러 해 쓰는 자산의 비용입니다. 두 요소가 있습니다: ① 자산에 묶인 돈의 <strong>기회비용</strong>(이자율로 가치화), ② 시간에 따른 <strong>감가상각</strong>(토지는 감가상각 없음). 경제성평가에서는 ① <strong>연간등가비용</strong>으로 환산하거나, ② 회계상 감가상각에 기회비용을 더하거나, ③ 임대료처럼 시장가격이 있으면 그대로 씁니다. 자본비용도 경상비처럼 배분이 필요합니다.</p>
+    <div class="formula">연간등가비용 E = (K − S / (1 + r)<sup>n</sup>) / A(n, r), &nbsp; A(n, r) = [1 − (1 + r)<sup>−n</sup>] / r &nbsp;&nbsp;(K: 구입비, S: 잔존가치, n: 내용연수, r: 할인율)</div>
+    <h3>7) 평균비용과 한계비용</h3>
+    <table>
+      <tr><th>용어</th><th>뜻</th></tr>
+      <tr><td>총비용 (TC)</td><td>일정량을 생산하는 데 드는 비용 = f(Q)</td></tr>
+      <tr><td>고정비용 (FC)</td><td>단기(약 1년) 안에 생산량과 무관한 비용 (임대료, 장비 리스, 일부 인건비)</td></tr>
+      <tr><td>변동비용 (VC)</td><td>생산량에 따라 변하는 비용 (소모품, 식품, 서비스 수수료)</td></tr>
+      <tr><td>평균비용 (AC)</td><td>TC / Q</td></tr>
+      <tr><td>한계비용 (MC)</td><td>한 단위를 더 생산할 때의 추가 비용 = TC(x+1) − TC(x)</td></tr>
+    </table>
+    <p>입원 초기에 치료비가 몰리므로, 재원일수를 하루 늘리거나 줄일 때의 비용 변화(한계비용)는 평균 일당비용보다 작습니다. 재원일수 단축의 절감액을 평균비용으로 계산하면 과대평가됩니다.</p>
+    <h3>8) 경상비(간접비) 배분</h3>
+    <table>
+      <tr><th>방법</th><th>지원 부서 간 상호작용</th></tr>
+      <tr><td>직접 배분 (direct)</td><td>무시</td></tr>
+      <tr><td>단계 배분 (step-down)</td><td>일부 반영</td></tr>
+      <tr><td>반복 단계 배분 (step-down with iteration)</td><td>완전 반영</td></tr>
+      <tr><td>동시 배분 (simultaneous)</td><td>완전 반영</td></tr>
+    </table>
+    <p>가장 쉬운 방법은 <strong>프로그램 병원비용 = 직접 배분 비용 + (순 병원지출 / 총 재원일수) × 프로그램 재원일수</strong>이며, 최근에는 활동기준원가(ABC)를 씁니다.</p>
+    <details class="slides" data-from="10" data-to="29"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">교재 참조(Drummond 4판 Ch.4): 원본 슬라이드 16·17·18·26·27·28·29쪽의 표·그림·Box는 저작권 보호를 위해 생략하고 위 설명으로 대신했습니다.</p>
+
+    <h2 id="precision">3. 비용 추정 강도</h2>
+    <table>
+      <tr><th>정밀도</th><th>방법</th></tr>
+      <tr><td>가장 정밀</td><td>미시원가(micro-costing): 검사·병동 재원일·약 등 자원 하나하나의 사용량과 단위비용</td></tr>
+      <tr><td></td><td>환자군(case-mix group)별 비용: 재원일수를 반영, 환자군 구분의 세밀함에 따라 정밀도가 달라짐</td></tr>
+      <tr><td></td><td>질병별 일당비용</td></tr>
+      <tr><td>가장 거침</td><td>평균 일당비용: 모든 환자군의 평균, 대부분의 의료체계에서 구할 수 있음</td></tr>
+    </table>
+    <p>비용 추정 모형의 예로, 환자 특성과 합병증 발생 여부를 넣어 연간 비용을 회귀식으로 추정하는 UKPDS 당뇨 합병증 비용 계산기가 있습니다.</p>
+    <details class="slides" data-from="30" data-to="31"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">원본 슬라이드 30쪽(Drummond Box 4.6)은 교재 참조로, 31쪽 UKPDS 계산기 화면은 자료 참조 안내로 바꾸었습니다.</p>
+
+    <h2 id="practice">실습</h2>
+    <p>숫자는 모두 수업용 <strong>예시 값</strong>입니다. 위쪽의 입력창으로 해 보고 아래 R 코드로 같은 결과를 확인합니다.</p>
+    <h3 id="eac-practice">실습 1. 자본비용의 연간등가비용</h3>
+    <div class="widget">
+      <div class="widget-row"><label for="k">구입비 K (만 원)</label><input id="k" class="num-in" inputmode="decimal" value="5000"><label for="s">잔존가치 S</label><input id="s" class="num-in" inputmode="decimal" value="0"></div>
+      <div class="widget-row"><label for="n">내용연수 n (년)</label><input id="n" class="num-in" inputmode="numeric" value="5"><label for="r">할인율 r (%)</label><input id="r" class="num-in" inputmode="decimal" value="5"></div>
+      <div class="bigresult" id="eac-result" aria-live="polite"></div>
+      <p class="widget-detail" id="eac-detail"></p>
+    </div>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 1</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+annuity &lt;- function(n, r) (1 - (1 + r)^(-n)) / r
+eac &lt;- function(K, S, n, r) (K - S / (1 + r)^n) / annuity(n, r)
+c(annuity_factor = annuity(5, 0.05), EAC = eac(5000, 0, 5, 0.05))   # 만 원
+c(straight_line_depreciation = 5000 / 5)                             # 기회비용을 뺀 단순 감가상각과 비교
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+
+    <h3 id="alloc-practice">실습 2. 경상비 배분: 직접 배분 vs. 단계 배분</h3>
+    <p>지원 부서 A(관리, 1,000만 원)와 B(세탁, 600만 원)의 비용을 진료 부서 X(3,000만 원)와 Y(2,000만 원)에 배분합니다. A는 인원(B 10명, X 40명, Y 50명), B는 세탁량(X 60%, Y 40%) 기준입니다. 단계 배분은 A를 B·X·Y에 먼저 나누고, B는 받은 몫까지 합쳐 X·Y에 나눕니다.</p>
+    <div class="widget">
+      <table id="alloc-table"><thead><tr><th>진료 부서</th><th>직접비</th><th>직접 배분 후</th><th>단계 배분 후</th></tr></thead><tbody></tbody></table>
+      <p class="widget-detail" id="alloc-detail"></p>
+    </div>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 2</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+A &lt;- 1000; B &lt;- 600; direct_cost &lt;- c(X = 3000, Y = 2000)       # 만 원 (예시 값)
+staff &lt;- c(B = 10, X = 40, Y = 50); laundry &lt;- c(X = 60, Y = 40)
+# 직접 배분: 지원 부서끼리 주고받는 몫은 무시
+direct &lt;- direct_cost + A * staff[c("X", "Y")] / sum(staff[c("X", "Y")]) + B * laundry / sum(laundry)
+# 단계 배분: A → (B, X, Y), 그다음 B(받은 몫 포함) → (X, Y)
+a_share &lt;- A * staff / sum(staff)
+step &lt;- direct_cost + a_share[c("X", "Y")] + (B + a_share["B"]) * laundry / sum(laundry)
+round(rbind(direct_cost, direct, step), 2)
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+
+    <h2 id="refs">참고자료</h2>
+    <ul class="refs">
+      <li>Drummond MF, Sculpher MJ, Claxton K, Stoddart GL, Torrance GW. <em>Methods for the Economic Evaluation of Health Care Programmes</em>. 4th ed. Oxford University Press; 2015. (Chapter 4)</li>
+    </ul>
+  </main>
+</div>
+
+<script>
+  // ---------- 원본 슬라이드: 이미지가 없으면 안내 상자 표시 ----------
+  document.querySelectorAll("details.slides").forEach(d => {
+    const grid = document.createElement("div"); grid.className = "slide-grid";
+    for (let n = +d.dataset.from; n <= +d.dataset.to; n++) {
+      const fig = document.createElement("figure"); fig.className = "slide-fig";
+      const img = new Image(); img.loading = "lazy"; img.alt = `슬라이드 ${n}`;
+      img.src = LESSON.assetDir + LESSON.slidePattern(n);
+      img.onerror = () => { img.replaceWith(Object.assign(document.createElement("div"),
+        { className: "slide-missing", textContent: `슬라이드 ${n} 이미지 준비 중 (lessons 폴더에 ${LESSON.slidePattern(n)} 추가)` })); };
+      const cap = document.createElement("figcaption"); cap.textContent = `${n} / ${LESSON.totalSlides}`;
+      fig.append(img, cap); grid.append(fig);
+    }
+    d.append(grid);
+  });
+
+  // ---------- 상단 도구 ----------
+  document.getElementById("btn-pdf").href = LESSON.assetDir + LESSON.slidePdf;
+  document.getElementById("btn-print").onclick = () => window.print();
+  document.getElementById("btn-toc").onclick = () =>
+    document.getElementById("lesson-layout").classList.toggle("toc-hidden");
+  let scale = 1;
+  const applyScale = () => document.querySelector(".lesson-main").style.setProperty("--lesson-scale", scale);
+  document.getElementById("btn-font-up").onclick = () => { scale = Math.min(1.5, scale + 0.1); applyScale(); };
+  document.getElementById("btn-font-down").onclick = () => { scale = Math.max(0.8, scale - 0.1); applyScale(); };
+
+  // ---------- 목차: 현재 위치 강조 ----------
+  const tocLinks = [...document.querySelectorAll(".lesson-toc a")];
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) tocLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id));
+  }), { rootMargin: "-20% 0px -70% 0px" });
+  document.querySelectorAll(".lesson-main h2[id], .lesson-main h3[id]").forEach(h => io.observe(h));
+</script>
+
+<script>
+  const fmt = (x, d = 0) => Number(x).toLocaleString("ko-KR", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const $ = id => document.getElementById(id);
+  // ---------- 실습 1: 연간등가비용 ----------
+  function runEac() {
+    const K = +$("k").value, S = +$("s").value, n = +$("n").value, r = +$("r").value / 100;
+    if (!(K > 0) || !(n >= 1) || !(r > 0) || S < 0) { $("eac-result").innerHTML = '<span class="err">입력 오류</span>'; $("eac-detail").textContent = "K > 0, n ≥ 1, r > 0으로 입력하세요."; return; }
+    const A = (1 - (1 + r) ** -n) / r, E = (K - S / (1 + r) ** n) / A;
+    $("eac-result").innerHTML = `${fmt(E, 1)}<small>만 원 / 년</small>`;
+    $("eac-detail").textContent = `A(${n}, ${fmt(r * 100, 1)}%) = ${A.toFixed(4)} → E = (${fmt(K)} − ${fmt(S)} / ${(1 + r).toFixed(2)}^${n}) / ${A.toFixed(4)} = ${fmt(E, 1)} (단순 감가상각 ${fmt((K - S) / n, 1)}보다 기회비용만큼 큼)`;
+  }
+  ["k", "s", "n", "r"].forEach(id => $(id).addEventListener("input", runEac)); runEac();
+  // ---------- 실습 2: 경상비 배분 ----------
+  (function () {
+    const A = 1000, B = 600, dc = { X: 3000, Y: 2000 }, staff = { B: 10, X: 40, Y: 50 }, laundry = { X: 60, Y: 40 };
+    const sXY = staff.X + staff.Y, sAll = staff.B + staff.X + staff.Y, lAll = laundry.X + laundry.Y;
+    const direct = k => dc[k] + A * staff[k] / sXY + B * laundry[k] / lAll;
+    const aB = A * staff.B / sAll, step = k => dc[k] + A * staff[k] / sAll + (B + aB) * laundry[k] / lAll;
+    $("alloc-table").querySelector("tbody").innerHTML = ["X", "Y"].map(k =>
+      `<tr><td>${k}</td><td>${fmt(dc[k])}</td><td>${fmt(direct(k), 2)}</td><td>${fmt(step(k), 2)}</td></tr>`).join("");
+    $("alloc-detail").textContent = `단계 배분에서는 A가 B에 넘긴 ${fmt(aB, 2)}만 원이 세탁량 비율로 다시 X·Y에 나뉘어, X는 ${fmt(step("X") - direct("X"), 2)}만 원 늘고 Y는 같은 만큼 줄었습니다. 합계는 두 방법 모두 ${fmt(direct("X") + direct("Y"))}만 원입니다.`;
+  })();
+</script>
+
+<script type="module">
+  const SETUP_R = `invisible(NULL)`;
+  let webRPromise = null;
+  function getWebR() {
+    if (!webRPromise) {
+      webRPromise = (async () => {
+        const { WebR } = await import("https://webr.r-wasm.org/latest/webr.mjs");
+        const webR = new WebR();
+        await webR.init();
+        await webR.evalRVoid(SETUP_R);
+        return webR;
+      })();
+    }
+    return webRPromise;
+  }
+
+  document.querySelectorAll(".r-cell").forEach(cell => {
+    const ta = cell.querySelector("textarea");
+    const out = cell.querySelector(".r-out");
+    const original = ta.value;
+    const autosize = () => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + 4 + "px"; };
+    autosize(); ta.addEventListener("input", autosize);
+
+    cell.querySelector(".reset-btn").onclick = () => { ta.value = original; autosize(); out.textContent = ""; cell.querySelectorAll("img.r-plot").forEach(i => i.remove()); };
+
+    cell.querySelector(".run-btn").onclick = async () => {
+      out.textContent = "R 준비 중… (처음 실행 시 10~30초)";
+      cell.querySelectorAll("img.r-plot").forEach(i => i.remove());
+      try {
+        const webR = await getWebR();
+        out.textContent = "실행 중…";
+        const shelter = await new webR.Shelter();
+        try {
+          const res = await shelter.captureR(ta.value, {
+            withAutoprint: true, captureStreams: true, captureConditions: false,
+            captureGraphics: { width: 640, height: 400 }
+          });
+          out.textContent = res.output.map(o => (o.type === "stderr" ? "⚠ " : "") + o.data).join("\n") || "(출력 없음)";
+          for (const bmp of res.images || []) {
+            const canvas = document.createElement("canvas");
+            canvas.width = bmp.width; canvas.height = bmp.height;
+            canvas.getContext("2d").drawImage(bmp, 0, 0);
+            const img = document.createElement("img");
+            img.className = "r-plot"; img.src = canvas.toDataURL("image/png");
+            img.style.cssText = "display:block;max-width:100%;background:#fff;border-top:1px solid #e2e8f0";
+            cell.append(img);
+          }
+        } finally { shelter.purge(); }
+      } catch (e) {
+        out.textContent = "오류: " + (e && e.message ? e.message : e);
+      }
+    };
+  });
+</script>
+</body>
+</html>

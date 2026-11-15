@@ -1,0 +1,15 @@
+# 8주차 수업 자료 폴더
+
+이 폴더의 파일은 `classes/economic-evaluation/08-paper-review/present/` 수업 화면에서 자동으로 불러옵니다.
+
+| 파일 | 용도 |
+|---|---|
+| `econ-08-slides.pdf` | 상단 **원본 PDF** 버튼 |
+| `original-p01.webp` ~ `original-p09.webp` | 각 절의 **원본 슬라이드 보기** |
+
+공개용 PDF와 슬라이드 이미지는 원본 8강 PDF의 1–9쪽으로 만들었습니다.
+
+- 10쪽(Q&A): 연락처가 있어 제외
+- 2쪽: 프로필 사진·전화번호·이메일을 지운 이미지로 교체
+
+다시 만들 때는 저장소 밖 `_work/make_slides.py`와 `_work/spec08.json`을 사용합니다.

@@ -434,3 +434,11 @@ input#lambda { flex: 1 1 260px; accent-color: var(--primary); }
 /* 07주차 실습: 할인율 슬라이더와 VSL 입력칸 (06주차 #lambda·#profile과 같은 모양) */
 input#rate { flex: 1 1 260px; accent-color: var(--primary); }
 .widget input#vsl-pay, .widget input#vsl-dr { width: 110px; font: 600 1em ui-monospace, Menlo, Consolas, monospace; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; }
+
+/* 01주차 실습: 예산·임계값 슬라이더 */
+input#budget, input#wtp { flex: 1 1 260px; accent-color: var(--primary); }
+
+/* 02–13주차 실습 공통: 숫자·글자 입력칸과 슬라이더 (06주차 입력칸과 같은 모양) */
+.widget input.num-in { width: 100px; font: 600 1em ui-monospace, Menlo, Consolas, monospace; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; }
+.widget input.text-in { flex: 1 1 260px; font: inherit; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; }
+.widget input[type="range"] { flex: 1 1 260px; accent-color: var(--primary); }

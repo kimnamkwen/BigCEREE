@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>13. 임상연구 병행 경제성평가 · 경제성평가 수업 | BigCEREE</title>
+  <link rel="stylesheet" href="../../../../style.css">
+</head>
+<body class="lesson-body">
+<!--
+  ▣ 13주차 수업 페이지 (06-cost-utility 템플릿 기반)
+  - 슬라이드 이미지/PDF는 /lessons/econ-13/ 폴더에 있습니다 (lessons/econ-13/README.md 참고).
+-->
+<script>
+  const LESSON = {
+    assetDir: "../../../../lessons/econ-13/",
+    slidePdf: "econ-13-slides.pdf",
+    slidePattern: n => `original-p${String(n).padStart(2, "0")}.webp`,
+    totalSlides: 58
+  };
+</script>
+
+<div class="lesson-topbar" id="top">
+  <div class="inner">
+    <a class="back-link" href="../../index.html">← 수업 목록</a>
+    <button class="tool-btn" id="btn-toc" type="button">목차</button>
+    <button class="tool-btn" id="btn-font-down" type="button" aria-label="글자 작게">가−</button>
+    <button class="tool-btn" id="btn-font-up" type="button" aria-label="글자 크게">가+</button>
+    <a class="tool-btn" id="btn-pdf" href="#" target="_blank" rel="noopener">원본 PDF</a>
+    <button class="tool-btn" id="btn-print" type="button">인쇄 / PDF</button>
+  </div>
+</div>
+
+<div class="lesson-layout" id="lesson-layout">
+  <nav class="lesson-toc" aria-label="목차">
+    <h2>목차</h2>
+    <ol>
+      <li><a href="#gold">Gold standard</a></li>
+      <li><a href="#design">6가지 설계 이슈</a>
+        <ol>
+          <li><a href="#preplan">사전 계획</a></li>
+          <li><a href="#services">측정할 의료서비스</a></li>
+          <li><a href="#aggregate">집계 수준</a></li>
+          <li><a href="#price">단가</a></li>
+          <li><a href="#natural">자연스러운 설계</a></li>
+          <li><a href="#beyond">시험 기간 밖의 비용·효과</a></li>
+        </ol>
+      </li>
+      <li><a href="#inappropriate">병행이 부적절한 경우</a></li>
+      <li><a href="#success">성공 요건</a></li>
+      <li><a href="#practice">실습</a>
+        <ol><li><a href="#ss-practice">표본수와 수용곡선</a></li></ol>
+      </li>
+      <li><a href="#refs">참고자료</a></li>
+    </ol>
+  </nav>
+
+  <main class="lesson-main">
+    <div class="breadcrumb">
+      <a href="../../../index.html">수업</a><span class="sep">›</span>
+      <a href="../../index.html">경제성평가</a><span class="sep">›</span>13주차
+    </div>
+    <h1>13. 임상연구 병행 경제성평가</h1>
+    <div class="lesson-meta">Economic Evaluation Alongside Clinical Trials · 경제성평가 13주차</div>
+
+    <p>이 강의는 Glick 등의 <em>Economic Evaluation in Clinical Trials</em>(Ch.2) 내용을 중심으로 정리했습니다.</p>
+
+    <h2 id="gold">1. The gold standard</h2>
+    <ul>
+      <li><strong>자연스러운 환경</strong>: 흔히 쓰는 비교 대안, 비용효과적인 치료, 통상치료와 비교</li>
+      <li><strong>충분한 검정력</strong>: 동질적인 임상 환경과 적응증</li>
+      <li><strong>충분한 추적 기간</strong>: 임상 결과뿐 아니라 경제적 결과가 나타날 만큼</li>
+      <li><strong>시기</strong>: 결과가 기술의 채택·확산 결정에 쓰일 수 있는 시점</li>
+      <li><strong>비용 측정</strong>: 무작위 배정 이후의 비용(결과 변수)과 이전의 비용(설명 변수)을 모두, 질환·치료와 관련된 비용과 관련 없는 비용을 모두 측정합니다. 특정 서비스와 치료의 관계를 따지는 것이 아니라 치료의 <strong>증분 비용</strong>을 구하는 것이 목적입니다.</li>
+      <li><strong>분석 유형과 비용 유형</strong>: CBA·CEA·CMA 중 무엇을 할지, 직접의료·직접비의료·생산성·무형 비용과 분석 관점을 함께 검토합니다.</li>
+    </ul>
+    <p><strong>실행 가능성</strong>: 서비스가 이미 공급되고 비용 자료가 있으며 행정자료에 접근할 수 있으면 수월합니다. 병원 기반 연구는 좋은 후보이지만, 퇴원 후 진료와 비급여 비용이 빠지는 한계가 있습니다. 결국 자연스러운 환경 vs. 시기(초기 시험 vs. 시판 후), 검정력과 연구비, 긴 추적, 경제 자료 수집 부담(경제 CRF, 비참여 기관 자료) 사이에서 <strong>실행 가능성과 불완전한 정보를 맞바꾸게</strong> 됩니다.</p>
+    <details class="slides" data-from="5" data-to="10"><summary>원본 슬라이드 보기</summary></details>
+
+    <h2 id="design">2. 6가지 설계 이슈</h2>
+    <h3 id="preplan">1) 사전 계획</h3>
+    <ul>
+      <li><strong>경제성평가의 추적 기간</strong>: 질병과 관련된 의료 이용 차이가 실제로 나타나는 기간을 포함해야 합니다. <strong>경제적 진료 에피소드</strong>(진단·무작위 배정부터 비용이 평소 수준으로 돌아올 때까지)를 찾거나 의사결정분석으로 정합니다. 예) 편두통은 진단 후 약 3주간 비용이 높아집니다(Glick 등의 Fig 2.1). 기대여명에 영향을 주는 치료라면 추적을 충분히 길게 하거나 기대여명 예측 모형을 만들 수 있게 설계합니다.</li>
+      <li><strong>표본수</strong>: 경제성평가의 목적은 허용할 수 없이 높은 비용효과비나 순편익 &lt; 0을 배제하는 것이므로, 비용 차이와 효과 차이 각각으로 구한 표본수 중 큰 값을 쓰는 옛 방법보다 더 많은 정보가 필요합니다. 비용·효과 차이의 기댓값, 군별 표준편차, 지불의사(WTP), 비용 차이와 효과 차이의 상관을 선행연구·의무기록·예비연구로 구합니다. 실습에서 계산합니다.</li>
+      <li><strong>경제적 결과의 검정력</strong>은 WTP에 따라 달라집니다. 증상 없는 날이나 발견 사례 수 같은 질환 특이 지표를 쓰면 WTP 판단이 어렵습니다. 예) 손발톱 무좀 치료의 증상 없는 날당 비용이 한 약제는 $5.67, 다른 약제는 $8.88일 때, 결론은 그 하루에 얼마를 낼 의향이 있는가에 달려 있습니다.</li>
+      <li><strong>의료서비스 파악</strong>: 의무기록·행정자료, 환자 일지, 환자·전문가 조사로 파악하고, 새 치료로 바뀔 진료(부작용 등)를 CRF에 반영합니다.</li>
+      <li><strong>예비조사</strong>: 자료 수집 도구의 효율·명확성·사용 편의를 시험합니다. CRF의 질이 낮으면 결론의 질도 낮습니다. 환자의 참여 의지는 탈락률을 예측하는 단서입니다.</li>
+    </ul>
+    <details class="slides" data-from="11" data-to="21"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">교재 참조(Glick 등, Ch.2): 원본 슬라이드 14쪽의 Fig 2.1은 저작권 보호를 위해 생략했습니다.</p>
+
+    <h3 id="services">2) 어떤 의료서비스를 측정할 것인가</h3>
+    <p>행정자료에 접근할 수 있으면 항목 수와 수집 비용을 맞바꿀 필요가 없습니다. CRF로 전향적으로 수집할 때는 ① 두 군 차이의 대부분을 만드는 <strong>비용 동인</strong>과 ② 총비용의 대부분을 차지하는 서비스를 측정합니다. 총비용 항목을 제대로 측정하지 않으면, 비용 차이를 찾더라도 관측하지 않은 항목에서 상쇄될 수 있다는 비판을 받습니다. 경제 CRF의 항목 수에 대한 지침은 없어 결국 항목 수와 수집 비용의 타협입니다.</p>
+    <table>
+      <tr><th>수집 범위를 줄이는 방법</th><th>장점</th><th>문제</th></tr>
+      <tr><td>질환 관련 서비스만</td><td>연구비와 변이 감소</td><td>‘관련 없음’ 판단의 정확성·타당성 근거 부족, 복합 질환에서 어려움</td></tr>
+      <tr><td>연구 기관의 서비스만</td><td>비용 절감</td><td>다른 기관에서 생긴 비용 누락 → 실제로 비슷한 치료가 다르게 보일 수 있음. 비참여 병원은 환자 보고나 건강보험 자료로 보완(회상 비뚤림: 퇴원 5개월 후 10%, 10–11개월 후 50%가 입원을 잊음)</td></tr>
+      <tr><td>일부 참여자만</td><td>수집 부담 감소</td><td>무작위 표본이면 가능하지만, 비무작위면 자기 선택 비뚤림. 비협조 기관의 결측은 복잡한 대체가 필요</td></tr>
+    </table>
+    <p><strong>권장 전략</strong>: CRF로 서비스 유형을 파악하고, 입원 같은 고비용 서비스는 원인과 관계없이 모두 수집하며 주·부진단을 기록합니다.</p>
+    <details class="slides" data-from="22" data-to="33"><summary>원본 슬라이드 보기</summary></details>
+
+    <h3 id="aggregate">3) 집계 수준</h3>
+    <p>의료비 = 서비스 이용량 × 단가(price weight). 입원은 입원 횟수, 병동별 재원일수, 개별 서비스 중 어느 수준으로 셀지 정합니다. 집계 수준이 결과에 미칠 영향과 수집 비용을 함께 고려합니다. 가장 덜 구체적인 방법(한 기관의 단일 일당비용)과 가장 구체적인 방법(기관별·진단별 단가) 사이의 전략을 택합니다.</p>
+    <h3 id="price">4) 단가</h3>
+    <p>공개 자료로는 미국의 비용/청구비 보정 병원 청구액·병원 원가시스템·DRG·RBRVS, 유럽의 수가표·DRG·병원 원가시스템이 있습니다. 시험 특이적으로는 회계자료 분석, 시간-동작 연구, 고가 장비의 비용 배분을 씁니다.</p>
+    <details class="slides" data-from="34" data-to="38"><summary>원본 슬라이드 보기</summary></details>
+
+    <h3 id="natural">5) 얼마나 자연스럽게 설계할 것인가</h3>
+    <ul>
+      <li><strong>대상 선정</strong>: 3상 효능시험은 가장 건강한(cream skimming) 또는 가장 아픈(reverse cream skimming) 환자를 골라 일반 진료의 이질적 인구를 대표하지 못합니다. 동질적 표본의 결과를 이질적 인구로 옮길 확립된 방법은 없습니다.</li>
+      <li><strong>ITT 분석</strong>: 경제적 질문은 ‘처방할 것인가’이지 실제로 받았는지·바꿨는지가 아니므로 초기 치료 결정 기준인 ITT로 분석합니다.</li>
+      <li><strong>추적 탈락</strong>: 결측과 중도절단을 줄이고(재예약, 전화 평가, 대리 면접), 치료 실패 같은 임상 단계에 도달해도 추적을 끊지 않습니다. 치료 실패는 대체 치료 시작, 에피소드 연장, 치료 중단 같은 비용 변화와 관련되기 때문입니다. 고정 기간 추적이나 정해진 날짜 종료 시에는 중도절단 자료 분석법이 필요합니다.</li>
+      <li><strong>프로토콜 유발 비용·효과</strong>: 시험 프로토콜은 진료를 표준화하고 검사와 적극적 치료를 요구합니다. 일반적인 해결책은 경제성평가에서 제외하는 것이지만, 영향이 전혀 없다고 가정하기는 어렵습니다. 통상진료에서 거의 하지 않고 임상에 영향이 없는 검사라면 양 군에 같은 상수가 더해질 뿐이지만, 일부에게만 시행되면 차이를 0 쪽으로 치우치게 하고, 결과 모니터링이 더 적극적이면 더 많이·더 일찍 발견되어 비용이 바뀌며, 결과에 대한 치료까지 더 강하면 비용과 효과 모두가 바뀝니다. 적극적 모니터링과 치료를 함께 요구하는 것이 가장 나쁜 경우로, 실제 진료의 비용과 효과를 추정하기 매우 어렵습니다.</li>
+    </ul>
+    <details class="slides" data-from="39" data-to="50"><summary>원본 슬라이드 보기</summary></details>
+
+    <h3 id="beyond">6) 전체 비용과 편익이 시험 기간에 관찰되지 않을 때</h3>
+    <p><strong>시험 내 평가</strong>는 비용과 효과의 분석 기간을 시험 추적 기간과 같게 유지합니다(예: 추적 1년이면 비용·효과도 1년). 장기 결과를 볼 수 없고 비용효과비가 추적 기간에 따라 달라지는 한계가 있으므로, 시험 자료·레지스트리 등으로 <strong>의사결정분석 모형</strong>을 만들어 장기 비용과 효과를 신뢰성 있게 평가할 계획을 세워야 합니다. 시험에서 바로 모형을 만들면 시간에 따른 비용효과비 궤적을 평가하고, 시험 이후를 예측하며, 모형이 시험에서 관찰된 궤적을 재현하는지로 내적 타당성을 일부 검증할 수 있습니다(Glick 등의 Table 2.1: 시험 내 5년 ICER와 20년 예측 ICER 비교).</p>
+    <details class="slides" data-from="51" data-to="54"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">교재 참조(Glick 등, Ch.2): 원본 슬라이드 54쪽의 Table 2.1은 저작권 보호를 위해 생략했습니다.</p>
+
+    <h2 id="inappropriate">3. 임상시험 병행 경제성평가가 부적절한 경우</h2>
+    <ul>
+      <li>시험 설계가 경제적 가치 관찰에 비뚤림을 만드는 경우: 과도한 진료를 의무화하거나 결과(완치·실패)에 따라 추적을 달리할 때</li>
+      <li>경제적 결과가 사용 결정에 영향을 주지 않는 경우: 치명적 질환의 유일한 치료처럼 비용과 관계없이 쓰이거나, 비용효과적이지 않아도 임상의가 쓸 새 치료(예: 신생아 집중치료)</li>
+    </ul>
+    <details class="slides" data-from="55" data-to="55"><summary>원본 슬라이드 보기</summary></details>
+
+    <h2 id="success">4. 성공적인 임상시험 병행 경제성평가</h2>
+    <table>
+      <tr><th>수준</th><th>특징</th></tr>
+      <tr><td>성공적</td><td>경제성평가를 일찍 계획하고, 처음부터 임상 연구자에게 경제 자료도 함께 수집한다고 알리며, 모든 참여자가 임상·경제 자료를 함께 제공</td></tr>
+      <tr><td>덜 성공적</td><td>임상 연구를 먼저 설계하고 연구자를 모집한 뒤, 등록이 시작될 때 경제성평가를 도입</td></tr>
+      <tr><td>가장 덜 성공적</td><td>연구자에게 참여자를 경제성평가에 등록할 의무가 없음</td></tr>
+    </table>
+    <p><strong>윤리</strong>: 자료 협조가 어려운 환자를 배제하는 기준, 임상·경제 정보를 함께 받는 단일 동의서, 진료비 정보 제공에 대한 개인정보 동의를 갖춥니다. 기관·연구자·환자의 협력과, 임상적으로 효과적이어도 비용효과적이지 않다고 판정될 위험을 감수하는 자세가 필요합니다.</p>
+    <details class="slides" data-from="56" data-to="58"><summary>원본 슬라이드 보기</summary></details>
+
+    <h2 id="practice">실습</h2>
+    <h3 id="ss-practice">실습 1. 임상시험 병행 경제성평가의 표본수와 비용효과 수용곡선</h3>
+    <p>순편익 접근으로, 군당 n명인 시험에서 증분 순편익 ΔNMB = λΔE − ΔC가 0보다 클 확률(정규근사)과, ΔNMB &gt; 0을 보이는 데 필요한 군당 표본수를 계산합니다. 입력값은 수업용 <strong>예시 값</strong>입니다(비용: 만 원, 효과: QALY, 표준편차는 개인 수준).</p>
+    <div class="formula">개인 수준 분산 σ²<sub>NMB</sub> = λ²σ<sub>E</sub>² + σ<sub>C</sub>² − 2λρσ<sub>C</sub>σ<sub>E</sub>, &nbsp; P(비용효과적) = Φ(ΔNMB / √(2σ²<sub>NMB</sub>/n)), &nbsp; n = 2(z<sub>1−α/2</sub> + z<sub>1−β</sub>)² σ²<sub>NMB</sub> / ΔNMB²</div>
+    <div class="widget">
+      <div class="widget-row"><label for="dc">ΔC</label><input id="dc" class="num-in" inputmode="decimal" value="50"><label for="de">ΔE</label><input id="de" class="num-in" inputmode="decimal" value="0.05"><label for="rho">상관 ρ</label><input id="rho" class="num-in" inputmode="decimal" value="0.1"></div>
+      <div class="widget-row"><label for="sc">σ<sub>C</sub></label><input id="sc" class="num-in" inputmode="decimal" value="200"><label for="se">σ<sub>E</sub></label><input id="se" class="num-in" inputmode="decimal" value="0.2"><label for="nn">군당 n</label><input id="nn" class="num-in" inputmode="numeric" value="300"></div>
+      <div class="widget-row"><label for="lam">λ (만 원/QALY)</label><input id="lam" type="range" min="0" max="6000" step="100" value="3000"><strong id="lam-value"></strong>
+        <label for="pw">검정력</label><select id="pw"><option value="0.8">80%</option><option value="0.9">90%</option></select></div>
+      <p class="verdict ok" id="ss-verdict" aria-live="polite"></p>
+      <svg id="ceac" class="chart" viewBox="0 0 640 300" role="img" aria-label="비용효과 수용곡선"></svg>
+      <p class="widget-help">비용효과 수용곡선(CEAC): λ에 따른 P(ΔNMB &gt; 0). 세로선은 선택한 λ입니다.</p>
+    </div>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 1</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+dC &lt;- 50; dE &lt;- 0.05; sC &lt;- 200; sE &lt;- 0.2; rho &lt;- 0.1; n &lt;- 300   # 예시 값
+lambda &lt;- 3000; power &lt;- 0.8; alpha &lt;- 0.05
+var_nmb &lt;- lambda^2 * sE^2 + sC^2 - 2 * lambda * rho * sC * sE
+dNMB &lt;- lambda * dE - dC
+p_ce &lt;- pnorm(dNMB / sqrt(2 * var_nmb / n))
+n_req &lt;- ceiling(2 * (qnorm(1 - alpha / 2) + qnorm(power))^2 * var_nmb / dNMB^2)
+c(dNMB = dNMB, sd_NMB = round(sqrt(var_nmb), 2), P_cost_effective = round(p_ce, 4), n_per_arm = n_req)
+lam &lt;- seq(0, 6000, 100)
+ceac &lt;- pnorm((lam * dE - dC) / sqrt(2 * (lam^2 * sE^2 + sC^2 - 2 * lam * rho * sC * sE) / n))
+plot(lam, ceac, type = "l", ylim = c(0, 1), xlab = "lambda (10,000 KRW/QALY)", ylab = "P(cost-effective)")
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+    <h2 id="refs">참고자료</h2>
+    <ul class="refs">
+      <li>Glick HA, Doshi JA, Sonnad SS, Polsky D. <em>Economic Evaluation in Clinical Trials</em>. 2nd ed. Oxford University Press; 2014. (Chapter 2)</li>
+      <li>Drummond MF, Sculpher MJ, Claxton K, Stoddart GL, Torrance GW. <em>Methods for the Economic Evaluation of Health Care Programmes</em>. 4th ed. Oxford University Press; 2015.</li>
+    </ul>
+  </main>
+</div>
+
+<script>
+  // ---------- 원본 슬라이드: 이미지가 없으면 안내 상자 표시 ----------
+  document.querySelectorAll("details.slides").forEach(d => {
+    const grid = document.createElement("div"); grid.className = "slide-grid";
+    for (let n = +d.dataset.from; n <= +d.dataset.to; n++) {
+      const fig = document.createElement("figure"); fig.className = "slide-fig";
+      const img = new Image(); img.loading = "lazy"; img.alt = `슬라이드 ${n}`;
+      img.src = LESSON.assetDir + LESSON.slidePattern(n);
+      img.onerror = () => { img.replaceWith(Object.assign(document.createElement("div"),
+        { className: "slide-missing", textContent: `슬라이드 ${n} 이미지 준비 중 (lessons 폴더에 ${LESSON.slidePattern(n)} 추가)` })); };
+      const cap = document.createElement("figcaption"); cap.textContent = `${n} / ${LESSON.totalSlides}`;
+      fig.append(img, cap); grid.append(fig);
+    }
+    d.append(grid);
+  });
+
+  // ---------- 상단 도구 ----------
+  document.getElementById("btn-pdf").href = LESSON.assetDir + LESSON.slidePdf;
+  document.getElementById("btn-print").onclick = () => window.print();
+  document.getElementById("btn-toc").onclick = () =>
+    document.getElementById("lesson-layout").classList.toggle("toc-hidden");
+  let scale = 1;
+  const applyScale = () => document.querySelector(".lesson-main").style.setProperty("--lesson-scale", scale);
+  document.getElementById("btn-font-up").onclick = () => { scale = Math.min(1.5, scale + 0.1); applyScale(); };
+  document.getElementById("btn-font-down").onclick = () => { scale = Math.max(0.8, scale - 0.1); applyScale(); };
+
+  // ---------- 목차: 현재 위치 강조 ----------
+  const tocLinks = [...document.querySelectorAll(".lesson-toc a")];
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) tocLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id));
+  }), { rootMargin: "-20% 0px -70% 0px" });
+  document.querySelectorAll(".lesson-main h2[id], .lesson-main h3[id]").forEach(h => io.observe(h));
+</script>
+<script>
+  const fmt = (x, d = 0) => Number(x).toLocaleString("ko-KR", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const $ = id => document.getElementById(id);
+  const NS = "http://www.w3.org/2000/svg";
+  function el(tag, attrs = {}, text) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; return e; }
+  function axes(svg, L, R, T, B, X, Y, xt, yt, xl, yl, yfmt = v => v) {
+    yt.forEach(t => { svg.append(el("line", { x1: L, x2: R, y1: Y(t), y2: Y(t), class: "grid" })); svg.append(el("text", { x: L - 10, y: Y(t) + 4, class: "tick", "text-anchor": "end" }, yfmt(t))); });
+    xt.forEach(t => svg.append(el("text", { x: X(t), y: B + 22, class: "tick", "text-anchor": "middle" }, t)));
+    svg.append(el("line", { x1: L, x2: L, y1: T, y2: B, class: "axis" })); svg.append(el("line", { x1: L, x2: R, y1: B, y2: B, class: "axis" }));
+    svg.append(el("text", { x: (L + R) / 2, y: B + 46, class: "axis-label", "text-anchor": "middle" }, xl));
+    svg.append(el("text", { x: 20, y: (T + B) / 2, class: "axis-label", "text-anchor": "middle", transform: `rotate(-90 20 ${(T + B) / 2})` }, yl));
+  }
+
+  // 표준정규 누적분포 (Abramowitz–Stegun 7.1.26, 오차 < 1.5e-7)
+  function Phi(x) { const s = x < 0 ? -1 : 1, z = Math.abs(x) / Math.SQRT2, t = 1 / (1 + 0.3275911 * z);
+    const y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-z * z);
+    return 0.5 * (1 + s * y); }
+  const Z = { a: 1.959963985, "0.8": 0.841621234, "0.9": 1.281551566 };
+  const ids = ["dc", "de", "rho", "sc", "se", "nn"], lamEl = $("lam");
+  function vals() { const v = {}; ids.forEach(i => v[i] = +$(i).value); return v; }
+  const varN = (l, v) => l * l * v.se * v.se + v.sc * v.sc - 2 * l * v.rho * v.sc * v.se;
+  function runSS() {
+    const v = vals(), l = +lamEl.value; lamEl.style.setProperty("--fill", l / 6000 * 100 + "%"); $("lam-value").textContent = fmt(l);
+    const vn = varN(l, v), d = l * v.de - v.dc, p = Phi(d / Math.sqrt(2 * vn / v.nn));
+    const z = Z.a + Z[$("pw").value], nreq = d > 0 ? Math.ceil(2 * z * z * vn / (d * d)) : null;
+    $("ss-verdict").className = "verdict " + (d > 0 ? "ok" : "no");
+    $("ss-verdict").textContent = `ΔNMB = ${fmt(d, 1)}, σNMB = ${Math.sqrt(vn).toFixed(2)} → 군당 ${fmt(v.nn)}명에서 P(비용효과적) = ${p.toFixed(4)}` +
+      (nreq ? ` · 필요한 군당 표본수 ${fmt(nreq)}명 (검정력 ${Math.round(+$("pw").value * 100)}%)` : " · ΔNMB ≤ 0이라 표본수를 늘려도 비용효과적임을 보일 수 없음");
+    const svg = $("ceac"); svg.replaceChildren();
+    const L = 70, R = 610, T = 20, B = 240, X = x => L + x / 6000 * (R - L), Y = y => B - y * (B - T);
+    axes(svg, L, R, T, B, X, Y, [0, 2000, 4000, 6000], [0, 0.25, 0.5, 0.75, 1], "λ (만 원/QALY)", "P(비용효과적)");
+    const pts = []; for (let x = 0; x <= 6000; x += 100) pts.push(`${X(x)},${Y(Phi((x * v.de - v.dc) / Math.sqrt(2 * varN(x, v) / v.nn)))}`);
+    svg.append(el("polyline", { points: pts.join(" "), class: "line" }));
+    svg.append(el("line", { x1: X(l), x2: X(l), y1: T, y2: B, class: "lambda-line" }));
+  }
+  ids.forEach(i => $(i).addEventListener("input", runSS)); lamEl.oninput = runSS; $("pw").onchange = runSS; runSS();
+
+</script>
+
+<script type="module">
+  const SETUP_R = `invisible(NULL)`;
+  let webRPromise = null;
+  function getWebR() {
+    if (!webRPromise) {
+      webRPromise = (async () => {
+        const { WebR } = await import("https://webr.r-wasm.org/latest/webr.mjs");
+        const webR = new WebR();
+        await webR.init();
+        await webR.evalRVoid(SETUP_R);
+        return webR;
+      })();
+    }
+    return webRPromise;
+  }
+
+  document.querySelectorAll(".r-cell").forEach(cell => {
+    const ta = cell.querySelector("textarea");
+    const out = cell.querySelector(".r-out");
+    const original = ta.value;
+    const autosize = () => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + 4 + "px"; };
+    autosize(); ta.addEventListener("input", autosize);
+
+    cell.querySelector(".reset-btn").onclick = () => { ta.value = original; autosize(); out.textContent = ""; cell.querySelectorAll("img.r-plot").forEach(i => i.remove()); };
+
+    cell.querySelector(".run-btn").onclick = async () => {
+      out.textContent = "R 준비 중… (처음 실행 시 10~30초)";
+      cell.querySelectorAll("img.r-plot").forEach(i => i.remove());
+      try {
+        const webR = await getWebR();
+        out.textContent = "실행 중…";
+        const shelter = await new webR.Shelter();
+        try {
+          const res = await shelter.captureR(ta.value, {
+            withAutoprint: true, captureStreams: true, captureConditions: false,
+            captureGraphics: { width: 640, height: 400 }
+          });
+          out.textContent = res.output.map(o => (o.type === "stderr" ? "⚠ " : "") + o.data).join("\n") || "(출력 없음)";
+          for (const bmp of res.images || []) {
+            const canvas = document.createElement("canvas");
+            canvas.width = bmp.width; canvas.height = bmp.height;
+            canvas.getContext("2d").drawImage(bmp, 0, 0);
+            const img = document.createElement("img");
+            img.className = "r-plot"; img.src = canvas.toDataURL("image/png");
+            img.style.cssText = "display:block;max-width:100%;background:#fff;border-top:1px solid #e2e8f0";
+            cell.append(img);
+          }
+        } finally { shelter.purge(); }
+      } catch (e) {
+        out.textContent = "오류: " + (e && e.message ? e.message : e);
+      }
+    };
+  });
+</script>
+</body>
+</html>

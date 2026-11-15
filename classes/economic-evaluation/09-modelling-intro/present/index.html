@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>9. 경제성평가 모델링 개요 및 프로그램 소개 · 경제성평가 수업 | BigCEREE</title>
+  <link rel="stylesheet" href="../../../../style.css">
+</head>
+<body class="lesson-body">
+<!--
+  ▣ 9주차 수업 페이지 (06-cost-utility 템플릿 기반)
+  - 슬라이드 이미지/PDF는 /lessons/econ-09/ 폴더에 있습니다 (lessons/econ-09/README.md 참고).
+-->
+<script>
+  const LESSON = {
+    assetDir: "../../../../lessons/econ-09/",
+    slidePdf: "econ-09-slides.pdf",
+    slidePattern: n => `original-p${String(n).padStart(2, "0")}.webp`,
+    totalSlides: 32
+  };
+</script>
+
+<div class="lesson-topbar" id="top">
+  <div class="inner">
+    <a class="back-link" href="../../index.html">← 수업 목록</a>
+    <button class="tool-btn" id="btn-toc" type="button">목차</button>
+    <button class="tool-btn" id="btn-font-down" type="button" aria-label="글자 작게">가−</button>
+    <button class="tool-btn" id="btn-font-up" type="button" aria-label="글자 크게">가+</button>
+    <a class="tool-btn" id="btn-pdf" href="#" target="_blank" rel="noopener">원본 PDF</a>
+    <button class="tool-btn" id="btn-print" type="button">인쇄 / PDF</button>
+  </div>
+</div>
+
+<div class="lesson-layout" id="lesson-layout">
+  <nav class="lesson-toc" aria-label="목차">
+    <h2>목차</h2>
+    <ol>
+      <li><a href="#da">Decision analysis</a></li>
+      <li><a href="#models">경제성평가 모델의 종류</a></li>
+      <li><a href="#dynamic">Dynamic models</a></li>
+      <li><a href="#select">Model selection</a></li>
+      <li><a href="#tree">Decision tree 개요</a></li>
+      <li><a href="#practice">실습</a>
+        <ol>
+          <li><a href="#ev-practice">기댓값</a></li>
+          <li><a href="#sir-practice">정적 vs. 동적 모형</a></li>
+        </ol>
+      </li>
+      <li><a href="#refs">참고자료</a></li>
+    </ol>
+  </nav>
+
+  <main class="lesson-main">
+    <div class="breadcrumb">
+      <a href="../../../index.html">수업</a><span class="sep">›</span>
+      <a href="../../index.html">경제성평가</a><span class="sep">›</span>9주차
+    </div>
+    <h1>9. 경제성평가 모델링 개요 및 프로그램 소개</h1>
+    <div class="lesson-meta">Introduction to Decision Modelling · 경제성평가 9주차</div>
+
+    <h2 id="da">1. Decision analysis</h2>
+    <p>알츠하이머 신약에 재원을 쓸지, 암 선별검사에 어떤 전략을 쓸지, 새 치료기술의 경제성평가를 할지처럼 자원 할당은 결국 의사결정입니다. 의사결정분석은 <strong>불확실한 상황에서 체계적으로 결정하는 방법</strong>으로, 1960년대 초 경영 분야에서 시작해 1970년대 공공 분야(멕시코시티 신공항, 민간 초음속기)로 넓어졌습니다.</p>
+    <h3>핵심 요소</h3>
+    <ul>
+      <li><strong>확률</strong>: 결합확률 P(A and B), 조건부확률 P(A and B) = P(A|B)·P(B), 독립이면 P(A and B) = P(A)·P(B)이고 P(A|B) = P(A)</li>
+      <li><strong>보상(payoff)</strong>: 각 선택과 결과에 따른 비용 또는 건강결과</li>
+      <li><strong>기댓값</strong>: 각 결과의 확률 × 보상을 모두 더한 값. 기댓값이 가장 높은 대안을 고릅니다.</li>
+    </ul>
+    <p>기댓값이 가장 높은 치료를 고른다고 개별 환자가 반드시 더 좋아지는 것은 아닙니다. A 치료의 기댓값이 높아도 A를 받은 어떤 환자는 더 일찍 사망할 수 있습니다. 다만 그 치료를 고르면 <strong>많은 환자의 평균 성과</strong>는 가장 좋습니다. 대부분의 의사결정 모형은 평균 환자의 경험에 초점을 둔 코호트 모형(의사결정나무, 마코프 모형)입니다.</p>
+    <details class="slides" data-from="5" data-to="9"><summary>원본 슬라이드 보기</summary></details>
+
+    <h2 id="models">2. 경제성평가 모델의 종류</h2>
+    <p>모델은 복잡한 현실을 단순화한 것입니다. 크게 <strong>경험적 모델</strong>(임상시험 병행 경제성평가)과 <strong>이론적 모델</strong>로 나뉘고, 이론적 모델은 단순 발생률 계산·회귀모형 같은 비시뮬레이션 모델과 시뮬레이션 모델(주로 사용)로 나뉩니다.</p>
+    <table>
+      <tr><th>속성</th><th>구분</th></tr>
+      <tr><td>정적 vs. 동적</td><td>비전염성 질환 vs. 전염성 질환(개인 간 상호작용)</td></tr>
+      <tr><td>결정적 vs. 확률적</td><td>상태 전이가 고정인가, 확률적으로 나타나는가</td></tr>
+      <tr><td>집단 수준 vs. 개인 수준</td><td>의사결정나무·마코프 코호트 vs. 1차 몬테카를로 시뮬레이션</td></tr>
+      <tr><td>연속 vs. 이산</td><td>시간을 연속으로 볼 것인가, 구간으로 나눌 것인가</td></tr>
+      <tr><td>닫힌 vs. 열린</td><td>모집단이 고정(단기)인가, 들어오고 나가는가(장기)</td></tr>
+      <tr><td>선형 vs. 비선형</td><td></td></tr>
+    </table>
+    <table>
+      <tr><th></th><th></th><th>정적</th><th>동적</th></tr>
+      <tr><td rowspan="2">집단 수준</td><td>결정적</td><td>의사결정나무, 마코프 코호트</td><td>감염병 전파역학, Dynamic transmission model</td></tr>
+      <tr><td>확률적</td><td>—</td><td>—</td></tr>
+      <tr><td rowspan="2">개인 수준</td><td>결정적</td><td>—</td><td>—</td></tr>
+      <tr><td>확률적</td><td>마코프 시뮬레이션, 1차 몬테카를로 시뮬레이션</td><td>행위자기반모형(ABM), 이산사건시뮬레이션(DES)</td></tr>
+    </table>
+    <details class="slides" data-from="10" data-to="15"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">원본 슬라이드 12쪽의 모델 구분표는 출처 표기가 없어 문헌 참조 안내로 바꾸었습니다.</p>
+
+    <h2 id="dynamic">3. Dynamic models</h2>
+    <p>개인 간 <strong>상호작용</strong>이 중요한 경우, 특히 감염병의 경제성평가는 집단면역 같은 간접효과를 포함해야 합니다.</p>
+    <ul>
+      <li><strong>Dynamic transmission model</strong>(구획모형, SI·SIR·SEIR·SIRS, 미분방정식): 백신·격리의 직접효과와 집단면역에 의한 간접효과를 함께 반영합니다. 마코프 모형은 간접효과를 잡지 못합니다. 실습 2에서 비교합니다.</li>
+      <li><strong>이산사건시뮬레이션(DES)</strong>: 개인·집단·환경 사이의 복잡한 상호작용을 유연하게 표현하며, 사건이 이산적으로 일어납니다. 진료 과정 재설계, 최적화, 자원의 지리적 배분, 정책 평가에 널리 쓰입니다.</li>
+      <li><strong>행위자기반모형(ABM)</strong>: 각자 목적과 행동 규칙을 가진 행위자들이 가상 세계에서 상호작용하도록 프로그램한 모형입니다. 예) 조류인플루엔자에서 번호를 붙인 가축마다 접촉 시 발병 확률을 시뮬레이션.</li>
+    </ul>
+    <details class="slides" data-from="16" data-to="22"><summary>원본 슬라이드 보기</summary></details>
+
+    <h2 id="select">4. Model selection</h2>
+    <p>결정적·집단·정적 모델(Type 1)은 단순하고 저렴하며 투명하고, 확률적·개인·동적 모델(Type 4)은 복잡하고 비싸지만 현실을 더 잘 반영합니다. 모델 유형은 다음을 보고 정합니다.</p>
+    <ul>
+      <li>의사결정 문제의 특성과 연구 질문, 관심 질환의 특성과 자연사</li>
+      <li>모수 추정·검증에 쓸 자료, 다른 모델링 기법을 가진 분석가</li>
+      <li>개발에 쓸 수 있는 시간, 시뮬레이션의 용이성과 속도</li>
+    </ul>
+    <p>개인 간 상호작용이 중요하면 DES, 시간이 중요하지 않으면 의사결정나무, 시간이 중요하면 마코프 모형, 환자 이질성이 중요하면 환자 수준 마코프 시뮬레이션을 고르는 흐름도가 제시되어 있습니다(Brennan 등의 흐름도를 응용한 그림, PLoS ONE).</p>
+    <details class="slides" data-from="24" data-to="27"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">원본 슬라이드 26쪽의 모델 선택 도식은 출처 표기가 없어 문헌 참조 안내로 바꾸었습니다.</p>
+
+    <h2 id="tree">5. Decision tree 개요</h2>
+    <p>의사결정나무는 <strong>결정 마디(□)</strong>, <strong>확률 마디(○)</strong>, <strong>종결 마디(◁)</strong>와 서로 배타적인 가지로 이루어집니다. 경로 확률은 경로를 따라 확률을 곱해 구합니다. 예) 편두통 발작에 수마트립탄 vs. 카페인/에르고타민(Evans 등)을 TreeAge로 구현.</p>
+    <ol>
+      <li><strong>문제 구조화</strong>: 결정 문제와 시작점, 분석 기간, 대안, 확률, 결과 가치</li>
+      <li><strong>나무 만들기</strong>: 사건의 순서, 확률 마디별 확률, 결과별 가치</li>
+      <li><strong>기저분석</strong>: 대안별 기댓값, 정보의 가치</li>
+      <li><strong>민감도 분석</strong>: 일원·이원 민감도 분석, 임계값 분석</li>
+    </ol>
+    <p>자세한 사례는 10주차에서 다룹니다.</p>
+    <details class="slides" data-from="28" data-to="32"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">원본 슬라이드 29쪽의 논문 그림(Evans 등)은 논문 참조 안내로 바꾸었습니다. 30쪽은 같은 나무를 TreeAge로 다시 만든 화면입니다.</p>
+
+    <h2 id="practice">실습</h2>
+    <p>숫자는 모두 수업용 <strong>예시 값</strong>입니다.</p>
+    <h3 id="ev-practice">실습 1. 기댓값으로 고르기</h3>
+    <p>치료 A는 성공 확률 p, 치료 B는 성공 확률 0.6입니다. 성공하면 1.0 QALY, 실패하면 0.4 QALY를 얻습니다.</p>
+    <div class="widget">
+      <div class="widget-row"><label for="pa">A의 성공 확률 p</label><input id="pa" type="range" min="0" max="1" step="0.01" value="0.7"><strong id="pa-value"></strong></div>
+      <p class="verdict ok" id="ev-verdict" aria-live="polite"></p>
+    </div>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 1</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+ev &lt;- function(p_success, u_success = 1.0, u_fail = 0.4) p_success * u_success + (1 - p_success) * u_fail
+c(A = ev(0.7), B = ev(0.6))
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+
+    <h3 id="sir-practice">실습 2. 정적 모형 vs. 동적 모형: 집단면역</h3>
+    <p>인구 10,000명, 첫 감염자 10명, 전파율 β = 0.3/일, 회복률 γ = 0.1/일(기초감염재생산수 R<sub>0</sub> = 3)인 SIR 모형을 하루 단위로 300일 계산합니다. 정적 모형은 “백신 접종률만큼 감염이 줄어든다”고 보지만, 동적 모형에서는 비접종자도 보호되는 간접효과가 생깁니다.</p>
+    <div class="formula">S<sub>t+1</sub> = S<sub>t</sub> − β S<sub>t</sub> I<sub>t</sub> / N, &nbsp; I<sub>t+1</sub> = I<sub>t</sub> + β S<sub>t</sub> I<sub>t</sub> / N − γ I<sub>t</sub></div>
+    <div class="widget">
+      <div class="widget-row"><label for="vc">백신 접종률</label><input id="vc" type="range" min="0" max="0.8" step="0.05" value="0.3"><strong id="vc-value"></strong></div>
+      <table id="sir-table"><thead><tr><th></th><th>총 감염자</th><th>예방된 감염자</th></tr></thead><tbody></tbody></table>
+      <svg id="sir-chart" class="chart" viewBox="0 0 640 320" role="img" aria-label="SIR 모형의 감염자 수 추이"></svg>
+      <p class="widget-help">곡선은 매일의 감염자 수(I)입니다. 회색은 접종 0%, 파란색은 선택한 접종률입니다.</p>
+    </div>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 2</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+sir &lt;- function(v, N = 10000, I0 = 10, beta = 0.3, gamma = 0.1, days = 300) {
+  S &lt;- (N - I0) * (1 - v); I &lt;- I0; cum &lt;- I0; It &lt;- numeric(days)
+  for (t in 1:days) {
+    new &lt;- beta * S * I / N
+    S &lt;- S - new; I &lt;- I + new - gamma * I; cum &lt;- cum + new; It[t] &lt;- I
+  }
+  list(total = cum, I = It)
+}
+base &lt;- sir(0)$total; dyn &lt;- sir(0.3)$total
+c(no_vaccine = round(base), dynamic = round(dyn),
+  averted_dynamic = round(base - dyn), averted_static = round(base * 0.3))
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+    <h2 id="refs">참고자료</h2>
+    <ul class="refs">
+      <li>Drummond MF, Sculpher MJ, Claxton K, Stoddart GL, Torrance GW. <em>Methods for the Economic Evaluation of Health Care Programmes</em>. 4th ed. Oxford University Press; 2015.</li>
+      <li>Briggs A, Claxton K, Sculpher M. <em>Decision Modelling for Health Economic Evaluation</em>. Oxford University Press; 2006.</li>
+      <li>Evans KW 등. Economic evaluation of oral sumatriptan compared with oral caffeine/ergotamine for migraine.</li>
+    </ul>
+  </main>
+</div>
+
+<script>
+  // ---------- 원본 슬라이드: 이미지가 없으면 안내 상자 표시 ----------
+  document.querySelectorAll("details.slides").forEach(d => {
+    const grid = document.createElement("div"); grid.className = "slide-grid";
+    for (let n = +d.dataset.from; n <= +d.dataset.to; n++) {
+      const fig = document.createElement("figure"); fig.className = "slide-fig";
+      const img = new Image(); img.loading = "lazy"; img.alt = `슬라이드 ${n}`;
+      img.src = LESSON.assetDir + LESSON.slidePattern(n);
+      img.onerror = () => { img.replaceWith(Object.assign(document.createElement("div"),
+        { className: "slide-missing", textContent: `슬라이드 ${n} 이미지 준비 중 (lessons 폴더에 ${LESSON.slidePattern(n)} 추가)` })); };
+      const cap = document.createElement("figcaption"); cap.textContent = `${n} / ${LESSON.totalSlides}`;
+      fig.append(img, cap); grid.append(fig);
+    }
+    d.append(grid);
+  });
+
+  // ---------- 상단 도구 ----------
+  document.getElementById("btn-pdf").href = LESSON.assetDir + LESSON.slidePdf;
+  document.getElementById("btn-print").onclick = () => window.print();
+  document.getElementById("btn-toc").onclick = () =>
+    document.getElementById("lesson-layout").classList.toggle("toc-hidden");
+  let scale = 1;
+  const applyScale = () => document.querySelector(".lesson-main").style.setProperty("--lesson-scale", scale);
+  document.getElementById("btn-font-up").onclick = () => { scale = Math.min(1.5, scale + 0.1); applyScale(); };
+  document.getElementById("btn-font-down").onclick = () => { scale = Math.max(0.8, scale - 0.1); applyScale(); };
+
+  // ---------- 목차: 현재 위치 강조 ----------
+  const tocLinks = [...document.querySelectorAll(".lesson-toc a")];
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) tocLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id));
+  }), { rootMargin: "-20% 0px -70% 0px" });
+  document.querySelectorAll(".lesson-main h2[id], .lesson-main h3[id]").forEach(h => io.observe(h));
+</script>
+<script>
+  const fmt = (x, d = 0) => Number(x).toLocaleString("ko-KR", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const $ = id => document.getElementById(id);
+  const NS = "http://www.w3.org/2000/svg";
+  function el(tag, attrs = {}, text) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; return e; }
+  function axes(svg, L, R, T, B, X, Y, xt, yt, xl, yl, yfmt = v => v) {
+    yt.forEach(t => { svg.append(el("line", { x1: L, x2: R, y1: Y(t), y2: Y(t), class: "grid" })); svg.append(el("text", { x: L - 10, y: Y(t) + 4, class: "tick", "text-anchor": "end" }, yfmt(t))); });
+    xt.forEach(t => svg.append(el("text", { x: X(t), y: B + 22, class: "tick", "text-anchor": "middle" }, t)));
+    svg.append(el("line", { x1: L, x2: L, y1: T, y2: B, class: "axis" })); svg.append(el("line", { x1: L, x2: R, y1: B, y2: B, class: "axis" }));
+    svg.append(el("text", { x: (L + R) / 2, y: B + 46, class: "axis-label", "text-anchor": "middle" }, xl));
+    svg.append(el("text", { x: 20, y: (T + B) / 2, class: "axis-label", "text-anchor": "middle", transform: `rotate(-90 20 ${(T + B) / 2})` }, yl));
+  }
+
+  // ---------- 실습 1 ----------
+  const paEl = $("pa"), ev = p => p * 1.0 + (1 - p) * 0.4;
+  function runEv() { const p = +paEl.value; paEl.style.setProperty("--fill", p * 100 + "%"); $("pa-value").textContent = p.toFixed(2);
+    const a = ev(p), b = ev(0.6), v = $("ev-verdict");
+    v.textContent = `기댓값: A = ${p.toFixed(2)}×1.0 + ${(1 - p).toFixed(2)}×0.4 = ${a.toFixed(3)} QALY, B = ${b.toFixed(3)} QALY → ${a > b ? "A 선택" : a < b ? "B 선택" : "무차별"}`; }
+  paEl.oninput = runEv; runEv();
+  // ---------- 실습 2: SIR ----------
+  function sir(v, N = 10000, I0 = 10, beta = 0.3, gamma = 0.1, days = 300) {
+    let S = (N - I0) * (1 - v), I = I0, cum = I0; const It = [];
+    for (let t = 1; t <= days; t++) { const nw = beta * S * I / N; S = S - nw; I = I + nw - gamma * I; cum = cum + nw; It.push(I); }
+    return { total: cum, I: It };
+  }
+  const BASE = sir(0), vcEl = $("vc");
+  function runSir() {
+    const v = +vcEl.value; vcEl.style.setProperty("--fill", v / 0.8 * 100 + "%"); $("vc-value").textContent = Math.round(v * 100) + "%";
+    const d = sir(v);
+    $("sir-table").querySelector("tbody").innerHTML =
+      `<tr><td>접종 없음</td><td>${fmt(Math.round(BASE.total))}</td><td>—</td></tr>` +
+      `<tr><td>정적 모형 (접종률만큼 감소 가정)</td><td>${fmt(Math.round(BASE.total * (1 - v)))}</td><td>${fmt(Math.round(BASE.total * v))}</td></tr>` +
+      `<tr><td>동적 모형 (SIR)</td><td>${fmt(Math.round(d.total))}</td><td><strong>${fmt(Math.round(BASE.total - d.total))}</strong></td></tr>`;
+    const svg = $("sir-chart"); svg.replaceChildren();
+    const L = 70, R = 610, T = 20, B = 260, X = t => L + t / 300 * (R - L), Y = i => B - i / 3500 * (B - T);
+    axes(svg, L, R, T, B, X, Y, [0, 100, 200, 300], [0, 1000, 2000, 3000], "일", "감염자 수", v => fmt(v));
+    svg.append(el("polyline", { points: BASE.I.map((y, t) => `${X(t + 1)},${Y(y)}`).join(" "), class: "line", style: "stroke:#94a3b8" }));
+    svg.append(el("polyline", { points: d.I.map((y, t) => `${X(t + 1)},${Y(y)}`).join(" "), class: "line" }));
+  }
+  vcEl.oninput = runSir; runSir();
+
+</script>
+
+<script type="module">
+  const SETUP_R = `invisible(NULL)`;
+  let webRPromise = null;
+  function getWebR() {
+    if (!webRPromise) {
+      webRPromise = (async () => {
+        const { WebR } = await import("https://webr.r-wasm.org/latest/webr.mjs");
+        const webR = new WebR();
+        await webR.init();
+        await webR.evalRVoid(SETUP_R);
+        return webR;
+      })();
+    }
+    return webRPromise;
+  }
+
+  document.querySelectorAll(".r-cell").forEach(cell => {
+    const ta = cell.querySelector("textarea");
+    const out = cell.querySelector(".r-out");
+    const original = ta.value;
+    const autosize = () => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + 4 + "px"; };
+    autosize(); ta.addEventListener("input", autosize);
+
+    cell.querySelector(".reset-btn").onclick = () => { ta.value = original; autosize(); out.textContent = ""; cell.querySelectorAll("img.r-plot").forEach(i => i.remove()); };
+
+    cell.querySelector(".run-btn").onclick = async () => {
+      out.textContent = "R 준비 중… (처음 실행 시 10~30초)";
+      cell.querySelectorAll("img.r-plot").forEach(i => i.remove());
+      try {
+        const webR = await getWebR();
+        out.textContent = "실행 중…";
+        const shelter = await new webR.Shelter();
+        try {
+          const res = await shelter.captureR(ta.value, {
+            withAutoprint: true, captureStreams: true, captureConditions: false,
+            captureGraphics: { width: 640, height: 400 }
+          });
+          out.textContent = res.output.map(o => (o.type === "stderr" ? "⚠ " : "") + o.data).join("\n") || "(출력 없음)";
+          for (const bmp of res.images || []) {
+            const canvas = document.createElement("canvas");
+            canvas.width = bmp.width; canvas.height = bmp.height;
+            canvas.getContext("2d").drawImage(bmp, 0, 0);
+            const img = document.createElement("img");
+            img.className = "r-plot"; img.src = canvas.toDataURL("image/png");
+            img.style.cssText = "display:block;max-width:100%;background:#fff;border-top:1px solid #e2e8f0";
+            cell.append(img);
+          }
+        } finally { shelter.purge(); }
+      } catch (e) {
+        out.textContent = "오류: " + (e && e.message ? e.message : e);
+      }
+    };
+  });
+</script>
+</body>
+</html>

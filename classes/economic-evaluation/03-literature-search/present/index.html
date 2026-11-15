@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>3. 경제성평가 논문 검색 · 경제성평가 수업 | BigCEREE</title>
+  <link rel="stylesheet" href="../../../../style.css">
+</head>
+<body class="lesson-body">
+<!--
+  ▣ 3주차 수업 페이지 (06-cost-utility 템플릿 기반)
+  - 슬라이드 이미지/PDF는 /lessons/econ-03/ 폴더에 있습니다.
+-->
+<script>
+  const LESSON = {
+    assetDir: "../../../../lessons/econ-03/",
+    slidePdf: "econ-03-slides.pdf",
+    slidePattern: n => `original-p${String(n).padStart(2, "0")}.webp`,
+    totalSlides: 35
+  };
+</script>
+
+<div class="lesson-topbar" id="top">
+  <div class="inner">
+    <a class="back-link" href="../../index.html">← 수업 목록</a>
+    <button class="tool-btn" id="btn-toc" type="button">목차</button>
+    <button class="tool-btn" id="btn-font-down" type="button" aria-label="글자 작게">가−</button>
+    <button class="tool-btn" id="btn-font-up" type="button" aria-label="글자 크게">가+</button>
+    <a class="tool-btn" id="btn-pdf" href="#" target="_blank" rel="noopener">원본 PDF</a>
+    <button class="tool-btn" id="btn-print" type="button">인쇄 / PDF</button>
+  </div>
+</div>
+
+<div class="lesson-layout" id="lesson-layout">
+  <nav class="lesson-toc" aria-label="목차">
+    <h2>목차</h2>
+    <ol>
+      <li><a href="#overview">개요</a></li>
+      <li><a href="#checklist">평가 체크리스트</a>
+        <ol>
+          <li><a href="#drummond">Drummond 체크리스트</a></li>
+          <li><a href="#cheers">CHEERS 2022</a></li>
+        </ol>
+      </li>
+      <li><a href="#search">검색 전략</a></li>
+      <li><a href="#use">검색 결과의 활용</a></li>
+      <li><a href="#practice">실습</a>
+        <ol><li><a href="#query-practice">PICO 검색식 만들기</a></li></ol>
+      </li>
+      <li><a href="#refs">참고자료</a></li>
+    </ol>
+  </nav>
+
+  <main class="lesson-main">
+    <div class="breadcrumb">
+      <a href="../../../index.html">수업</a><span class="sep">›</span>
+      <a href="../../index.html">경제성평가</a><span class="sep">›</span>3주차
+    </div>
+    <h1>3. 경제성평가 논문 검색</h1>
+    <div class="lesson-meta">Searching and Appraising Economic Evaluations · 경제성평가 3주차</div>
+
+    <h2 id="overview">1. 개요</h2>
+    <p>경제성평가 논문은 두 관점에서 읽습니다.</p>
+    <ol>
+      <li><strong>전반적 관점</strong>: 이 연구 결과가 나의 상황에 유용한가?</li>
+      <li><strong>구체적 관점</strong>: 연구 방법이 적절하고 결과가 타당한가, 그리고 나의 상황에 적용할 수 있는가?</li>
+    </ol>
+    <details class="slides" data-from="5" data-to="5"><summary>원본 슬라이드 보기</summary></details>
+
+    <h2 id="checklist">2. 경제성평가 연구 평가 체크리스트</h2>
+    <h3 id="drummond">1) Drummond 체크리스트 (10개 질문)</h3>
+    <table>
+      <tr><th>#</th><th>질문</th><th>확인할 점</th></tr>
+      <tr><td>1</td><td>연구 질문이 답할 수 있게 정리되었는가?</td><td>비용과 결과를 모두 보았는가, 비교 대안이 있는가, 분석 관점과 의사결정 맥락을 밝혔는가</td></tr>
+      <tr><td>2</td><td>경쟁 대안을 포괄적으로 기술했는가?</td><td>누가·누구에게·어디서·얼마나, 빠진 대안이나 ‘아무것도 하지 않음’ 대안은 없는가</td></tr>
+      <tr><td>3</td><td>효과가 입증되었는가?</td><td>RCT(현실 진료 반영 여부), 체계적 문헌고찰(검색전략·선정기준), 관찰연구(비뚤림)</td></tr>
+      <tr><td>4</td><td>관련 비용과 결과를 모두 찾았는가?</td><td>연구 질문에 충분한 범위인가, 사회·환자·지불자 관점을 포괄하는가, 고정비와 운영비를 포함했는가</td></tr>
+      <tr><td>5</td><td>적절한 단위로 정확히 측정했는가?</td><td>자원 사용 근거, 빠진 항목, 공동 사용 자원 같은 측정이 까다로운 상황의 처리</td></tr>
+      <tr><td>6</td><td>가치화가 믿을 만한가?</td><td>가격의 출처, 시장가격이 없거나 왜곡된 경우의 처리, 분석 유형(CEA·CUA·CBA)의 적절성</td></tr>
+      <tr><td>7</td><td>시간 선호를 보정했는가?</td><td>미래 비용·결과의 할인 여부와 할인율의 적절성</td></tr>
+      <tr><td>8</td><td>증분 분석을 했는가?</td><td>추가 효과·효용·편익에 대한 추가 비용 비교</td></tr>
+      <tr><td>9</td><td>불확실성을 제시했는가?</td><td>통계 분석의 적절성, 민감도 분석의 범위·분포·형식</td></tr>
+      <tr><td>10</td><td>결과 제시와 고찰이 이용자의 관심사를 다루는가?</td><td>지표 제시, 선행연구 비교, 일반화 가능성, 분배·윤리 문제, 도입 가능성과 절감 자원의 재배치</td></tr>
+    </table>
+    <details class="slides" data-from="6" data-to="13"><summary>원본 슬라이드 보기</summary></details>
+
+    <h3 id="cheers">2) CHEERS 2022 보고 체크리스트</h3>
+    <p>CHEERS 2022는 경제성평가 보고의 국제 지침으로 28개 항목입니다. EQUATOR Network와 온라인 작성 도구에서 내려받을 수 있습니다.</p>
+    <table>
+      <tr><th>영역</th><th>주요 항목</th></tr>
+      <tr><td>제목·초록</td><td>경제성평가임을 드러내는 제목, 목적·관점·세팅·방법·결과·결론의 구조화 초록</td></tr>
+      <tr><td>서론</td><td>연구의 맥락, 연구 질문과 정책·임상 결정과의 관련성</td></tr>
+      <tr><td>방법</td><td>대상 인구와 하위군, 세팅, 분석 관점, 비교 대안, 분석 기간, 할인율, 건강결과 선택, 효과 측정(단일 연구/자료 합성), 선호 기반 결과의 측정, 자원·비용 추정, 통화·가격 시점·환산, 모형 선택(구조 그림 권장), 가정, 분석 방법(치우친 분포, 결측, 외삽, 반주기 보정, 이질성·불확실성)</td></tr>
+      <tr><td>결과</td><td>모든 입력값(값·범위·출처·분포), 증분 비용과 결과·ICER, 불확실성, 이질성</td></tr>
+      <tr><td>고찰</td><td>주요 결과, 한계, 일반화 가능성, 기존 지식과의 비교</td></tr>
+      <tr><td>기타</td><td>연구비 출처와 역할, 이해상충</td></tr>
+    </table>
+    <details class="slides" data-from="14" data-to="26"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">원본 슬라이드 14쪽의 CHEERS 화면 캡처는 링크 안내로 바꾸었습니다.</p>
+
+    <h2 id="search">3. 경제성평가 연구 검색 전략</h2>
+    <h3>1) 검색 전략 계획</h3>
+    <ol>
+      <li>PICOT-SD(대상·중재·비교·결과·기간·세팅·설계)로 검색 개념을 정합니다.</li>
+      <li>경제성평가 <strong>검색 필터</strong>를 씁니다: 캐나다 의약품청(CDA) Search Filters Database의 “Economic Evaluations &amp; Models”(PubMed).</li>
+      <li>PubMed 조합: #1 필터, #2 질환, #3 중재, #4 비교 → #5 = #2 AND (#3 OR #4) → #6 = #1 AND #5 → 연도 제한 → EndNote로 내보내기.</li>
+    </ol>
+    <h3>2) 검색 사이트</h3>
+    <ul>
+      <li><strong>PubMed</strong>: 필터와 검색어를 조합하고 Advanced 검색 기록으로 단계별 결과 수를 확인합니다.</li>
+      <li><strong>NHS EED</strong>(CRD, University of York): 경제성평가 초록 데이터베이스. 2015년 이후 신규 추가는 중단되어 이전 문헌 확인용으로 씁니다.</li>
+      <li><strong>Consensus</strong>(consensus.app): 인공지능 기반 논문 검색. 한국어 질문이 가능합니다. 예) “Is acupuncture cost-effective compared with usual care for treating low back pain?”</li>
+      <li><strong>ChatGPT</strong>: 초록에서 First author(Year), Region, Population, Alternatives, Model, Perspective, Time horizon, Markov cycle length, Results를 표로 정리하게 할 수 있습니다. 결과는 반드시 원문과 대조합니다.</li>
+    </ul>
+    <details class="slides" data-from="27" data-to="33"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">원본 슬라이드 27쪽(CDA 필터)과 31쪽(CRD)의 사이트 화면은 링크 안내로 바꾸었고, 32쪽 Consensus 화면 캡처는 지웠습니다.</p>
+
+    <h2 id="use">4. 논문 검색 결과의 활용</h2>
+    <ul>
+      <li><strong>프로토콜 개발</strong>: 얼굴마비·아토피피부염의 임상연구 병행 경제성평가 프로토콜 개발을 위한 체계적 문헌고찰처럼, 선행 연구의 대안·관점·비용 항목·결과 지표를 정리해 프로토콜에 반영합니다.</li>
+      <li><strong>의사결정 모형 분석</strong>: 선행 연구에서 전이확률·비용·효용 같은 모수와 분포를 모아 민감도 분석 표를 만듭니다(예: Kim N 등, 2010의 모수 표).</li>
+    </ul>
+    <details class="slides" data-from="34" data-to="35"><summary>원본 슬라이드 보기</summary></details>
+
+    <h2 id="practice">실습</h2>
+    <h3 id="query-practice">실습 1. PICO 검색식 만들기</h3>
+    <p>질환·중재·비교 검색어를 넣으면 슬라이드 28쪽의 순서대로 PubMed 검색식을 조립합니다. 경제성 필터는 수업용으로 줄인 <strong>예시 필터</strong>이며, 실제 검색에는 CDA의 전체 필터를 씁니다.</p>
+    <div class="widget">
+      <div class="widget-row"><label for="q-p">질환(P)</label><input id="q-p" class="text-in" value="low back pain"></div>
+      <div class="widget-row"><label for="q-i">중재(I)</label><input id="q-i" class="text-in" value="acupuncture"></div>
+      <div class="widget-row"><label for="q-c">비교(C)</label><input id="q-c" class="text-in" value="usual care"></div>
+      <div class="widget-row"><label for="q-y">시작 연도</label><input id="q-y" class="num-in" inputmode="numeric" value="2010"></div>
+      <pre class="r-out" id="q-out" style="white-space:pre-wrap"></pre>
+      <button class="tool-btn" id="q-copy" type="button">검색식 복사</button>
+    </div>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 1</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+econ_filter &lt;- paste('"Economics"[Mesh:NoExp]', '"Costs and Cost Analysis"[Mesh]',
+                     'cost*[tiab]', 'economic*[tiab]', 'markov[tiab]', '"decision model*"[tiab]',
+                     sep = " OR ")                      # 수업용 예시 필터
+tiab &lt;- function(x) paste0('"', x, '"[tiab]')
+q1 &lt;- paste0("(", econ_filter, ")")
+q5 &lt;- paste0("(", tiab("low back pain"), " AND (", tiab("acupuncture"), " OR ", tiab("usual care"), "))")
+q6 &lt;- paste(q1, "AND", q5, 'AND ("2010"[dp] : "3000"[dp])')
+cat(q6)
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+
+    <h2 id="refs">참고자료</h2>
+    <ul class="refs">
+      <li>Drummond MF, Sculpher MJ, Claxton K, Stoddart GL, Torrance GW. <em>Methods for the Economic Evaluation of Health Care Programmes</em>. 4th ed. Oxford University Press; 2015. (Chapter 3)</li>
+      <li>Husereau D 등. Consolidated Health Economic Evaluation Reporting Standards 2022 (CHEERS 2022) statement. 2022. — <a href="https://www.equator-network.org/reporting-guidelines/cheers/" target="_blank" rel="noopener">EQUATOR Network</a></li>
+      <li>Canada's Drug Agency. Search Filters Database — Economic Evaluations &amp; Models.</li>
+      <li>Centre for Reviews and Dissemination. NHS Economic Evaluation Database (NHS EED).</li>
+    </ul>
+  </main>
+</div>
+
+<script>
+  // ---------- 원본 슬라이드: 이미지가 없으면 안내 상자 표시 ----------
+  document.querySelectorAll("details.slides").forEach(d => {
+    const grid = document.createElement("div"); grid.className = "slide-grid";
+    for (let n = +d.dataset.from; n <= +d.dataset.to; n++) {
+      const fig = document.createElement("figure"); fig.className = "slide-fig";
+      const img = new Image(); img.loading = "lazy"; img.alt = `슬라이드 ${n}`;
+      img.src = LESSON.assetDir + LESSON.slidePattern(n);
+      img.onerror = () => { img.replaceWith(Object.assign(document.createElement("div"),
+        { className: "slide-missing", textContent: `슬라이드 ${n} 이미지 준비 중 (lessons 폴더에 ${LESSON.slidePattern(n)} 추가)` })); };
+      const cap = document.createElement("figcaption"); cap.textContent = `${n} / ${LESSON.totalSlides}`;
+      fig.append(img, cap); grid.append(fig);
+    }
+    d.append(grid);
+  });
+
+  // ---------- 상단 도구 ----------
+  document.getElementById("btn-pdf").href = LESSON.assetDir + LESSON.slidePdf;
+  document.getElementById("btn-print").onclick = () => window.print();
+  document.getElementById("btn-toc").onclick = () =>
+    document.getElementById("lesson-layout").classList.toggle("toc-hidden");
+  let scale = 1;
+  const applyScale = () => document.querySelector(".lesson-main").style.setProperty("--lesson-scale", scale);
+  document.getElementById("btn-font-up").onclick = () => { scale = Math.min(1.5, scale + 0.1); applyScale(); };
+  document.getElementById("btn-font-down").onclick = () => { scale = Math.max(0.8, scale - 0.1); applyScale(); };
+
+  // ---------- 목차: 현재 위치 강조 ----------
+  const tocLinks = [...document.querySelectorAll(".lesson-toc a")];
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) tocLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id));
+  }), { rootMargin: "-20% 0px -70% 0px" });
+  document.querySelectorAll(".lesson-main h2[id], .lesson-main h3[id]").forEach(h => io.observe(h));
+</script>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const ECON = ['"Economics"[Mesh:NoExp]', '"Costs and Cost Analysis"[Mesh]', 'cost*[tiab]', 'economic*[tiab]', 'markov[tiab]', '"decision model*"[tiab]'].join(" OR ");
+  const tiab = x => `"${x.trim()}"[tiab]`;
+  function buildQuery() {
+    const p = $("q-p").value, i = $("q-i").value, c = $("q-c").value, y = $("q-y").value.trim();
+    const q1 = `(${ECON})`, q5 = `(${tiab(p)} AND (${tiab(i)} OR ${tiab(c)}))`;
+    const q6 = `${q1} AND ${q5}` + (/^\d{4}$/.test(y) ? ` AND ("${y}"[dp] : "3000"[dp])` : "");
+    $("q-out").textContent = `#1 ${q1}\n#2 ${tiab(p)}\n#3 ${tiab(i)}\n#4 ${tiab(c)}\n#5 ${q5}\n#6 ${q6}`;
+    return q6;
+  }
+  ["q-p", "q-i", "q-c", "q-y"].forEach(id => $(id).addEventListener("input", buildQuery)); buildQuery();
+  $("q-copy").onclick = async () => { try { await navigator.clipboard.writeText(buildQuery()); $("q-copy").textContent = "복사됨"; } catch (e) { $("q-copy").textContent = "복사 실패: 직접 선택해 복사하세요"; } setTimeout(() => $("q-copy").textContent = "검색식 복사", 1500); };
+</script>
+
+<script type="module">
+  const SETUP_R = `invisible(NULL)`;
+  let webRPromise = null;
+  function getWebR() {
+    if (!webRPromise) {
+      webRPromise = (async () => {
+        const { WebR } = await import("https://webr.r-wasm.org/latest/webr.mjs");
+        const webR = new WebR();
+        await webR.init();
+        await webR.evalRVoid(SETUP_R);
+        return webR;
+      })();
+    }
+    return webRPromise;
+  }
+
+  document.querySelectorAll(".r-cell").forEach(cell => {
+    const ta = cell.querySelector("textarea");
+    const out = cell.querySelector(".r-out");
+    const original = ta.value;
+    const autosize = () => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + 4 + "px"; };
+    autosize(); ta.addEventListener("input", autosize);
+
+    cell.querySelector(".reset-btn").onclick = () => { ta.value = original; autosize(); out.textContent = ""; cell.querySelectorAll("img.r-plot").forEach(i => i.remove()); };
+
+    cell.querySelector(".run-btn").onclick = async () => {
+      out.textContent = "R 준비 중… (처음 실행 시 10~30초)";
+      cell.querySelectorAll("img.r-plot").forEach(i => i.remove());
+      try {
+        const webR = await getWebR();
+        out.textContent = "실행 중…";
+        const shelter = await new webR.Shelter();
+        try {
+          const res = await shelter.captureR(ta.value, {
+            withAutoprint: true, captureStreams: true, captureConditions: false,
+            captureGraphics: { width: 640, height: 400 }
+          });
+          out.textContent = res.output.map(o => (o.type === "stderr" ? "⚠ " : "") + o.data).join("\n") || "(출력 없음)";
+          for (const bmp of res.images || []) {
+            const canvas = document.createElement("canvas");
+            canvas.width = bmp.width; canvas.height = bmp.height;
+            canvas.getContext("2d").drawImage(bmp, 0, 0);
+            const img = document.createElement("img");
+            img.className = "r-plot"; img.src = canvas.toDataURL("image/png");
+            img.style.cssText = "display:block;max-width:100%;background:#fff;border-top:1px solid #e2e8f0";
+            cell.append(img);
+          }
+        } finally { shelter.purge(); }
+      } catch (e) {
+        out.textContent = "오류: " + (e && e.message ? e.message : e);
+      }
+    };
+  });
+</script>
+</body>
+</html>

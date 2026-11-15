@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>12. Markov model 2 · 경제성평가 수업 | BigCEREE</title>
+  <link rel="stylesheet" href="../../../../style.css">
+</head>
+<body class="lesson-body">
+<!--
+  ▣ 12주차 수업 페이지 (06-cost-utility 템플릿 기반)
+  - 슬라이드 이미지/PDF는 /lessons/econ-12/ 폴더에 있습니다 (lessons/econ-12/README.md 참고).
+-->
+<script>
+  const LESSON = {
+    assetDir: "../../../../lessons/econ-12/",
+    slidePdf: "econ-12-slides.pdf",
+    slidePattern: n => `original-p${String(n).padStart(2, "0")}.webp`,
+    totalSlides: 26
+  };
+</script>
+
+<div class="lesson-topbar" id="top">
+  <div class="inner">
+    <a class="back-link" href="../../index.html">← 수업 목록</a>
+    <button class="tool-btn" id="btn-toc" type="button">목차</button>
+    <button class="tool-btn" id="btn-font-down" type="button" aria-label="글자 작게">가−</button>
+    <button class="tool-btn" id="btn-font-up" type="button" aria-label="글자 크게">가+</button>
+    <a class="tool-btn" id="btn-pdf" href="#" target="_blank" rel="noopener">원본 PDF</a>
+    <button class="tool-btn" id="btn-print" type="button">인쇄 / PDF</button>
+  </div>
+</div>
+
+<div class="lesson-layout" id="lesson-layout">
+  <nav class="lesson-toc" aria-label="목차">
+    <h2>목차</h2>
+    <ol>
+      <li><a href="#tp">전이확률</a></li>
+      <li><a href="#rate">Rates vs. Probabilities</a></li>
+      <li><a href="#reduction">감소 모수 (HR·OR·RR)</a></li>
+      <li><a href="#survival">모수적 생존함수</a></li>
+      <li><a href="#exp">Exponential 모형</a></li>
+      <li><a href="#weibull">Weibull 모형</a></li>
+      <li><a href="#memory">마코프 가정의 완화</a></li>
+      <li><a href="#practice">실습</a>
+        <ol>
+          <li><a href="#conv-practice">율·확률 변환</a></li>
+          <li><a href="#weibull-practice">시간 의존 전이확률</a></li>
+        </ol>
+      </li>
+      <li><a href="#refs">참고자료</a></li>
+    </ol>
+  </nav>
+
+  <main class="lesson-main">
+    <div class="breadcrumb">
+      <a href="../../../index.html">수업</a><span class="sep">›</span>
+      <a href="../../index.html">경제성평가</a><span class="sep">›</span>12주차
+    </div>
+    <h1>12. Markov model 2</h1>
+    <div class="lesson-meta">Markov Models II · 경제성평가 12주차</div>
+
+    <h2 id="tp">1. Transition probabilities</h2>
+    <p>11주차 예제의 전이행렬(Well→Well 0.6, →Disease 0.3, →Dead 0.1, Disease→Disease 0.8, →Dead 0.2)의 각 확률은 서로 다른 자료에서 옵니다. Well→Well은 질병 예방에 관한 역학 연구, Well→Disease는 질병 발생에 관한 코호트·레지스트리·임상시험, Disease→Dead는 임상시험·코호트·레지스트리·사망통계입니다.</p>
+    <details class="slides" data-from="5" data-to="5"><summary>원본 슬라이드 보기</summary></details>
+
+    <h2 id="rate">2. Rates vs. Probabilities</h2>
+    <table>
+      <tr><th></th><th>율 (rate)</th><th>확률 (probability)</th></tr>
+      <tr><td>뜻</td><td>단위 시간·단위 환자당 사건 수 (순간값)</td><td>주어진 기간에 사건이 일어날 가능성</td></tr>
+      <tr><td>범위</td><td>0 ~ ∞</td><td>0 ~ 1</td></tr>
+      <tr><td>연산</td><td>더하고 빼고 시간으로 나눌 수 있음</td><td>기간에 비례해 단순히 곱하거나 나눌 수 없음</td></tr>
+    </table>
+    <div class="formula">p = 1 − exp(−r·t) &nbsp;&nbsp;|&nbsp;&nbsp; r = −ln(1 − p) / t &nbsp;&nbsp;|&nbsp;&nbsp; 주기 확률 <sub>1</sub>p = 1 − (1 − <sub>t</sub>p)<sup>1/t</sup></div>
+    <p>예) 100명을 5년 추적해 10명에게 사건이 생기면 5년 확률은 0.1이지만, 1년 확률은 0.02가 아니라 1 − 0.9<sup>1/5</sup> ≈ 0.0209입니다. 20명이면 5년 확률 0.2 → 1년 율 0.0446 → 1년 확률 0.0436입니다. 실습 1에서 확인합니다.</p>
+    <details class="slides" data-from="6" data-to="9"><summary>원본 슬라이드 보기</summary></details>
+
+    <h2 id="reduction">3. 감소 모수 (Reduction parameters)</h2>
+    <table>
+      <tr><th>모수</th><th>얻는 연구</th><th>정의</th><th>모형에 넣는 법</th></tr>
+      <tr><td>위험비 (HR)</td><td>코호트·레지스트리, 생존분석</td><td>r<sub>tx</sub> / r<sub>notx</sub></td><td>율이므로 율에 곱한 뒤 확률로 바꿔 시점별 표로 사용</td></tr>
+      <tr><td>오즈비 (OR)</td><td>환자-대조군, 로지스틱 회귀 exp(b)</td><td>[p<sub>tx</sub>/(1−p<sub>tx</sub>)] / [p<sub>notx</sub>/(1−p<sub>notx</sub>)]</td><td>RR로 바꿔 사용</td></tr>
+      <tr><td>상대위험 (RR)</td><td>단면조사·레지스트리·코호트</td><td>p<sub>tx</sub> / p<sub>notx</sub></td><td>전이행렬의 확률에 곱해서 사용</td></tr>
+    </table>
+    <div class="formula">RR = OR / [(1 − p<sub>notx</sub>) + (p<sub>notx</sub> × OR)]</div>
+    <details class="slides" data-from="10" data-to="13"><summary>원본 슬라이드 보기</summary></details>
+
+    <h2 id="survival">4. 모수적 생존함수</h2>
+    <table>
+      <tr><th>함수</th><th>뜻</th></tr>
+      <tr><td>확률밀도함수 f(t)</td><td>시점 t에 사건이 일어날 확률</td></tr>
+      <tr><td>누적분포함수 F(t)</td><td>시점 t까지 사건이 일어날 누적 확률</td></tr>
+      <tr><td>생존함수 S(t) = Pr(T &gt; t) = 1 − F(t)</td><td>시점 t를 넘어 생존할 확률</td></tr>
+      <tr><td>위험함수 h(t) = f(t) / S(t)</td><td>t까지 생존했을 때 바로 사건이 일어날 순간 가능성 (율)</td></tr>
+      <tr><td>누적위험함수 H(t) = ∫<sub>0</sub><sup>t</sup> h(u) du</td><td>t까지 위험의 누적, S(t) = exp{−H(t)}</td></tr>
+    </table>
+    <p>한 함수를 알면 나머지를 모두 구할 수 있습니다(f(t) = h(t) × S(t)). 경제성평가에서는 지수 모형과 Weibull 모형을 주로 씁니다.</p>
+    <details class="slides" data-from="14" data-to="18"><summary>원본 슬라이드 보기</summary></details>
+
+    <h2 id="exp">5. Exponential 모형</h2>
+    <p>위험이 시간과 무관하게 일정한(h(t) = λ) 모형입니다: f(t) = λ exp(−λt), S(t) = exp(−λt), H(t) = λt. 주기 길이 u의 전이확률은 <strong>tp = 1 − exp(−λu)</strong>로 매 주기 같습니다. 예) 급성심근경색의 일간 위험 4.9119 × 10<sup>−5</sup>이면 연간 전이확률은 1 − exp(−4.9119×10<sup>−5</sup> × 365) ≈ <strong>1.78%</strong>.</p>
+    <details class="slides" data-from="19" data-to="20"><summary>원본 슬라이드 보기</summary></details>
+
+    <h2 id="weibull">6. Weibull 모형</h2>
+    <p>위험이 시간에 따라 변할 수 있는 모형입니다: h(t) = λγt<sup>γ−1</sup>, S(t) = exp(−λt<sup>γ</sup>), H(t) = λt<sup>γ</sup>. γ(형태 모수) &gt; 1이면 위험 증가, γ = 1이면 지수 모형, γ &lt; 1이면 위험 감소이며, λ는 척도 모수입니다. 주기 [t−u, t]의 전이확률은 다음과 같습니다.</p>
+    <div class="formula">tp(t) = 1 − exp{λ(t − u)<sup>γ</sup> − λt<sup>γ</sup>} = 1 − S(t) / S(t − u)</div>
+    <p>예) 916명, 사건 52건, 위험 노출 1,058,651일의 Weibull 생존분석(Stata) 결과 상수항 −8.0589, ln p = −0.3040 → λ = exp(−8.0589) ≈ 0.000316, γ ≈ 0.7378. 일 단위 시간으로 계산한 연간 전이확률은 1년 2.43%, 2년 1.63%, 10년 1.00%로 줄어듭니다. 실습 2에서 확인합니다.</p>
+    <details class="slides" data-from="21" data-to="23"><summary>원본 슬라이드 보기</summary></details>
+
+    <h2 id="memory">7. 마코프 가정 제약의 완화</h2>
+    <ul>
+      <li><strong>마코프 가정</strong>: 환자에게 과거에 무슨 일이 있었는지 기억하지 않습니다. 많은 연구에서는 문제가 되지 않지만, 암 모형처럼 국소·국부 재발 중 어느 상태에 얼마나 머물렀는지가 관해로의 전이에 영향을 주면 문제가 됩니다.</li>
+      <li><strong>준마코프 과정</strong>: 상태를 추가해 기억을 만듭니다. 터널 상태(관해 1년차 → 2년차 → 2년 이후)로 시간 의존성을 넣습니다.</li>
+      <li><strong>미시 시뮬레이션</strong>: 개인 단위 1차 몬테카를로 시뮬레이션으로 환자가 상태를 옮겨 가며 과거력을 쌓고, 그 과거력이 관해 같은 미래 사건을 일부 결정합니다. 많은 수의 개인을 모형에 넣습니다.</li>
+    </ul>
+    <details class="slides" data-from="24" data-to="26"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">원본 슬라이드 24·25쪽의 상태 전이도는 문헌 그림 참조 안내로 바꾸었습니다.</p>
+
+    <h2 id="practice">실습</h2>
+    <h3 id="conv-practice">실습 1. 율·확률·주기 변환과 OR → RR</h3>
+    <div class="widget">
+      <div class="widget-row"><label for="cp">t년 확률</label><input id="cp" class="num-in" inputmode="decimal" value="0.2"><label for="ct">t (년)</label><input id="ct" class="num-in" inputmode="decimal" value="5"></div>
+      <div class="widget-row"><label for="or">OR</label><input id="or" class="num-in" inputmode="decimal" value="0.5"><label for="p0">기저 확률 p<sub>notx</sub></label><input id="p0" class="num-in" inputmode="decimal" value="0.2"></div>
+      <table id="conv-table"><thead><tr><th>항목</th><th>값</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 1</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+p_t &lt;- 0.2; t &lt;- 5
+r &lt;- -log(1 - p_t) / t                       # 연간 율
+p1 &lt;- 1 - exp(-r)                            # 연간 확률 (= 1 - (1 - p_t)^(1/t))
+or_to_rr &lt;- function(or, p0) or / ((1 - p0) + p0 * or)
+round(c(rate = r, annual_prob = p1, naive = p_t / t, RR = or_to_rr(0.5, 0.2)), 4)
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+
+    <h3 id="weibull-practice">실습 2. 지수 vs. Weibull 연간 전이확률</h3>
+    <p>원본 슬라이드의 추정값(지수: 일간 위험 4.9119×10<sup>−5</sup>, Weibull: λ = 0.000316275, γ = 0.7378419, 시간 단위 일)으로 10년간 연간 전이확률을 계산합니다.</p>
+    <div class="widget">
+      <table id="wb-table"><thead><tr><th>연도</th><th>지수 모형</th><th>Weibull 모형</th></tr></thead><tbody></tbody></table>
+      <svg id="wb-chart" class="chart" viewBox="0 0 640 300" role="img" aria-label="연간 전이확률"></svg>
+    </div>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 2</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+lambda &lt;- 0.000316275; gamma &lt;- 0.7378419; daily &lt;- 4.9119e-5
+t &lt;- (1:10) * 365; u &lt;- 365
+tp_exp &lt;- 1 - exp(-daily * u)
+tp_wb  &lt;- 1 - exp(lambda * (t - u)^gamma - lambda * t^gamma)
+data.frame(year = 1:10, exponential = round(100 * tp_exp, 2), weibull = round(100 * tp_wb, 2))   # %
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+    <h2 id="refs">참고자료</h2>
+    <ul class="refs">
+      <li>Briggs A, Claxton K, Sculpher M. <em>Decision Modelling for Health Economic Evaluation</em>. Oxford University Press; 2006.</li>
+    </ul>
+  </main>
+</div>
+
+<script>
+  // ---------- 원본 슬라이드: 이미지가 없으면 안내 상자 표시 ----------
+  document.querySelectorAll("details.slides").forEach(d => {
+    const grid = document.createElement("div"); grid.className = "slide-grid";
+    for (let n = +d.dataset.from; n <= +d.dataset.to; n++) {
+      const fig = document.createElement("figure"); fig.className = "slide-fig";
+      const img = new Image(); img.loading = "lazy"; img.alt = `슬라이드 ${n}`;
+      img.src = LESSON.assetDir + LESSON.slidePattern(n);
+      img.onerror = () => { img.replaceWith(Object.assign(document.createElement("div"),
+        { className: "slide-missing", textContent: `슬라이드 ${n} 이미지 준비 중 (lessons 폴더에 ${LESSON.slidePattern(n)} 추가)` })); };
+      const cap = document.createElement("figcaption"); cap.textContent = `${n} / ${LESSON.totalSlides}`;
+      fig.append(img, cap); grid.append(fig);
+    }
+    d.append(grid);
+  });
+
+  // ---------- 상단 도구 ----------
+  document.getElementById("btn-pdf").href = LESSON.assetDir + LESSON.slidePdf;
+  document.getElementById("btn-print").onclick = () => window.print();
+  document.getElementById("btn-toc").onclick = () =>
+    document.getElementById("lesson-layout").classList.toggle("toc-hidden");
+  let scale = 1;
+  const applyScale = () => document.querySelector(".lesson-main").style.setProperty("--lesson-scale", scale);
+  document.getElementById("btn-font-up").onclick = () => { scale = Math.min(1.5, scale + 0.1); applyScale(); };
+  document.getElementById("btn-font-down").onclick = () => { scale = Math.max(0.8, scale - 0.1); applyScale(); };
+
+  // ---------- 목차: 현재 위치 강조 ----------
+  const tocLinks = [...document.querySelectorAll(".lesson-toc a")];
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) tocLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id));
+  }), { rootMargin: "-20% 0px -70% 0px" });
+  document.querySelectorAll(".lesson-main h2[id], .lesson-main h3[id]").forEach(h => io.observe(h));
+</script>
+<script>
+  const fmt = (x, d = 0) => Number(x).toLocaleString("ko-KR", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const $ = id => document.getElementById(id);
+  const NS = "http://www.w3.org/2000/svg";
+  function el(tag, attrs = {}, text) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; return e; }
+  function axes(svg, L, R, T, B, X, Y, xt, yt, xl, yl, yfmt = v => v) {
+    yt.forEach(t => { svg.append(el("line", { x1: L, x2: R, y1: Y(t), y2: Y(t), class: "grid" })); svg.append(el("text", { x: L - 10, y: Y(t) + 4, class: "tick", "text-anchor": "end" }, yfmt(t))); });
+    xt.forEach(t => svg.append(el("text", { x: X(t), y: B + 22, class: "tick", "text-anchor": "middle" }, t)));
+    svg.append(el("line", { x1: L, x2: L, y1: T, y2: B, class: "axis" })); svg.append(el("line", { x1: L, x2: R, y1: B, y2: B, class: "axis" }));
+    svg.append(el("text", { x: (L + R) / 2, y: B + 46, class: "axis-label", "text-anchor": "middle" }, xl));
+    svg.append(el("text", { x: 20, y: (T + B) / 2, class: "axis-label", "text-anchor": "middle", transform: `rotate(-90 20 ${(T + B) / 2})` }, yl));
+  }
+
+  // ---------- 실습 1 ----------
+  function runConv() {
+    const p = +$("cp").value, t = +$("ct").value, or = +$("or").value, p0 = +$("p0").value;
+    const ok = p > 0 && p < 1 && t > 0, r = -Math.log(1 - p) / t, p1 = 1 - Math.exp(-r), rr = or / ((1 - p0) + p0 * or);
+    $("conv-table").querySelector("tbody").innerHTML = ok ?
+      `<tr><td>연간 율 r = −ln(1 − p)/t</td><td>${r.toFixed(4)}</td></tr><tr><td>연간 확률 1 − exp(−r)</td><td><strong>${p1.toFixed(4)}</strong></td></tr>` +
+      `<tr><td>잘못된 단순 나눗셈 p/t</td><td>${(p / t).toFixed(4)}</td></tr><tr><td>RR = OR / [(1 − p<sub>0</sub>) + p<sub>0</sub>·OR]</td><td>${rr.toFixed(4)}</td></tr>`
+      : `<tr><td colspan="2"><span class="err">0 &lt; 확률 &lt; 1, t &gt; 0으로 입력하세요.</span></td></tr>`;
+  }
+  ["cp", "ct", "or", "p0"].forEach(id => $(id).addEventListener("input", runConv)); runConv();
+  // ---------- 실습 2 ----------
+  (function () {
+    const lam = 0.000316275, g = 0.7378419, daily = 4.9119e-5, u = 365, ex = 1 - Math.exp(-daily * u);
+    const wb = [...Array(10)].map((_, i) => { const t = (i + 1) * 365; return 1 - Math.exp(lam * (t - u) ** g - lam * t ** g); });
+    $("wb-table").querySelector("tbody").innerHTML = wb.map((v, i) => `<tr><td>${i + 1}</td><td>${(100 * ex).toFixed(2)}%</td><td>${(100 * v).toFixed(2)}%</td></tr>`).join("");
+    const svg = $("wb-chart"), L = 70, R = 610, T = 20, B = 240, X = y => L + y / 11 * (R - L), Y = p => B - p / 0.03 * (B - T);
+    axes(svg, L, R, T, B, X, Y, [1, 2, 4, 6, 8, 10], [0, 0.01, 0.02, 0.03], "연도", "연간 전이확률", v => (v * 100).toFixed(0) + "%");
+    svg.append(el("polyline", { points: wb.map((v, i) => `${X(i + 1)},${Y(ex)}`).join(" "), class: "line", style: "stroke:#94a3b8" }));
+    svg.append(el("polyline", { points: wb.map((v, i) => `${X(i + 1)},${Y(v)}`).join(" "), class: "line" }));
+    svg.append(el("text", { x: X(10), y: Y(ex) - 8, class: "val", "text-anchor": "end" }, "지수"));
+    svg.append(el("text", { x: X(10), y: Y(wb[9]) + 16, class: "val", "text-anchor": "end" }, "Weibull"));
+  })();
+
+</script>
+
+<script type="module">
+  const SETUP_R = `invisible(NULL)`;
+  let webRPromise = null;
+  function getWebR() {
+    if (!webRPromise) {
+      webRPromise = (async () => {
+        const { WebR } = await import("https://webr.r-wasm.org/latest/webr.mjs");
+        const webR = new WebR();
+        await webR.init();
+        await webR.evalRVoid(SETUP_R);
+        return webR;
+      })();
+    }
+    return webRPromise;
+  }
+
+  document.querySelectorAll(".r-cell").forEach(cell => {
+    const ta = cell.querySelector("textarea");
+    const out = cell.querySelector(".r-out");
+    const original = ta.value;
+    const autosize = () => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + 4 + "px"; };
+    autosize(); ta.addEventListener("input", autosize);
+
+    cell.querySelector(".reset-btn").onclick = () => { ta.value = original; autosize(); out.textContent = ""; cell.querySelectorAll("img.r-plot").forEach(i => i.remove()); };
+
+    cell.querySelector(".run-btn").onclick = async () => {
+      out.textContent = "R 준비 중… (처음 실행 시 10~30초)";
+      cell.querySelectorAll("img.r-plot").forEach(i => i.remove());
+      try {
+        const webR = await getWebR();
+        out.textContent = "실행 중…";
+        const shelter = await new webR.Shelter();
+        try {
+          const res = await shelter.captureR(ta.value, {
+            withAutoprint: true, captureStreams: true, captureConditions: false,
+            captureGraphics: { width: 640, height: 400 }
+          });
+          out.textContent = res.output.map(o => (o.type === "stderr" ? "⚠ " : "") + o.data).join("\n") || "(출력 없음)";
+          for (const bmp of res.images || []) {
+            const canvas = document.createElement("canvas");
+            canvas.width = bmp.width; canvas.height = bmp.height;
+            canvas.getContext("2d").drawImage(bmp, 0, 0);
+            const img = document.createElement("img");
+            img.className = "r-plot"; img.src = canvas.toDataURL("image/png");
+            img.style.cssText = "display:block;max-width:100%;background:#fff;border-top:1px solid #e2e8f0";
+            cell.append(img);
+          }
+        } finally { shelter.purge(); }
+      } catch (e) {
+        out.textContent = "오류: " + (e && e.message ? e.message : e);
+      }
+    };
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>5. 비용효과분석 · 경제성평가 수업 | BigCEREE</title>
+  <link rel="stylesheet" href="../../../../style.css">
+</head>
+<body class="lesson-body">
+<!--
+  ▣ 5주차 수업 페이지 (06-cost-utility 템플릿 기반)
+  - 슬라이드 이미지/PDF는 /lessons/econ-05/ 폴더에 있습니다.
+-->
+<script>
+  const LESSON = {
+    assetDir: "../../../../lessons/econ-05/",
+    slidePdf: "econ-05-slides.pdf",
+    slidePattern: n => `original-p${String(n).padStart(2, "0")}.webp`,
+    totalSlides: 34
+  };
+</script>
+
+<div class="lesson-topbar" id="top">
+  <div class="inner">
+    <a class="back-link" href="../../index.html">← 수업 목록</a>
+    <button class="tool-btn" id="btn-toc" type="button">목차</button>
+    <button class="tool-btn" id="btn-font-down" type="button" aria-label="글자 작게">가−</button>
+    <button class="tool-btn" id="btn-font-up" type="button" aria-label="글자 크게">가+</button>
+    <a class="tool-btn" id="btn-pdf" href="#" target="_blank" rel="noopener">원본 PDF</a>
+    <button class="tool-btn" id="btn-print" type="button">인쇄 / PDF</button>
+  </div>
+</div>
+
+<div class="lesson-layout" id="lesson-layout">
+  <nav class="lesson-toc" aria-label="목차">
+    <h2>목차</h2>
+    <ol>
+      <li><a href="#overview">비용효과분석 개요</a></li>
+      <li><a href="#effect">효과분석</a>
+        <ol>
+          <li><a href="#outcome">최종 vs. 중간 결과</a></li>
+          <li><a href="#source">효과 자료원</a></li>
+          <li><a href="#meta">메타분석</a></li>
+          <li><a href="#discount">효과의 할인</a></li>
+        </ol>
+      </li>
+      <li><a href="#result">결과 제시</a></li>
+      <li><a href="#extract">논문 추출</a></li>
+      <li><a href="#practice">실습</a>
+        <ol>
+          <li><a href="#icer-practice">ICER와 열등대안</a></li>
+          <li><a href="#nmb-practice">순편익(NMB·NHB)</a></li>
+        </ol>
+      </li>
+      <li><a href="#refs">참고자료</a></li>
+    </ol>
+  </nav>
+
+  <main class="lesson-main">
+    <div class="breadcrumb">
+      <a href="../../../index.html">수업</a><span class="sep">›</span>
+      <a href="../../index.html">경제성평가</a><span class="sep">›</span>5주차
+    </div>
+    <h1>5. 비용효과분석</h1>
+    <div class="lesson-meta">Cost-Effectiveness Analysis (CEA) · 경제성평가 5주차</div>
+
+    <h2 id="overview">1. 비용효과분석 개요</h2>
+    <p>CEA는 결과를 혈압(mmHg), 혈당, 콜레스테롤, 합병증 발생률, 연장된 수명 같은 <strong>자연단위</strong>로 측정합니다. 결과 지표가 같아야만 비교할 수 있어, 건강 프로그램과 환경 프로그램처럼 다른 공공사업과 직접 비교하기는 어렵습니다.</p>
+    <table>
+      <tr><th>방법</th><th>특징</th></tr>
+      <tr><td>비용효용분석 (CUA)</td><td>임상효과 개선, 부작용 감소, 삶의 질 개선처럼 여러 측면을 하나의 지표(QALY)로 평가</td></tr>
+      <tr><td>비용결과분석 (CCA)</td><td>대안별 비용과 결과를 합치지 않고 나열해 의사결정자가 직접 비교·교환. 교환(trade-off)이 명시적이지 않다는 문제가 있어 요즘은 CUA를 선호</td></tr>
+    </table>
+    <p>결과 지표는 치료의 궁극적 목표를 잘 반영해야 합니다. 임상적 개선으로 이어지기 어려운 단순한 생화학 표지는 부적절하며, 시험 기간에 측정하기 어려운 최종 결과는 모델링으로 추정합니다.</p>
+    <details class="slides" data-from="5" data-to="7"><summary>원본 슬라이드 보기</summary></details>
+
+    <h2 id="effect">2. 효과분석</h2>
+    <h3 id="outcome">1) 최종 결과 vs. 중간 결과</h3>
+    <ul>
+      <li><strong>최종 결과(final intended outcome)</strong>: 예) 항고혈압제의 사망률·뇌졸중 감소</li>
+      <li><strong>중간 결과(대리 결과)</strong>: 예) 혈압 감소. 최종 결과에 가까울수록 유용합니다.</li>
+      <li>중간 결과는 ① 최종 결과와의 관련성이 확립되었거나 ② 그 자체로 가치가 있을 때 쓸 수 있습니다. 가장 중요한 것은 의사결정자의 관심사에 맞는가이며, 급여 결정에 쓰려면 효과 한 단위 증가의 임상적·경제적 의미를 설명해야 합니다.</li>
+      <li>CEA 효과 지표의 예: 혈압 감소(mmHg), 혈청 콜레스테롤 감소율, 발견된 DVT 사례 수, 천식 무증상일, 얻은 생존연수.</li>
+      <li>통계적 유의성뿐 아니라 효과의 크기가 임상적으로 의미 있는지 봅니다. 암 선별검사에서 ‘발견된 사례 수’는 적절한 지표가 아닙니다. 선별검사의 목적은 조기 이환과 사망을 막는 것이고, 효과는 발견된 암의 유형과 병기에 따라 다르기 때문입니다.</li>
+    </ul>
+    <h3 id="source">2) 효과 자료원의 이슈</h3>
+    <ol>
+      <li><strong>질</strong>: 무작위 배정이 가장 중요하지만, 경제성평가에는 RCT 외 다양한 자료원이 필요합니다.</li>
+      <li><strong>적절성</strong>: 임상 자료가 분석 상황과 얼마나 가까운가. 질과 적절성의 기준은 서로 어긋날 수 있습니다(효능 vs. 효과).</li>
+      <li><strong>포괄성</strong>: 사용한 임상 자료가 의학 문헌 전체를 대표하는가.</li>
+    </ol>
+    <table>
+      <tr><th>근거 수준</th><th>연구</th><th>권고 등급</th></tr>
+      <tr><td>I</td><td>결과가 명확한 대규모 무작위시험(오류 위험 낮음)</td><td>A</td></tr>
+      <tr><td>II</td><td>결과가 불확실한 소규모 무작위시험(오류 위험 중등도 이상)</td><td>B</td></tr>
+      <tr><td>III</td><td>비무작위, 동시대 대조군</td><td>C</td></tr>
+      <tr><td>IV</td><td>비무작위, 역사적 대조군</td><td>D</td></tr>
+      <tr><td>V</td><td>대조군 없음, 증례 연구</td><td>E</td></tr>
+    </table>
+    <ul>
+      <li><strong>RCT</strong>: 참가자를 무작위로 실험군·대조군에 배정. 무작위화, 이중맹검, ITT 분석(분모 = 무작위 배정된 전원) 여부로 질을 평가합니다.</li>
+      <li><strong>환자-대조군 연구</strong>: 질병이 있는 군과 적절한 대조군의 과거 노출 정보를 비교합니다.</li>
+      <li><strong>코호트 연구</strong>: 처치군과 비처치군의 결과를 비교하되, 무작위 배정이 아니라는 점이 RCT와 다릅니다.</li>
+    </ul>
+    <h3 id="meta">3) 메타분석</h3>
+    <p>기존 연구 결과를 통계적으로 결합하는 방법입니다. 시험 결과가 서로 모순되거나 개별 시험이 너무 작을 때 필요하며, 먼저 양적 통합이 바람직한지 검토합니다. 단계: 체계적 검색 → 선정기준 정의 → 문헌 선정 → 자료 요약 → 통계 분석(이질성 검증 포함). 개별 연구의 원자료를 모아 분석하는 것도 메타분석입니다.</p>
+    <ul>
+      <li><strong>이질성</strong>: 임상적·통계적 이질성을 고려하며, χ² 검정(Q 통계량)과 숲 그림으로 확인합니다. 랜덤효과모형을 썼다고 이질성 문제가 해결되는 것은 아니며, 하위군 분석·메타회귀로 원인을 찾아야 합니다.</li>
+      <li><strong>고정효과모형</strong>: 모든 연구가 같은 효과크기를 추정한다고 가정하며, 표본이 큰 연구에 가중치가 더 갑니다.</li>
+      <li><strong>랜덤효과모형</strong>: 연구 간 분산과 연구 내 분산을 모두 인정해 더 보수적이고 신뢰구간이 넓습니다. 연구 간 분산이 크면 큰 연구와 작은 연구의 가중치가 비슷해집니다. 이질성이 거의 없으면 두 모형의 결과는 같습니다.</li>
+      <li><strong>민감도 분석</strong>: 선정기준, 특정 연구 포함·배제, 미발표 문헌 포함 여부, 통합 방법을 바꿔 결과가 안정적인지 확인합니다.</li>
+    </ul>
+    <h3 id="discount">4) 효과의 할인</h3>
+    <ul>
+      <li><strong>반대 견해</strong>: 사람이 건강을 투자하거나 거래한다고 보기 어렵고, 미래 세대의 건강에 낮은 가중치를 주게 되며, 실증적으로도 사람들은 건강을 돈과 다른 율로 할인합니다.</li>
+      <li><strong>찬성 견해</strong>: 효과를 할인하지 않으면 추론이 비일관적이 되어 결정을 계속 미루게 됩니다(비용만 할인하면 항상 내년에 시작하는 편이 유리). 보건의료를 다른 부문과 다르게 다루면 전체 자원배분이 일관되지 않습니다.</li>
+      <li><strong>현재 원칙</strong>: 비용과 효과를 같은 율로 모두 할인하는 것이 대세입니다. 영국은 한때 비용 6%·효과 1.5%를 권고했다가 둘 다 3.5%로 바꾸었습니다. 국내 의약품 경제성평가 지침의 할인율은 4.5%(2021년)이며, WHO CEA 지침은 3%를 기본으로 비용 6%·효과 0%를 민감도 분석에 씁니다.</li>
+    </ul>
+    <details class="slides" data-from="8" data-to="28"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">원본 슬라이드 10·13·17·20쪽의 교재·문헌 표와 그림은 저작권 보호를 위해 생략하고 위 표와 설명으로 대신했습니다.</p>
+
+    <h2 id="result">3. 비용효과분석 결과 제시</h2>
+    <ul>
+      <li><strong>평균 비용효과비(CER = C/E)</strong>: 대안들이 서로 독립적일 때 씁니다.</li>
+      <li><strong>증분 비용효과비(ICER = (C<sub>1</sub> − C<sub>0</sub>) / (E<sub>1</sub> − E<sub>0</sub>))</strong>: 대안들이 서로 대체 관계일 때 씁니다. 규모수익 불변과 가분성을 가정하며, 규모에 따라 비용효과비가 달라지면 규모가 다른 프로그램은 서로 배타적인 대안으로 정의합니다.</li>
+    </ul>
+    <p><strong>ICER 계산 순서</strong></p>
+    <ol>
+      <li>비용 순으로 대안을 나열합니다.</li>
+      <li>비용은 오르는데 효과는 같거나 떨어지는 대안(<strong>강한 열등</strong>, strongly dominated)을 뺍니다.</li>
+      <li>차례로 ICER를 구합니다.</li>
+      <li>다음 대안보다 ICER가 큰 대안(<strong>약한 열등</strong> = 확장우월, weakly dominated)을 빼고 ICER를 다시 구합니다.</li>
+    </ol>
+    <p><strong>순편익</strong> — 임계값 N<sub>T</sub>에서 ΔC/ΔE &lt; N<sub>T</sub>는 다음과 같습니다.</p>
+    <div class="formula">순화폐편익 NMB = N<sub>T</sub>·ΔE − ΔC &gt; 0 &nbsp;&nbsp;|&nbsp;&nbsp; 순건강편익 NHB = ΔE − ΔC / N<sub>T</sub> &gt; 0 &nbsp;→ 비용효과적</div>
+    <details class="slides" data-from="29" data-to="33"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">원본 슬라이드 31·32쪽의 표와 그림은 문헌 참조 안내로 바꾸고, 같은 숫자로 실습 1을 만들었습니다.</p>
+
+    <h2 id="extract">4. 논문 추출</h2>
+    <p>공유 시트(주소는 수업 공지 참조)에 공유를 신청한 뒤 연구 관심(RI)과 연구 질문(RQ)을 작성합니다.</p>
+    <details class="slides" data-from="34" data-to="34"><summary>원본 슬라이드 보기</summary></details>
+
+    <h2 id="practice">실습</h2>
+    <p>원본 슬라이드 31쪽의 예제(비용: 만 원, 효과: QALY)를 씁니다. A의 ICER는 무처치(비용 0, 효과 0) 대비입니다. 아래 R 코드로 같은 결과를 확인합니다.</p>
+    <h3 id="icer-practice">실습 1. ICER와 열등대안</h3>
+    <div class="widget">
+      <table id="icer-table"><thead><tr><th>대안</th><th>비용 (만 원)</th><th>QALY</th><th>판정</th><th>ICER (만 원/QALY)</th></tr></thead><tbody></tbody></table>
+      <svg id="plane" class="chart" viewBox="0 0 640 340" role="img" aria-label="비용효과 평면의 효율 경계선"></svg>
+      <p class="widget-help">선은 효율 경계선, 회색 점은 열등대안입니다(D: 강한 열등, ED: 약한 열등).</p>
+    </div>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 1</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+st &lt;- data.frame(alt = c("O", "A", "B", "C", "D", "E"),           # O: 무처치
+                 cost = c(0, 1000, 1500, 2000, 2500, 2800),
+                 qaly = c(0, 0.5, 0.7, 0.7, 0.9, 1.0))           # 원본 슬라이드 31쪽 예제
+st &lt;- st[order(st$cost, -st$qaly), ]; st$status &lt;- ""
+for (i in seq_len(nrow(st)))                                     # 강한 열등
+  if (any(st$cost[-i] &lt;= st$cost[i] &amp; st$qaly[-i] &gt;= st$qaly[i] &amp;
+          (st$cost[-i] &lt; st$cost[i] | st$qaly[-i] &gt; st$qaly[i]))) st$status[i] &lt;- "D"
+repeat {                                                         # 약한 열등(확장우월)
+  k &lt;- which(st$status == ""); icer &lt;- c(NA, diff(st$cost[k]) / diff(st$qaly[k]))
+  bad &lt;- which(head(icer, -1) &gt; tail(icer, -1)); if (!length(bad)) break
+  st$status[k[bad[1]]] &lt;- "ED"
+}
+k &lt;- which(st$status == ""); st$icer &lt;- NA
+st$icer[k] &lt;- c(NA, diff(st$cost[k]) / diff(st$qaly[k]))
+st$icer &lt;- round(st$icer); st
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+
+    <h3 id="nmb-practice">실습 2. 순편익(NMB · NHB)</h3>
+    <p>임계값을 바꾸면 순화폐편익(NMB = λ·E − C)이 가장 큰 대안이 바뀝니다. 이 선택은 실습 1의 ICER 규칙(ICER ≤ λ인 효율적 대안 중 가장 효과가 큰 것)과 항상 같습니다.</p>
+    <div class="widget">
+      <div class="widget-row"><label for="nt">임계값 λ</label><input id="nt" type="range" min="1000" max="6000" step="100" value="3000"><strong id="nt-value"></strong></div>
+      <table id="nmb-table"><thead><tr><th>대안</th><th>NMB = λ·E − C (만 원)</th><th>NHB = E − C/λ (QALY)</th></tr></thead><tbody></tbody></table>
+      <p class="verdict ok" id="nmb-verdict" aria-live="polite"></p>
+    </div>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 2</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+alt &lt;- c("O", "A", "B", "C", "D", "E"); cost &lt;- c(0, 1000, 1500, 2000, 2500, 2800); qaly &lt;- c(0, 0.5, 0.7, 0.7, 0.9, 1.0)
+lambda &lt;- 3000
+nmb &lt;- lambda * qaly - cost; nhb &lt;- qaly - cost / lambda
+data.frame(alt, NMB = nmb, NHB = round(nhb, 4))
+alt[which.max(nmb)]       # λ에서 선택할 대안
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+
+    <h2 id="refs">참고자료</h2>
+    <ul class="refs">
+      <li>Drummond MF, Sculpher MJ, Claxton K, Stoddart GL, Torrance GW. <em>Methods for the Economic Evaluation of Health Care Programmes</em>. 4th ed. Oxford University Press; 2015.</li>
+      <li>건강보험심사평가원. 의약품 경제성평가 지침 — <a href="https://www.hira.or.kr/ebooksc/ebook_617/ebook_617_202012220247334120.pdf" target="_blank" rel="noopener">PDF</a></li>
+    </ul>
+  </main>
+</div>
+
+<script>
+  // ---------- 원본 슬라이드: 이미지가 없으면 안내 상자 표시 ----------
+  document.querySelectorAll("details.slides").forEach(d => {
+    const grid = document.createElement("div"); grid.className = "slide-grid";
+    for (let n = +d.dataset.from; n <= +d.dataset.to; n++) {
+      const fig = document.createElement("figure"); fig.className = "slide-fig";
+      const img = new Image(); img.loading = "lazy"; img.alt = `슬라이드 ${n}`;
+      img.src = LESSON.assetDir + LESSON.slidePattern(n);
+      img.onerror = () => { img.replaceWith(Object.assign(document.createElement("div"),
+        { className: "slide-missing", textContent: `슬라이드 ${n} 이미지 준비 중 (lessons 폴더에 ${LESSON.slidePattern(n)} 추가)` })); };
+      const cap = document.createElement("figcaption"); cap.textContent = `${n} / ${LESSON.totalSlides}`;
+      fig.append(img, cap); grid.append(fig);
+    }
+    d.append(grid);
+  });
+
+  // ---------- 상단 도구 ----------
+  document.getElementById("btn-pdf").href = LESSON.assetDir + LESSON.slidePdf;
+  document.getElementById("btn-print").onclick = () => window.print();
+  document.getElementById("btn-toc").onclick = () =>
+    document.getElementById("lesson-layout").classList.toggle("toc-hidden");
+  let scale = 1;
+  const applyScale = () => document.querySelector(".lesson-main").style.setProperty("--lesson-scale", scale);
+  document.getElementById("btn-font-up").onclick = () => { scale = Math.min(1.5, scale + 0.1); applyScale(); };
+  document.getElementById("btn-font-down").onclick = () => { scale = Math.max(0.8, scale - 0.1); applyScale(); };
+
+  // ---------- 목차: 현재 위치 강조 ----------
+  const tocLinks = [...document.querySelectorAll(".lesson-toc a")];
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) tocLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id));
+  }), { rootMargin: "-20% 0px -70% 0px" });
+  document.querySelectorAll(".lesson-main h2[id], .lesson-main h3[id]").forEach(h => io.observe(h));
+</script>
+
+<script>
+  const fmt = (x, d = 0) => Number(x).toLocaleString("ko-KR", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const $ = id => document.getElementById(id);
+  const NS = "http://www.w3.org/2000/svg";
+  function el(tag, attrs = {}, text) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; return e; }
+  const ALTS = [{ s: "O", cost: 0, qaly: 0 }, { s: "A", cost: 1000, qaly: 0.5 }, { s: "B", cost: 1500, qaly: 0.7 }, { s: "C", cost: 2000, qaly: 0.7 },
+                { s: "D", cost: 2500, qaly: 0.9 }, { s: "E", cost: 2800, qaly: 1.0 }]; // 원본 슬라이드 31쪽 예제
+  function frontier(list) {
+    const st = list.map(x => ({ ...x, status: "", icer: null })).sort((a, b) => a.cost - b.cost || b.qaly - a.qaly);
+    st.forEach((x, i) => { if (st.some((y, j) => j !== i && y.cost <= x.cost && y.qaly >= x.qaly && (y.cost < x.cost || y.qaly > x.qaly))) x.status = "D"; });
+    for (;;) {
+      const k = st.filter(x => x.status === "");
+      const icer = k.map((x, i) => i === 0 ? null : (x.cost - k[i - 1].cost) / (x.qaly - k[i - 1].qaly));
+      let bad = -1; for (let i = 1; i < k.length - 1; i++) if (icer[i] > icer[i + 1]) { bad = i; break; }
+      if (bad < 0) { k.forEach((x, i) => x.icer = icer[i]); break; }
+      k[bad].status = "ED";
+    }
+    return st;
+  }
+  const FR = frontier(ALTS);
+  const label = { "": "효율적", D: "강한 열등 (D)", ED: "약한 열등 (ED)" };
+  $("icer-table").querySelector("tbody").innerHTML = FR.map(x =>
+    `<tr${x.status ? ' style="color:var(--muted)"' : ""}><td>${x.s === "O" ? "O (무처치)" : x.s}</td><td>${fmt(x.cost)}</td><td>${x.qaly.toFixed(1)}</td><td>${label[x.status]}</td><td>${x.icer === null ? (x.status ? "—" : "기준") : fmt(Math.round(x.icer))}</td></tr>`).join("");
+  (function draw() {
+    const svg = $("plane"), L = 80, R = 610, T = 25, B = 280, X = q => L + q / 1.1 * (R - L), Y = c => B - c / 3000 * (B - T);
+    [0, 1000, 2000, 3000].forEach(t => { svg.append(el("line", { x1: L, x2: R, y1: Y(t), y2: Y(t), class: "grid" })); svg.append(el("text", { x: L - 10, y: Y(t) + 4, class: "tick", "text-anchor": "end" }, fmt(t))); });
+    [0, 0.25, 0.5, 0.75, 1.0].forEach(t => svg.append(el("text", { x: X(t), y: B + 22, class: "tick", "text-anchor": "middle" }, t)));
+    svg.append(el("line", { x1: L, x2: L, y1: T, y2: B, class: "axis" })); svg.append(el("line", { x1: L, x2: R, y1: B, y2: B, class: "axis" }));
+    svg.append(el("text", { x: (L + R) / 2, y: B + 48, class: "axis-label", "text-anchor": "middle" }, "효과 (QALY)"));
+    svg.append(el("text", { x: 22, y: (T + B) / 2, class: "axis-label", "text-anchor": "middle", transform: `rotate(-90 22 ${(T + B) / 2})` }, "비용 (만 원)"));
+    svg.append(el("polyline", { points: FR.filter(x => !x.status).map(x => `${X(x.qaly)},${Y(x.cost)}`).join(" "), class: "line" }));
+    FR.forEach(x => { svg.append(el("circle", { cx: X(x.qaly), cy: Y(x.cost), r: 6, class: x.status ? "dot" : "ce-dot ok", style: x.status ? "fill:#cbd5e1;stroke:#94a3b8" : "" }));
+      svg.append(el("text", { x: X(x.qaly) + 9, y: Y(x.cost) - 7, class: "val" }, x.s + (x.status ? ` (${x.status})` : ""))); });
+  })();
+  // ---------- 실습 2 ----------
+  const ntEl = $("nt");
+  function runNmb() {
+    const lam = +ntEl.value; ntEl.style.setProperty("--fill", ((lam - 1000) / 5000 * 100) + "%");
+    $("nt-value").textContent = fmt(lam) + "만 원/QALY";
+    const rows = ALTS.map(x => ({ ...x, nmb: lam * x.qaly - x.cost, nhb: x.qaly - x.cost / lam }));
+    const best = rows.reduce((a, b) => (b.nmb > a.nmb ? b : a));
+    $("nmb-table").querySelector("tbody").innerHTML = rows.map(x => `<tr><td>${x.s === "O" ? "O (무처치)" : x.s}${x === best ? " ★" : ""}</td><td>${fmt(x.nmb)}</td><td>${x.nhb.toFixed(4)}</td></tr>`).join("");
+    const ok = FR.filter(x => !x.status && x.s !== "O" && x.icer <= lam);
+    const rule = ok.length ? ok[ok.length - 1].s : "O";
+    $("nmb-verdict").textContent = `λ = ${fmt(lam)}: NMB 최대 대안 ${best.s} · ICER 규칙으로 고른 대안 ${rule}`;
+  }
+  ntEl.oninput = runNmb; runNmb();
+</script>
+
+<script type="module">
+  const SETUP_R = `invisible(NULL)`;
+  let webRPromise = null;
+  function getWebR() {
+    if (!webRPromise) {
+      webRPromise = (async () => {
+        const { WebR } = await import("https://webr.r-wasm.org/latest/webr.mjs");
+        const webR = new WebR();
+        await webR.init();
+        await webR.evalRVoid(SETUP_R);
+        return webR;
+      })();
+    }
+    return webRPromise;
+  }
+
+  document.querySelectorAll(".r-cell").forEach(cell => {
+    const ta = cell.querySelector("textarea");
+    const out = cell.querySelector(".r-out");
+    const original = ta.value;
+    const autosize = () => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + 4 + "px"; };
+    autosize(); ta.addEventListener("input", autosize);
+
+    cell.querySelector(".reset-btn").onclick = () => { ta.value = original; autosize(); out.textContent = ""; cell.querySelectorAll("img.r-plot").forEach(i => i.remove()); };
+
+    cell.querySelector(".run-btn").onclick = async () => {
+      out.textContent = "R 준비 중… (처음 실행 시 10~30초)";
+      cell.querySelectorAll("img.r-plot").forEach(i => i.remove());
+      try {
+        const webR = await getWebR();
+        out.textContent = "실행 중…";
+        const shelter = await new webR.Shelter();
+        try {
+          const res = await shelter.captureR(ta.value, {
+            withAutoprint: true, captureStreams: true, captureConditions: false,
+            captureGraphics: { width: 640, height: 400 }
+          });
+          out.textContent = res.output.map(o => (o.type === "stderr" ? "⚠ " : "") + o.data).join("\n") || "(출력 없음)";
+          for (const bmp of res.images || []) {
+            const canvas = document.createElement("canvas");
+            canvas.width = bmp.width; canvas.height = bmp.height;
+            canvas.getContext("2d").drawImage(bmp, 0, 0);
+            const img = document.createElement("img");
+            img.className = "r-plot"; img.src = canvas.toDataURL("image/png");
+            img.style.cssText = "display:block;max-width:100%;background:#fff;border-top:1px solid #e2e8f0";
+            cell.append(img);
+          }
+        } finally { shelter.purge(); }
+      } catch (e) {
+        out.textContent = "오류: " + (e && e.message ? e.message : e);
+      }
+    };
+  });
+</script>
+</body>
+</html>

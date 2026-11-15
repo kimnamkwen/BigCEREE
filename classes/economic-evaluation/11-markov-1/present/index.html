@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>11. Markov model 1 · 경제성평가 수업 | BigCEREE</title>
+  <link rel="stylesheet" href="../../../../style.css">
+</head>
+<body class="lesson-body">
+<!--
+  ▣ 11주차 수업 페이지 (06-cost-utility 템플릿 기반)
+  - 슬라이드 이미지/PDF는 /lessons/econ-11/ 폴더에 있습니다 (lessons/econ-11/README.md 참고).
+-->
+<script>
+  const LESSON = {
+    assetDir: "../../../../lessons/econ-11/",
+    slidePdf: "econ-11-slides.pdf",
+    slidePattern: n => `original-p${String(n).padStart(2, "0")}.webp`,
+    totalSlides: 38
+  };
+</script>
+
+<div class="lesson-topbar" id="top">
+  <div class="inner">
+    <a class="back-link" href="../../index.html">← 수업 목록</a>
+    <button class="tool-btn" id="btn-toc" type="button">목차</button>
+    <button class="tool-btn" id="btn-font-down" type="button" aria-label="글자 작게">가−</button>
+    <button class="tool-btn" id="btn-font-up" type="button" aria-label="글자 크게">가+</button>
+    <a class="tool-btn" id="btn-pdf" href="#" target="_blank" rel="noopener">원본 PDF</a>
+    <button class="tool-btn" id="btn-print" type="button">인쇄 / PDF</button>
+  </div>
+</div>
+
+<div class="lesson-layout" id="lesson-layout">
+  <nav class="lesson-toc" aria-label="목차">
+    <h2>목차</h2>
+    <ol>
+      <li><a href="#intro">Introduction</a></li>
+      <li><a href="#building">Markov model building</a></li>
+      <li><a href="#solutions">Markov 모형의 해결점</a></li>
+      <li><a href="#example">예제: Basic model</a></li>
+      <li><a href="#practice">실습</a>
+        <ol>
+          <li><a href="#matrix-practice">전이행렬 곱하기</a></li>
+          <li><a href="#cohort-practice">마코프 코호트 분석</a></li>
+        </ol>
+      </li>
+      <li><a href="#refs">참고자료</a></li>
+    </ol>
+  </nav>
+
+  <main class="lesson-main">
+    <div class="breadcrumb">
+      <a href="../../../index.html">수업</a><span class="sep">›</span>
+      <a href="../../index.html">경제성평가</a><span class="sep">›</span>11주차
+    </div>
+    <h1>11. Markov model 1</h1>
+    <div class="lesson-meta">Markov Models I · 경제성평가 11주차</div>
+
+    <h2 id="intro">1. Introduction</h2>
+    <p>건강 문제는 바이러스 감염에서 암 발생까지(HIV → AIDS 약 12년, B·C형 간염 → 간부전·간암 약 30년, HPV → 자궁경부암 약 25년) 전 과정을 직접 관찰하기 어렵고, 모든 예방·치료를 RCT로 연구할 수도 없습니다. 쓸 수 있는 자료는 대리 표지나 중간 결과가 많아, 여러 자료를 합성해야 정책 결정을 할 수 있습니다.</p>
+    <p>C형 간염 선별검사처럼 단기 결정은 의사결정나무로 충분하지만, 사건이 <strong>반복</strong>되거나 사건이 일어나는 <strong>시간</strong>이 중요하면 나무가 매년 가지를 쳐서 지나치게 복잡해집니다(bushy tree). 마코프 모형은 이런 한계를 넘기 위한 방법으로, 위험이 시간에 따라 변하고 사건 시점이 중요하며 사건이 여러 번 일어날 때 유용합니다. 행렬대수에서 나왔고, Markov chain 연구로 알려진 러시아 수학자 안드레이 마르코프의 이름을 땄습니다.</p>
+    <details class="slides" data-from="5" data-to="9"><summary>원본 슬라이드 보기</summary></details>
+
+    <h2 id="building">2. Markov model building</h2>
+    <ol>
+      <li><strong>건강상태 정하기</strong>: 문헌·전문가 의견·연구자 판단으로 정하며, 자료가 있다는 이유로 상태를 정해서는 안 됩니다. 흡수 상태(사망처럼 나갈 수 없음), 비흡수 상태(회복·악화로 나갈 수 있음), 일시 상태(터널: 자기 자신으로 돌아오지 않음)가 있습니다.</li>
+      <li><strong>전이 정하기</strong>: 상태 전이도를 그리고(예: Well→Sick, Well→Dead, Sick→Sick, Sick→Dead, Dead→Dead), 각 경로의 근거(교과서·논문, 전문가 자문, 연구자 판단)를 적습니다.</li>
+      <li><strong>주기(cycle) 정하기</strong>: 질병의 경과와 사건 발생 시간을 반영해, 급성 질환은 짧게, 만성 질환은 길게 정합니다.</li>
+      <li><strong>전이확률 추정</strong>: 한 주기 동안 한 상태에서 다른 상태로 옮겨 갈 확률. 사망은 생명표, 그 밖에 임상시험·레지스트리·후향적 자료, 문헌, 전문가 의견, 가정을 씁니다.</li>
+      <li><strong>상태별 효용·비용 부여</strong>: 살아 있는 상태에 머문 주기 수의 합이 기대여명, 여기에 상태별 효용을 가중하면 질보정 기대여명입니다.</li>
+      <li><strong>평가</strong>: ① 기본행렬 해법(마코프 체인에서만, 거의 쓰지 않음), ② <strong>코호트 시뮬레이션</strong>(TreeAge 기본값, 매 주기 분포인 Markov trace 제공, 반주기 보정 가능), ③ 1차 몬테카를로 시뮬레이션(개인을 한 명씩 통과시켜 1만–100만 번 반복, 평균은 코호트 결과와 비슷하고 분포·분산도 추정)</li>
+      <li><strong>민감도 분석</strong>: 변이·이질성·불확실성을 구분하고, 모수 불확실성(전이확률, 효과, 비용)과 모형 구조·가정의 불확실성을 다룹니다.</li>
+    </ol>
+    <p>행렬로 쓰면 주기 k의 상태 분포는 p<sub>k</sub> = p<sub>k−1</sub> · A = p<sub>0</sub> · A<sup>k</sup>입니다(각 행의 합 = 1). 실습 1에서 확인합니다.</p>
+    <details class="slides" data-from="11" data-to="26"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">원본 슬라이드 16·17·18·23·25쪽의 문헌 그림과 표는 출처 표기가 없어 안내로 바꾸었습니다.</p>
+
+    <h2 id="solutions">3. Markov 모형의 장점과 해결점</h2>
+    <p>CD4·혈압 같은 중간 결과를 생존연수·QALY 같은 임상 결과로 바꿀 수 있고, 치료의 장기 효과를 분석에 넣을 수 있습니다. 대신 다음 문제를 다뤄야 합니다.</p>
+    <ul>
+      <li><strong>마코프 가정(무기억성)</strong>: 다음 전이는 현재 상태에만 달려 있고 과거를 기억하지 못합니다. 과거력 상태(history state)나 터널 상태를 추가해 해결합니다.</li>
+      <li><strong>인구 이질성</strong>: 위험요인별로 상태를 나눕니다(예: 가족력 유무에 따른 우울 상태).</li>
+      <li><strong>반주기 보정</strong>: 전이가 주기 시작이나 끝에만 일어난다고 가정하면 과소·과대추정이 생기므로, 주기 중간에 일어난다고 보고 첫 주기와 마지막 주기의 보상을 절반으로 계산합니다.</li>
+    </ul>
+    <details class="slides" data-from="28" data-to="31"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">원본 슬라이드 31쪽의 반주기 보정 그림은 문헌 그림 참조 안내로 바꾸었습니다.</p>
+
+    <h2 id="example">4. 예제: Basic model</h2>
+    <table>
+      <tr><th>단계</th><th>내용</th></tr>
+      <tr><td>건강상태</td><td>무증상(Well), 진행(Disease), 사망(Dead)</td></tr>
+      <tr><td>전이</td><td>시작은 Well. Well→Disease, Well→Dead, Disease→Dead, Dead→Dead</td></tr>
+      <tr><td>주기</td><td>1년</td></tr>
+      <tr><td>전이확률</td><td>Well→Well 0.6, Well→Disease 0.3, Well→Dead 0.1 / Disease→Disease 0.8, Disease→Dead 0.2</td></tr>
+      <tr><td>비용·효용</td><td>비용: Well 0, Disease 100,000, Dead 0 / 효용: Well 1.00, Disease 0.60, Dead 0</td></tr>
+      <tr><td>계산</td><td>1,000명 코호트, 10주기 → 생존연수 합 약 5,610, 총비용 약 3억 1,194만, QALY 약 4,362.5</td></tr>
+    </table>
+    <p>예제의 “Cost per life year gained = 55,601”과 “Cost per QALY = 71,503”은 한 전략의 총비용을 총 생존연수·총 QALY로 나눈 <strong>평균 비용효과비</strong>입니다. 대안끼리 비교할 때는 5주기의 ICER를 씁니다.</p>
+    <details class="slides" data-from="33" data-to="38"><summary>원본 슬라이드 보기</summary></details>
+    <p class="textbook-ref">원본 슬라이드 35쪽의 전이확률표는 문헌 표 참조 안내로 바꾸었고, 숫자는 위 표와 실습 2에 있습니다.</p>
+
+    <h2 id="practice">실습</h2>
+    <h3 id="matrix-practice">실습 1. 전이행렬 곱하기</h3>
+    <p>원본 슬라이드 21쪽의 3상태 예시(Well·Sick·Dead)입니다. 모두 Well에서 시작합니다.</p>
+    <div class="widget">
+      <table id="mat-table"><thead><tr><th>주기</th><th>Well</th><th>Sick</th><th>Dead</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 1</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+A &lt;- matrix(c(0.3, 0.5, 0.2,
+              0.4, 0.2, 0.4,
+              0,   0,   1), nrow = 3, byrow = TRUE,
+            dimnames = list(c("Well", "Sick", "Dead"), c("Well", "Sick", "Dead")))
+p &lt;- c(1, 0, 0); trace &lt;- NULL
+for (k in 1:10) { p &lt;- p %*% A; trace &lt;- rbind(trace, p) }
+rownames(trace) &lt;- paste("cycle", 1:10); round(trace, 3)
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+
+    <h3 id="cohort-practice">실습 2. 마코프 코호트 분석 (Basic model)</h3>
+    <p>원본 슬라이드 35–37쪽의 예제입니다. 기본 설정(할인 0%, 반주기 보정 없음)이 슬라이드 계산과 같습니다. 할인율과 반주기 보정을 바꿔 결과가 어떻게 달라지는지 보세요.</p>
+    <div class="widget">
+      <div class="widget-row"><label for="dr">할인율 (%)</label><input id="dr" class="num-in" inputmode="decimal" value="0">
+        <label><input type="checkbox" id="hcc"> 반주기 보정</label></div>
+      <table id="mk-table"><thead><tr><th>주기</th><th>Well</th><th>Disease</th><th>Dead</th><th>생존연수</th><th>비용</th><th>QALY</th></tr></thead><tbody></tbody></table>
+      <p class="verdict ok" id="mk-verdict"></p>
+      <svg id="mk-chart" class="chart" viewBox="0 0 640 300" role="img" aria-label="Markov trace"></svg>
+      <p class="widget-help">Markov trace: 주기별 상태 분포(초록 Well, 주황 Disease, 회색 Dead).</p>
+    </div>
+    <div class="r-cell">
+      <div class="r-head"><span class="r-label">R · 실습 2</span>
+        <button class="tool-btn run-btn" type="button">실행</button>
+        <button class="tool-btn reset-btn" type="button">처음으로</button></div>
+      <textarea spellcheck="false">
+P &lt;- matrix(c(0.6, 0.3, 0.1,
+              0,   0.8, 0.2,
+              0,   0,   1), 3, byrow = TRUE)
+cost &lt;- c(0, 100000, 0); util &lt;- c(1, 0.6, 0)
+markov &lt;- function(cycles = 10, r = 0, hcc = FALSE) {
+  s &lt;- c(1000, 0, 0); tr &lt;- matrix(NA, cycles + 1, 3); tr[1, ] &lt;- s
+  for (t in 1:cycles) { s &lt;- s %*% P; tr[t + 1, ] &lt;- s }
+  w &lt;- rep(1, cycles + 1); if (hcc) w[c(1, cycles + 1)] &lt;- 0.5     # 반주기 보정
+  d &lt;- 1 / (1 + r)^(0:cycles)
+  c_t &lt;- tr %*% cost; c_t[1] &lt;- 0                                  # 비용은 1주기부터
+  c(LY = sum(w * d * (tr[, 1] + tr[, 2])), Cost = sum(w * d * c_t),
+    QALY = sum(w * d * (tr %*% util)))
+}
+res &lt;- markov()
+round(c(res, cost_per_LY = res[["Cost"]] / res[["LY"]], cost_per_QALY = res[["Cost"]] / res[["QALY"]]), 3)
+</textarea>
+      <pre class="r-out"></pre>
+    </div>
+    <h2 id="refs">참고자료</h2>
+    <ul class="refs">
+      <li>Drummond MF, Sculpher MJ, Claxton K, Stoddart GL, Torrance GW. <em>Methods for the Economic Evaluation of Health Care Programmes</em>. 4th ed. Oxford University Press; 2015.</li>
+      <li>Briggs A, Claxton K, Sculpher M. <em>Decision Modelling for Health Economic Evaluation</em>. Oxford University Press; 2006.</li>
+    </ul>
+  </main>
+</div>
+
+<script>
+  // ---------- 원본 슬라이드: 이미지가 없으면 안내 상자 표시 ----------
+  document.querySelectorAll("details.slides").forEach(d => {
+    const grid = document.createElement("div"); grid.className = "slide-grid";
+    for (let n = +d.dataset.from; n <= +d.dataset.to; n++) {
+      const fig = document.createElement("figure"); fig.className = "slide-fig";
+      const img = new Image(); img.loading = "lazy"; img.alt = `슬라이드 ${n}`;
+      img.src = LESSON.assetDir + LESSON.slidePattern(n);
+      img.onerror = () => { img.replaceWith(Object.assign(document.createElement("div"),
+        { className: "slide-missing", textContent: `슬라이드 ${n} 이미지 준비 중 (lessons 폴더에 ${LESSON.slidePattern(n)} 추가)` })); };
+      const cap = document.createElement("figcaption"); cap.textContent = `${n} / ${LESSON.totalSlides}`;
+      fig.append(img, cap); grid.append(fig);
+    }
+    d.append(grid);
+  });
+
+  // ---------- 상단 도구 ----------
+  document.getElementById("btn-pdf").href = LESSON.assetDir + LESSON.slidePdf;
+  document.getElementById("btn-print").onclick = () => window.print();
+  document.getElementById("btn-toc").onclick = () =>
+    document.getElementById("lesson-layout").classList.toggle("toc-hidden");
+  let scale = 1;
+  const applyScale = () => document.querySelector(".lesson-main").style.setProperty("--lesson-scale", scale);
+  document.getElementById("btn-font-up").onclick = () => { scale = Math.min(1.5, scale + 0.1); applyScale(); };
+  document.getElementById("btn-font-down").onclick = () => { scale = Math.max(0.8, scale - 0.1); applyScale(); };
+
+  // ---------- 목차: 현재 위치 강조 ----------
+  const tocLinks = [...document.querySelectorAll(".lesson-toc a")];
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) tocLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id));
+  }), { rootMargin: "-20% 0px -70% 0px" });
+  document.querySelectorAll(".lesson-main h2[id], .lesson-main h3[id]").forEach(h => io.observe(h));
+</script>
+<script>
+  const fmt = (x, d = 0) => Number(x).toLocaleString("ko-KR", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const $ = id => document.getElementById(id);
+  const NS = "http://www.w3.org/2000/svg";
+  function el(tag, attrs = {}, text) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; return e; }
+  function axes(svg, L, R, T, B, X, Y, xt, yt, xl, yl, yfmt = v => v) {
+    yt.forEach(t => { svg.append(el("line", { x1: L, x2: R, y1: Y(t), y2: Y(t), class: "grid" })); svg.append(el("text", { x: L - 10, y: Y(t) + 4, class: "tick", "text-anchor": "end" }, yfmt(t))); });
+    xt.forEach(t => svg.append(el("text", { x: X(t), y: B + 22, class: "tick", "text-anchor": "middle" }, t)));
+    svg.append(el("line", { x1: L, x2: L, y1: T, y2: B, class: "axis" })); svg.append(el("line", { x1: L, x2: R, y1: B, y2: B, class: "axis" }));
+    svg.append(el("text", { x: (L + R) / 2, y: B + 46, class: "axis-label", "text-anchor": "middle" }, xl));
+    svg.append(el("text", { x: 20, y: (T + B) / 2, class: "axis-label", "text-anchor": "middle", transform: `rotate(-90 20 ${(T + B) / 2})` }, yl));
+  }
+
+  // ---------- 실습 1 ----------
+  (function () {
+    const A = [[0.3, 0.5, 0.2], [0.4, 0.2, 0.4], [0, 0, 1]]; let p = [1, 0, 0]; const rows = [];
+    for (let k = 1; k <= 10; k++) { p = [0, 1, 2].map(j => p.reduce((s, v, i) => s + v * A[i][j], 0)); rows.push(`<tr><td>${k}</td>${p.map(v => `<td>${v.toFixed(3)}</td>`).join("")}</tr>`); }
+    $("mat-table").querySelector("tbody").innerHTML = rows.join("");
+  })();
+  // ---------- 실습 2 ----------
+  const P = [[0.6, 0.3, 0.1], [0, 0.8, 0.2], [0, 0, 1]], COST = [0, 100000, 0], UTIL = [1, 0.6, 0];
+  function markov(cycles = 10, r = 0, hcc = false) {
+    let s = [1000, 0, 0]; const tr = [s];
+    for (let t = 1; t <= cycles; t++) { s = [0, 1, 2].map(j => s.reduce((a, v, i) => a + v * P[i][j], 0)); tr.push(s); }
+    let LY = 0, C = 0, Q = 0; const rows = [];
+    tr.forEach((x, t) => { const w = hcc && (t === 0 || t === cycles) ? 0.5 : 1, d = 1 / (1 + r) ** t;
+      const ly = x[0] + x[1], c = t === 0 ? 0 : x.reduce((a, v, i) => a + v * COST[i], 0), q = x.reduce((a, v, i) => a + v * UTIL[i], 0);
+      LY += w * d * ly; C += w * d * c; Q += w * d * q; rows.push({ t, x, ly, c, q }); });
+    return { LY, C, Q, rows, tr };
+  }
+  function runMk() {
+    const r = Math.max(0, +$("dr").value / 100 || 0), m = markov(10, r, $("hcc").checked);
+    $("mk-table").querySelector("tbody").innerHTML = m.rows.map(o =>
+      `<tr><td>${o.t}</td>${o.x.map(v => `<td>${fmt(v, 0)}</td>`).join("")}<td>${fmt(o.ly, 0)}</td><td>${fmt(o.c, 0)}</td><td>${fmt(o.q, 1)}</td></tr>`).join("");
+    $("mk-verdict").textContent = `생존연수 ${fmt(m.LY, 3)} · 총비용 ${fmt(m.C, 0)} · QALY ${fmt(m.Q, 3)} → 생존연수당 ${fmt(m.C / m.LY, 0)}, QALY당 ${fmt(m.C / m.Q, 0)}`;
+    const svg = $("mk-chart"); svg.replaceChildren();
+    const L = 70, R = 610, T = 20, B = 240, X = t => L + t / 10 * (R - L), Y = n => B - n / 1000 * (B - T);
+    axes(svg, L, R, T, B, X, Y, [0, 2, 4, 6, 8, 10], [0, 250, 500, 750, 1000], "주기 (년)", "인원 (명)");
+    [["#16a34a", 0], ["#f59e0b", 1], ["#94a3b8", 2]].forEach(([c, j]) => svg.append(el("polyline", { points: m.tr.map((x, t) => `${X(t)},${Y(x[j])}`).join(" "), class: "line", style: `stroke:${c}` })));
+  }
+  $("dr").addEventListener("input", runMk); $("hcc").addEventListener("change", runMk); runMk();
+
+</script>
+
+<script type="module">
+  const SETUP_R = `invisible(NULL)`;
+  let webRPromise = null;
+  function getWebR() {
+    if (!webRPromise) {
+      webRPromise = (async () => {
+        const { WebR } = await import("https://webr.r-wasm.org/latest/webr.mjs");
+        const webR = new WebR();
+        await webR.init();
+        await webR.evalRVoid(SETUP_R);
+        return webR;
+      })();
+    }
+    return webRPromise;
+  }
+
+  document.querySelectorAll(".r-cell").forEach(cell => {
+    const ta = cell.querySelector("textarea");
+    const out = cell.querySelector(".r-out");
+    const original = ta.value;
+    const autosize = () => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + 4 + "px"; };
+    autosize(); ta.addEventListener("input", autosize);
+
+    cell.querySelector(".reset-btn").onclick = () => { ta.value = original; autosize(); out.textContent = ""; cell.querySelectorAll("img.r-plot").forEach(i => i.remove()); };
+
+    cell.querySelector(".run-btn").onclick = async () => {
+      out.textContent = "R 준비 중… (처음 실행 시 10~30초)";
+      cell.querySelectorAll("img.r-plot").forEach(i => i.remove());
+      try {
+        const webR = await getWebR();
+        out.textContent = "실행 중…";
+        const shelter = await new webR.Shelter();
+        try {
+          const res = await shelter.captureR(ta.value, {
+            withAutoprint: true, captureStreams: true, captureConditions: false,
+            captureGraphics: { width: 640, height: 400 }
+          });
+          out.textContent = res.output.map(o => (o.type === "stderr" ? "⚠ " : "") + o.data).join("\n") || "(출력 없음)";
+          for (const bmp of res.images || []) {
+            const canvas = document.createElement("canvas");
+            canvas.width = bmp.width; canvas.height = bmp.height;
+            canvas.getContext("2d").drawImage(bmp, 0, 0);
+            const img = document.createElement("img");
+            img.className = "r-plot"; img.src = canvas.toDataURL("image/png");
+            img.style.cssText = "display:block;max-width:100%;background:#fff;border-top:1px solid #e2e8f0";
+            cell.append(img);
+          }
+        } finally { shelter.purge(); }
+      } catch (e) {
+        out.textContent = "오류: " + (e && e.message ? e.message : e);
+      }
+    };
+  });
+</script>
+</body>
+</html>
