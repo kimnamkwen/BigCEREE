@@ -394,3 +394,36 @@ details.slides > summary { cursor: pointer; padding: 9px 14px; color: var(--prim
   .lesson-main { box-shadow: none; padding: 0; }
   details.slides { display: none; }
 }
+
+/* ---------- 실습 위젯 ---------- */
+.widget { border: 1px solid #dbe5ef; border-radius: 12px; padding: 18px 20px; margin: 14px 0 12px; background: #fbfdff; }
+.widget-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.widget-row label { font-weight: 600; color: #1e293b; }
+.widget input#profile { width: 130px; font: 600 1.05em ui-monospace, Menlo, Consolas, monospace; letter-spacing: .12em; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; }
+.widget input#profile[aria-invalid="true"] { border-color: #dc2626; background: #fef2f2; }
+.widget select { padding: 7px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font: inherit; background: #fff; }
+.widget-help { color: var(--muted); font-size: .88em; margin: 8px 0 0; }
+.widget-detail { color: #334155; font-size: .92em; margin: 6px 0 0; font-variant-numeric: tabular-nums; }
+.bigresult { font: 700 2em ui-monospace, Menlo, Consolas, monospace; color: #1e3a8a; margin-top: 12px; }
+.bigresult small { font: 400 .45em 'Noto Sans KR', system-ui, sans-serif; color: var(--muted); margin-left: 10px; }
+.bigresult .err { color: #dc2626; font-size: .6em; }
+.widget table { margin-top: 0; font-variant-numeric: tabular-nums; }
+.widget td:nth-child(n+2) { text-align: right; }
+.chart { width: 100%; max-width: 680px; display: block; margin: 12px 0 0; }
+.chart .grid { stroke: #eef2f7; }
+.chart .axis { stroke: #94a3b8; }
+.chart .tick { fill: #64748b; font-size: 12px; }
+.chart .axis-label { fill: #475569; font-size: 13px; }
+.chart .area { fill: #dbe7f5; opacity: .8; }
+.chart .line { fill: none; stroke: #1e4f91; stroke-width: 2.5; }
+.chart .dot { fill: #1e4f91; }
+.chart .val { fill: #334155; font-size: 12px; }
+.chart .ce-zone { fill: #dcfce7; opacity: .7; }
+.chart .lambda-line { stroke: #dc2626; stroke-width: 2; stroke-dasharray: 6 5; }
+.chart .icer-line { stroke: #1e4f91; stroke-width: 2.5; }
+.chart .line-label { fill: #1e4f91; font-size: 13px; font-weight: 700; }
+.chart .line-label.lam { fill: #dc2626; }
+.chart .ce-dot.ok { fill: #16a34a; } .chart .ce-dot.no { fill: #dc2626; }
+.verdict { margin: 10px 0 0; padding: 8px 12px; border-radius: 8px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.verdict.ok { background: #dcfce7; color: #166534; } .verdict.no { background: #fee2e2; color: #991b1b; }
+input#lambda { flex: 1 1 260px; accent-color: var(--primary); }
