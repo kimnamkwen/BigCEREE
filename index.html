@@ -46,7 +46,6 @@
     </footer>
   </div>
   <script src="publications-data.js"></script>
-  <script src="research.js"></script>
   <script src="publications.js"></script>
   <script>
     const menuData = {
@@ -179,8 +178,7 @@
               진단 기준 설정, 통계적 접근 방법, 분석 절차 안내.<br>
               대표 진단검사 연구 사례와 결과 요약 포함.
             </p>
-          `},
-          ...economicResearchSections
+          `}
         ]
       },
       bigdata: {
@@ -301,19 +299,18 @@
     const mainMenuEl = document.getElementById('main-menu');
     const sideNavEl = document.getElementById('side-nav');
     const mainContentEl = document.getElementById('main-content');
+    const publicationsHash = '#center/paper';
     let currentMenu = "center";
     let currentSubKey = menuData[currentMenu].submenus[0].key;
 
     function renderSideNav(menuKey) {
-      const focusWasInSideNav = sideNavEl.contains(document.activeElement);
       sideNavEl.innerHTML = `<h2>${menuData[menuKey].label} 세부 목록</h2>
         <ul class="nav-list">
           ${menuData[menuKey].submenus.map(sub => {
-            const selected = sub.key === currentSubKey;
-            return `<li><a class="nav-link${selected ? ' active' : ''}"${selected ? ' aria-current="page"' : ''} href="#${sub.permalink || `${menuKey}/${sub.key}`}">${sub.label}</a></li>`;
+            const href = menuKey === 'center' && sub.key === 'paper' ? publicationsHash : '#';
+            return `<li><a class="nav-link${sub.key === currentSubKey ? ' active' : ''}" data-sub="${sub.key}" href="${href}">${sub.label}</a></li>`;
           }).join('')}
         </ul>`;
-      if (focusWasInSideNav) sideNavEl.querySelector('[aria-current="page"]')?.focus({ preventScroll: true });
     }
 
     function renderContent(menuKey, subKey) {
@@ -327,25 +324,43 @@
     function handleMainMenuClick(e) {
       const target = e.target.closest('.menu-item');
       if (!target) return;
+      Array.from(mainMenuEl.querySelectorAll('.menu-item')).forEach(mi => mi.classList.remove('active'));
+      target.classList.add('active');
       const menuKey = target.getAttribute('data-menu');
       if (!menuKey) return; // 링크형 메뉴(수업)는 페이지 이동
-      if (location.hash !== '#' + menuKey) location.hash = menuKey;
+      history.replaceState(null, '', '#' + menuKey);
+      currentMenu = menuKey;
+      currentSubKey = menuData[menuKey].submenus[0].key;
+      renderSideNav(menuKey);
+      renderContent(menuKey, currentSubKey);
+    }
+
+    function handleSubMenuClick(e) {
+      const link = e.target.closest('.nav-link');
+      if (!link) return;
+      e.preventDefault();
+      Array.from(sideNavEl.querySelectorAll('.nav-link')).forEach(item => item.classList.remove('active'));
+      link.classList.add('active');
+      currentSubKey = link.getAttribute('data-sub');
+      if (currentMenu === 'center' && currentSubKey === 'paper') {
+        history.replaceState(null, '', publicationsHash);
+      } else if (location.hash === publicationsHash) {
+        history.replaceState(null, '', '#center');
+      }
+      renderContent(currentMenu, currentSubKey);
     }
 
     mainMenuEl.addEventListener('click', handleMainMenuClick);
+    sideNavEl.addEventListener('click', handleSubMenuClick);
 
     // 주소의 해시(#lecture 등)로 특정 메뉴를 바로 열 수 있게 함
     // 예: index.html#lecture  → 수업 페이지 등 하위 페이지의 상단 메뉴에서 사용
     function openMenuFromHash() {
-      const hash = location.hash.slice(1);
-      const [menuKey, subKey] = hash.split('/');
-      const permalinkMenu = Object.keys(menuData).find(key =>
-        menuData[key].submenus.some(sub => sub.permalink === hash));
-      const key = permalinkMenu || menuKey;
+      const opensPublications = location.hash === publicationsHash;
+      const key = opensPublications ? 'center' : location.hash.slice(1);
       if (!Object.hasOwn(menuData, key)) return false;
-      const submenus = menuData[key].submenus;
       currentMenu = key;
-      currentSubKey = (submenus.find(sub => permalinkMenu ? sub.permalink === hash : sub.key === subKey) || submenus[0]).key;
+      currentSubKey = opensPublications ? 'paper' : menuData[key].submenus[0].key;
       Array.from(mainMenuEl.querySelectorAll('.menu-item')).forEach(mi =>
         mi.classList.toggle('active', mi.getAttribute('data-menu') === key));
       renderSideNav(key);
