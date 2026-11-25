@@ -35,7 +35,7 @@ node scripts/publications.mjs collect > publication-candidates.json
 
 1. 센터가 관리하는 Google Cloud 프로젝트에서 Drive API를 활성화합니다. 수집 전용 서비스 계정을 만들고 운영용 Drive 폴더에 **뷰어**로 공유합니다.
 2. GitHub OIDC를 Google Cloud Workload Identity Federation에 연결합니다. 신뢰 조건은 이 저장소의 `main` 브랜치에서 실행되는 `.github/workflows/publications.yml`로 제한하고, 서비스 계정에 해당 연동 주체의 `roles/iam.workloadIdentityUser`를 부여합니다. [GitHub와 Google Cloud OIDC 연결](https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-google-cloud-platform)
-3. **Settings → Secrets and variables → Actions → Variables**에 `PUBLICATIONS_DRIVE_FOLDER_ID`, `PUBLICATIONS_DRIVE_WORKLOAD_IDENTITY_PROVIDER`(제공자 전체 리소스 이름), `PUBLICATIONS_DRIVE_SERVICE_ACCOUNT`(서비스 계정 이메일)를 등록합니다. Drive 연결 전에는 PubMed와 Crossref 수집부터 사용할 수 있습니다.
+3. **Settings → Secrets and variables → Actions**에서 `PUBLICATIONS_DRIVE_FOLDER_ID`는 **Secrets**에, `PUBLICATIONS_DRIVE_WORKLOAD_IDENTITY_PROVIDER`(제공자 전체 리소스 이름)와 `PUBLICATIONS_DRIVE_SERVICE_ACCOUNT`(서비스 계정 이메일)는 **Variables**에 등록합니다. Drive 연결 전에는 PubMed와 Crossref 수집부터 사용할 수 있습니다.
 
 테스트용 폴더는 로컬 시험에서만 사용합니다. 로컬 수집 실행에는 `PUBLICATIONS_DRIVE_FOLDER_ID`와 Drive 읽기 권한이 있는 단기 토큰을 `PUBLICATIONS_DRIVE_ACCESS_TOKEN`으로 전달합니다. 확인이 필요한 PDF를 보고서의 `fileRef`와 대조할 때는 PDF 파일 ID의 SHA-256 해시 앞 16자리를 사용합니다.
 

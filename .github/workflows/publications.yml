@@ -50,7 +50,7 @@ jobs:
           node-version: '24'
       - run: npm ci --prefix scripts --ignore-scripts --no-audit --no-fund
       - name: Authenticate for Google Drive
-        if: vars.PUBLICATIONS_DRIVE_FOLDER_ID != '' && vars.PUBLICATIONS_DRIVE_WORKLOAD_IDENTITY_PROVIDER != '' && vars.PUBLICATIONS_DRIVE_SERVICE_ACCOUNT != ''
+        if: vars.PUBLICATIONS_DRIVE_WORKLOAD_IDENTITY_PROVIDER != '' && vars.PUBLICATIONS_DRIVE_SERVICE_ACCOUNT != ''
         id: auth
         continue-on-error: true
         uses: google-github-actions/auth@v3
@@ -64,7 +64,7 @@ jobs:
       - name: Collect publication candidates
         id: collect
         env:
-          PUBLICATIONS_DRIVE_FOLDER_ID: ${{ vars.PUBLICATIONS_DRIVE_FOLDER_ID }}
+          PUBLICATIONS_DRIVE_FOLDER_ID: ${{ secrets.PUBLICATIONS_DRIVE_FOLDER_ID }}
           PUBLICATIONS_DRIVE_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
         run: node scripts/publications.mjs collect > "$RUNNER_TEMP/publication-candidates.json"
       - name: Upload review report
