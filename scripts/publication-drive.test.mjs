@@ -105,3 +105,33 @@ test('missing Drive permission leaves other source results available', async t =
   assert.equal(result.additions.length, 1);
   assert.equal(result.sources[0].error, 'Google Drive returned HTTP 403');
 });
+
+test('a full approved KCI citation identifies a duplicate even when Crossref has no DOI record', async t => {
+  const approved = {
+    title: 'A KCI case report',
+    authors: 'Jane Kim, Alex Lee',
+    journal: 'Example Journal',
+    year: 2026,
+    volume: '40',
+    issue: '1',
+    pages: '78–84',
+    kciUrl: 'https://www.kci.go.kr/kciportal/landing/article.kci?arti_id=ART000001234',
+  };
+  const firstPage = approved.title + '. Jane Kim and Alex Lee. 40.1:78-84, 2026. DOI: 10.1234/kci';
+  t.mock.method(globalThis, 'fetch', async url => {
+    if (url.hostname === 'api.crossref.org') return new Response(null, { status: 404 });
+    if (url.pathname.endsWith('/example-folder')) return Response.json({ mimeType: 'application/vnd.google-apps.folder' });
+    if (url.pathname.endsWith('/files')) return Response.json({ files: [{ id: 'complete' }, { id: 'title-only' }] });
+    const text = url.pathname.endsWith('/complete') ? firstPage : approved.title + '. DOI: 10.1234/other';
+    return new Response(makePdf(text));
+  });
+
+  const catalog = [approved];
+  const source = await loadDrivePublications({ folderId: 'example-folder', accessToken: 'temporary-token', catalog });
+  assert.deepEqual(source.records.map(({ paper, evidence }) => ({ paper, evidence })),
+    [{ paper: approved, evidence: 'approved-kci-citation' }]);
+  const report = reconcileCandidates(catalog, [{ name: 'Google Drive', ...source }]);
+  assert.equal(report.additions.length, 0);
+  assert.equal(report.changes.length, 0);
+  assert.deepEqual(report.review.map(item => item.reason), ['drive-citation-unconfirmed']);
+});

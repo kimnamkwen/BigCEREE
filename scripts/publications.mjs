@@ -149,7 +149,7 @@ async function run() {
   const folderId = process.env.PUBLICATIONS_DRIVE_FOLDER_ID;
   const accessToken = process.env.PUBLICATIONS_DRIVE_ACCESS_TOKEN;
   if (folderId || accessToken) {
-    sources.push({ name: 'Google Drive', load: () => loadDrivePublications({ folderId, accessToken }) });
+    sources.push({ name: 'Google Drive', load: () => loadDrivePublications({ folderId, accessToken, catalog: publicationCatalog }) });
   }
   const results = await Promise.allSettled(sources.map(source => source.load()));
   const report = reconcileCandidates(publicationCatalog, results.map((result, index) => {

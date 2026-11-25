@@ -29,7 +29,7 @@ node scripts/publications.mjs collect > publication-candidates.json
 
 #### Google Drive로 누락 논문 제출
 
-교수님은 전용 비공개 폴더에 PDF를 올립니다. 수집 작업은 PDF 첫 페이지와 문서 메타데이터에서 DOI를 찾고 Crossref 제목과 대조합니다. 서지가 확인되면 기존 PubMed·Crossref 결과와 함께 후보로 검토할 수 있습니다. 스캔본, DOI가 없는 PDF, 25 MiB를 넘는 PDF와 서지가 불확실한 PDF는 확인이 필요한 사유를 표시합니다. 보고서에는 공개 서지정보와 파일 참조 코드가 들어갑니다. PDF와 파일명, Drive 링크는 전용 폴더에서 관리합니다.
+교수님은 전용 비공개 폴더에 PDF를 올립니다. 수집 작업은 PDF 첫 페이지와 문서 메타데이터에서 DOI를 찾고 Crossref 제목과 대조합니다. Crossref에서 논문을 확인할 수 없는 경우, PDF의 제목·저자·연도·권·호·쪽수가 기존 KCI 논문과 모두 일치하면 이미 게시된 논문으로 처리합니다. 신규 서지가 확인되면 기존 PubMed·Crossref 결과와 함께 후보로 검토할 수 있습니다. 스캔본, DOI가 없는 PDF, 25 MiB를 넘는 PDF와 서지가 불확실한 PDF는 확인이 필요한 사유를 표시합니다. 보고서에는 공개 서지정보와 파일 참조 코드가 들어갑니다. PDF와 파일명, Drive 링크는 전용 폴더에서 관리합니다.
 
 운영 환경을 연결하려면 다음을 설정합니다.
 

@@ -66,26 +66,46 @@ async function readPdfCitation(bytes) {
   }
 }
 
-async function resolvePdfCitation({ text, title, dois }) {
+function matchesCatalogCitation(paper, titleMatches, pageText) {
+  if (!paper.kciUrl || paper.doi || !titleMatches(paper.title)) return false;
+
+  const location = [paper.volume, paper.issue, paper.pages].map(normalizedTitle);
+  if (location.some(part => !/^\d+$/.test(part))) return false;
+  const coordinate = location.join('');
+  if (!pageText.includes(paper.year + coordinate) && !pageText.includes(coordinate + paper.year)) return false;
+
+  const authors = paper.authors.split(',').map(normalizedTitle);
+  return authors.every(author => author.length >= 2 && pageText.includes(author));
+}
+
+async function resolvePdfCitation({ text, title, dois }, catalog) {
   if (!dois.length) return { reason: 'drive-no-doi' };
   if (dois.length > 8) return { reason: 'drive-ambiguous-doi' };
 
   const titleInMetadata = normalizedTitle(title);
   const titleInText = normalizedTitle(text);
+  const titleMatches = candidateTitle => {
+    const key = normalizedTitle(candidateTitle?.replace(/<\/?[a-z][^>]*>/gi, ''));
+    return Boolean(key && (key === titleInMetadata || titleInText.includes(key)));
+  };
   const results = await Promise.allSettled(dois.map(findCrossrefPublication));
   const matches = results.flatMap(result => {
-    if (result.status !== 'fulfilled' || !result.value) return [];
-    const publishedTitle = result.value.paper.title?.replace(/<\/?[a-z][^>]*>/gi, '');
-    const key = normalizedTitle(publishedTitle);
-    return key && (key === titleInMetadata || titleInText.includes(key)) ? [result.value] : [];
+    if (result.status !== 'fulfilled' || !titleMatches(result.value?.paper.title)) return [];
+    return [result.value];
   });
   if (matches.length > 1) return { reason: 'drive-ambiguous-doi' };
   if (results.some(result => result.status === 'rejected')) return { reason: 'drive-doi-lookup-failed' };
   if (matches.length === 1) return { record: matches[0] };
+
+  // Some approved KCI records have no DOI. Reuse their verified citation only
+  // when the PDF also confirms the author list and publication coordinates.
+  const approved = catalog.filter(paper => matchesCatalogCitation(paper, titleMatches, titleInText));
+  if (approved.length > 1) return { reason: 'drive-ambiguous-citation' };
+  if (approved.length === 1) return { record: { paper: approved[0], evidence: 'approved-kci-citation' } };
   return { reason: 'drive-citation-unconfirmed' };
 }
 
-export async function loadDrivePublications({ folderId, accessToken }) {
+export async function loadDrivePublications({ folderId, accessToken, catalog = [] }) {
   if (!folderId || !accessToken) throw new Error('Google Drive folder ID or access token is missing');
 
   const files = await listPdfs(folderId, accessToken);
@@ -123,7 +143,7 @@ export async function loadDrivePublications({ folderId, accessToken }) {
       review.push({ fileRef, reason: 'drive-unreadable-pdf' });
       continue;
     }
-    const result = await resolvePdfCitation(citation);
+    const result = await resolvePdfCitation(citation, catalog);
     if (result.record) {
       records.push({ ...result.record, fileRef });
     } else {
