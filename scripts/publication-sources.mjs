@@ -1,13 +1,19 @@
 const professorOrcid = '0000-0001-6969-1231';
 const knownAffiliations = /(?:pusan|busan) national university|wonkwang univ(?:ersity)?\b|national institute for korean medicine development/i;
+const crossrefEndpoint = 'https://api.crossref.org/works';
 
-async function requestMetadata(endpoint, params) {
+export function normalizedTitle(value) {
+  return String(value ?? '').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '');
+}
+
+async function requestMetadata(endpoint, params, { allowMissing = false } = {}) {
   const url = new URL(endpoint);
   url.search = new URLSearchParams(params);
   const response = await fetch(url, {
     headers: { 'User-Agent': 'BigCEREE publications (+https://github.com/kimnamkwen/BigCEREE)' },
     signal: AbortSignal.timeout(30000),
   });
+  if (allowMissing && response.status === 404) return null;
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   return response.json();
 }
@@ -79,12 +85,11 @@ export async function loadPubMedPublications() {
 }
 
 export async function loadCrossrefPublications() {
-  const endpoint = 'https://api.crossref.org/works';
   const records = [];
   let cursor = '*';
 
   while (cursor) {
-    const { message } = await requestMetadata(endpoint, {
+    const { message } = await requestMetadata(crossrefEndpoint, {
       cursor, rows: '100', filter: `orcid:${professorOrcid},type:journal-article`,
       select: 'DOI,title,author,published,container-title,volume,issue,page,article-number',
     });
@@ -95,17 +100,35 @@ export async function loadCrossrefPublications() {
   }
 
   return records.filter(record => record.author?.some(author => normalizeOrcid(author.ORCID) === professorOrcid))
-    .map(record => ({
-      evidence: 'orcid',
-      paper: {
-        year: Number(record.published?.['date-parts']?.[0]?.[0]),
-        title: record.title?.[0],
-        authors: record.author.map(author => author.name || [author.given, author.family].filter(Boolean).join(' ')).filter(Boolean).join(', '),
-        journal: record['container-title']?.[0],
-        volume: record.volume,
-        issue: record.issue,
-        pages: record.page || record['article-number'],
-        doi: record.DOI,
-      },
-    }));
+    .map(record => ({ evidence: 'orcid', paper: crossrefCitation(record) }));
+}
+
+function crossrefCitation(record) {
+  return {
+    year: Number(record.published?.['date-parts']?.[0]?.[0]),
+    title: record.title?.[0],
+    authors: (record.author || []).map(author => author.name || [author.given, author.family].filter(Boolean).join(' ')).filter(Boolean).join(', '),
+    journal: record['container-title']?.[0],
+    volume: record.volume,
+    issue: record.issue,
+    pages: record.page || record['article-number'],
+    doi: record.DOI,
+  };
+}
+
+export async function findCrossrefPublication(doi) {
+  const path = doi.split('/').map(encodeURIComponent).join('/');
+  const response = await requestMetadata(`${crossrefEndpoint}/${path}`, undefined, { allowMissing: true });
+  const record = response?.message;
+  if (record?.type !== 'journal-article' || record.DOI?.toLowerCase() !== doi.toLowerCase()) return null;
+
+  const authors = (record.author || []).map(author => ({
+    firstName: author.given,
+    lastName: author.family,
+    authorId: author.ORCID ? { type: 'ORCID', value: author.ORCID } : undefined,
+    authorAffiliationDetailsList: {
+      authorAffiliation: (author.affiliation || []).map(({ name }) => ({ affiliation: name })),
+    },
+  }));
+  return { evidence: authorEvidence(authors) || 'unverified', paper: crossrefCitation(record) };
 }

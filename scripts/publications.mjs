@@ -1,7 +1,10 @@
+import { appendFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 import publicationCatalog from '../publications-data.js';
-import { loadCrossrefPublications, loadPubMedPublications } from './publication-sources.mjs';
+import { loadDrivePublications } from './publication-drive.mjs';
+import { loadCrossrefPublications, loadPubMedPublications, normalizedTitle } from './publication-sources.mjs';
 
+const minimumPublicationYear = 2010;
 const doiPattern = /^10\.\d{4,9}\/\S+$/i;
 const pmidPattern = /^\d+$/;
 const kciPattern = /^https:\/\/(?:www\.)?kci\.go\.kr\//i;
@@ -23,10 +26,6 @@ function matchingIdentifiers(left, right) {
 
 function conflictingIdentifiers(left, right) {
   return Object.keys(left).some(type => left[type] && right[type] && left[type] !== right[type]);
-}
-
-function normalizedTitle(value) {
-  return String(value ?? '').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '');
 }
 
 function isPublicUrl(value) {
@@ -67,9 +66,9 @@ export function validateCatalog(catalog) {
 export function reconcileCandidates(catalog, sources) {
   const candidates = [];
   for (const { name, records = [] } of sources) {
-    for (const { paper, evidence } of records) {
+    for (const { paper, evidence, fileRef } of records) {
       const citation = { ...paper, title: paper.title?.replace(/<\/?[a-z][^>]*>/gi, '').trim() };
-      const observed = { source: name, evidence };
+      const observed = { source: name, evidence, ...(fileRef && { fileRef }) };
       const ids = identifiers(citation);
       const matches = candidates.filter(entry => matchingIdentifiers(ids, identifiers(entry.paper)));
       if (matches.length === 1 && !conflictingIdentifiers(ids, identifiers(matches[0].paper))) {
@@ -84,9 +83,14 @@ export function reconcileCandidates(catalog, sources) {
 
   const additions = [];
   const changes = [];
-  const review = [];
+  const review = sources.flatMap(({ name, review = [] }) => review.map(item => ({ ...item, source: name })));
+  let excludedByYear = 0;
   for (const candidate of candidates) {
     const { paper, observed } = candidate;
+    if (Number.isInteger(paper.year) && paper.year >= 1900 && paper.year < minimumPublicationYear) {
+      excludedByYear++;
+      continue;
+    }
     const ids = identifiers(paper);
     const matches = catalog.filter(current => matchingIdentifiers(ids, identifiers(current)));
     const candidateConflicts = candidates.filter(other => other !== candidate && matchingIdentifiers(ids, identifiers(other.paper)));
@@ -110,7 +114,7 @@ export function reconcileCandidates(catalog, sources) {
       review.push({ ...candidate, reason: 'title-match-without-shared-identifier', similarRecords });
     } else if (issues.length) {
       review.push({ ...candidate, reason: 'incomplete-metadata', fields: issues });
-    } else if (observed.every(item => item.evidence === 'name-only')) {
+    } else if (!observed.some(item => item.evidence === 'orcid' || item.evidence === 'name-and-affiliation')) {
       review.push({ ...candidate, reason: 'author-needs-verification' });
     } else {
       additions.push(candidate);
@@ -119,10 +123,13 @@ export function reconcileCandidates(catalog, sources) {
 
   return {
     catalogCount: catalog.length,
-    sources: sources.map(({ name, records, error }) => error ? { name, error } : { name, count: records.length }),
+    sources: sources.map(({ name, records, files, error }) => error
+      ? { name, error }
+      : { name, count: records.length, ...(files !== undefined && { files }) }),
     additions,
     changes,
     review,
+    excludedByYear,
   };
 }
 
@@ -136,22 +143,40 @@ async function run() {
   if (command !== 'collect') throw new Error('Usage: node scripts/publications.mjs check|collect');
 
   const sources = [
-    { name: 'PubMed (Europe PMC)', load: loadPubMedPublications },
-    { name: 'Crossref', load: loadCrossrefPublications },
+    { name: 'PubMed (Europe PMC)', load: async () => ({ records: await loadPubMedPublications() }) },
+    { name: 'Crossref', load: async () => ({ records: await loadCrossrefPublications() }) },
   ];
+  const folderId = process.env.PUBLICATIONS_DRIVE_FOLDER_ID;
+  const accessToken = process.env.PUBLICATIONS_DRIVE_ACCESS_TOKEN;
+  if (folderId || accessToken) {
+    sources.push({ name: 'Google Drive', load: () => loadDrivePublications({ folderId, accessToken }) });
+  }
   const results = await Promise.allSettled(sources.map(source => source.load()));
   const report = reconcileCandidates(publicationCatalog, results.map((result, index) => {
     const { name } = sources[index];
-    if (result.status === 'fulfilled' && result.value.length) return { name, records: result.value };
-    return { name, error: result.status === 'rejected' ? result.reason.message : 'No records returned' };
+    if (result.status === 'rejected') return { name, error: result.reason.message };
+    if (!result.value.records.length && result.value.files === undefined) return { name, error: 'No records returned' };
+    return { name, ...result.value };
   }));
+  const allFailed = report.sources.every(source => source.error);
+  if (!folderId && !accessToken) report.sources.push({ name: 'Google Drive', skipped: 'Not configured' });
 
   console.log(JSON.stringify(report, null, 2));
-  console.error(`New: ${report.additions.length}; changed: ${report.changes.length}; needs review: ${report.review.length}.`);
+  const totals = `New: ${report.additions.length}; changed: ${report.changes.length}; needs review: ${report.review.length}; published before 2010: ${report.excludedByYear}.`;
+  console.error(totals);
   for (const source of report.sources) {
     if (source.error) console.error(`${source.name}: ${source.error}`);
   }
-  if (report.sources.every(source => source.error)) process.exitCode = 1;
+  if (process.env.GITHUB_STEP_SUMMARY) {
+    const statuses = report.sources.map(({ name, error, skipped, count, files }) => {
+      if (error) return `- ${name}: 조회 실패`;
+      if (skipped) return `- ${name}: 미설정`;
+      if (files !== undefined) return `- ${name}: PDF ${files}건, 서지 확인 ${count}건`;
+      return `- ${name}: ${count}건 조회`;
+    });
+    await appendFile(process.env.GITHUB_STEP_SUMMARY, ['## 발표논문 수집 결과', '', totals, '', ...statuses, ''].join('\n'));
+  }
+  if (allFailed) process.exitCode = 1;
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
