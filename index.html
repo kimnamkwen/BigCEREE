@@ -45,6 +45,9 @@
       <div style="margin-top:8px">홈페이지의 상세 기능 추가 및 연동 요청시 관리자에게 문의 바랍니다.</div>
     </footer>
   </div>
+  <script src="publications-data.js"></script>
+  <script src="research.js"></script>
+  <script src="publications.js"></script>
   <script>
     const menuData = {
       center: {
@@ -87,17 +90,21 @@
             </div>
           `},
           {key:"paper", label:"발표논문", content:`
-            <h3>발표논문</h3>
-            <p>센터 소속 연구진이 발표한 주요 논문 목록입니다.<br>
-            최신 국제 및 국내 학술지에 게재된 논문과 발표자료를 통해 최신 동향과 연구 성과를 확인할 수 있습니다.<br>
-            <br>
-            <ul>
-              <li><a href="http://example" target="_blank">비용-효과 분석에 근거한 치료법 비교 연구 (2024, Health Economics Journal)</li>
-              <li><a href="http://example" target="_blank">한국 보건의료 빅데이터를 활용한 의료비 모델링 (2023, Journal of Big Health Data)</li>
-              <li><a href="http://example" target="_blank">환자군 기반 경제성평가 연구 (2022, KHEA 학술대회)</li>
-            </ul>
-            논문 PDF 및 요약본은 <a href="#">연구성과 자료실</a>을 통해 다운로드 가능.
-            </p>
+            <section id="publications" class="publications" aria-labelledby="publications-heading">
+              <h3 id="publications-heading">발표논문</h3>
+              <div class="publication-filters" role="search" aria-label="발표논문 검색">
+                <label class="publication-filter">
+                  <span>논문 검색</span>
+                  <input type="search" name="query" placeholder="제목, 저자, 학술지" aria-controls="publications-list">
+                </label>
+                <label class="publication-filter">
+                  <span>발행연도</span>
+                  <select name="year" aria-controls="publications-list"><option value="">전체 연도</option></select>
+                </label>
+              </div>
+              <p class="publication-feedback" role="status"></p>
+              <div id="publications-list"></div>
+            </section>
           `},
           {key:"project", label:"연구사업", content:`
             <h3>연구사업</h3>
@@ -172,7 +179,8 @@
               진단 기준 설정, 통계적 접근 방법, 분석 절차 안내.<br>
               대표 진단검사 연구 사례와 결과 요약 포함.
             </p>
-          `}
+          `},
+          ...economicResearchSections
         ]
       },
       bigdata: {
@@ -297,53 +305,47 @@
     let currentSubKey = menuData[currentMenu].submenus[0].key;
 
     function renderSideNav(menuKey) {
+      const focusWasInSideNav = sideNavEl.contains(document.activeElement);
       sideNavEl.innerHTML = `<h2>${menuData[menuKey].label} 세부 목록</h2>
         <ul class="nav-list">
-          ${menuData[menuKey].submenus.map(sub=>
-            `<li><a class="nav-link${sub.key===currentSubKey ? ' active' : ''}" data-sub="${sub.key}" href="#">${sub.label}</a></li>`
-          ).join('')}
+          ${menuData[menuKey].submenus.map(sub => {
+            const selected = sub.key === currentSubKey;
+            return `<li><a class="nav-link${selected ? ' active' : ''}"${selected ? ' aria-current="page"' : ''} href="#${sub.permalink || `${menuKey}/${sub.key}`}">${sub.label}</a></li>`;
+          }).join('')}
         </ul>`;
+      if (focusWasInSideNav) sideNavEl.querySelector('[aria-current="page"]')?.focus({ preventScroll: true });
     }
 
     function renderContent(menuKey, subKey) {
       const submenu = menuData[menuKey].submenus.find(s=>s.key===subKey);
       mainContentEl.innerHTML = submenu ? submenu.content : "<p>해당 내용을 불러올 수 없습니다.</p>";
+      if (menuKey === 'center' && subKey === 'paper') {
+        showPublications(document.getElementById('publications'));
+      }
     }
 
     function handleMainMenuClick(e) {
       const target = e.target.closest('.menu-item');
       if (!target) return;
-      Array.from(mainMenuEl.querySelectorAll('.menu-item')).forEach(mi => mi.classList.remove('active'));
-      target.classList.add('active');
       const menuKey = target.getAttribute('data-menu');
       if (!menuKey) return; // 링크형 메뉴(수업)는 페이지 이동
-      history.replaceState(null, '', '#' + menuKey);
-      currentMenu = menuKey;
-      currentSubKey = menuData[menuKey].submenus[0].key;
-      renderSideNav(menuKey);
-      renderContent(menuKey, currentSubKey);
-    }
-
-    function handleSubMenuClick(e) {
-      const link = e.target.closest('.nav-link');
-      if (!link) return;
-      e.preventDefault();
-      Array.from(sideNavEl.querySelectorAll('.nav-link')).forEach(l => l.classList.remove('active'));
-      link.classList.add('active');
-      currentSubKey = link.getAttribute('data-sub');
-      renderContent(currentMenu, currentSubKey);
+      if (location.hash !== '#' + menuKey) location.hash = menuKey;
     }
 
     mainMenuEl.addEventListener('click', handleMainMenuClick);
-    sideNavEl.addEventListener('click', handleSubMenuClick);
 
     // 주소의 해시(#lecture 등)로 특정 메뉴를 바로 열 수 있게 함
     // 예: index.html#lecture  → 수업 페이지 등 하위 페이지의 상단 메뉴에서 사용
     function openMenuFromHash() {
-      const key = (location.hash || '').replace('#', '');
-      if (!menuData[key]) return false;
+      const hash = location.hash.slice(1);
+      const [menuKey, subKey] = hash.split('/');
+      const permalinkMenu = Object.keys(menuData).find(key =>
+        menuData[key].submenus.some(sub => sub.permalink === hash));
+      const key = permalinkMenu || menuKey;
+      if (!Object.hasOwn(menuData, key)) return false;
+      const submenus = menuData[key].submenus;
       currentMenu = key;
-      currentSubKey = menuData[key].submenus[0].key;
+      currentSubKey = (submenus.find(sub => permalinkMenu ? sub.permalink === hash : sub.key === subKey) || submenus[0]).key;
       Array.from(mainMenuEl.querySelectorAll('.menu-item')).forEach(mi =>
         mi.classList.toggle('active', mi.getAttribute('data-menu') === key));
       renderSideNav(key);

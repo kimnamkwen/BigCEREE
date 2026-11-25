@@ -1,0 +1,41 @@
+name: Publication catalog
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - publications-data.js
+      - scripts/publication-sources.mjs
+      - scripts/publications.mjs
+      - scripts/publications.test.mjs
+      - .github/workflows/publications.yml
+
+permissions:
+  contents: read
+
+jobs:
+  publications:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - name: Validate catalog and matching rules
+        run: |
+          node scripts/publications.mjs check
+          node --test scripts/publications.test.mjs
+      - name: Collect publication candidates
+        if: github.event_name == 'workflow_dispatch'
+        id: collect
+        run: node scripts/publications.mjs collect > "$RUNNER_TEMP/publication-candidates.json"
+      - name: Upload review report
+        if: ${{ !cancelled() && (steps.collect.outcome == 'success' || steps.collect.outcome == 'failure') }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: publication-candidates
+          path: ${{ runner.temp }}/publication-candidates.json
+          if-no-files-found: error
