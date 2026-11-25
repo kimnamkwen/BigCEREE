@@ -12,7 +12,7 @@
 ## 연구 사례 및 발표논문
 
 -   **임상 연구** 하위의 세 연구 유형은 `research.js`에 정의되어 있습니다. 메뉴를 옮길 때 `index.html`에서 `economicResearchSections`를 원하는 메뉴에 배치하면 기존 연구 링크를 계속 사용할 수 있습니다.
--   **센터 소개 → 발표논문**에서는 `publications-data.js`에 게시된 목록을 제목·저자·학술지와 발행연도로 검색할 수 있습니다. 목록을 확인할 때는 [부산대 연구실적](https://scholar2.pusan.ac.kr/resources?f%5Bscholar%5D=01a19069-b4f5-7458-878c-da00023bec69&sort=year)과 KCI·PubMed의 개별 논문 정보를 대조합니다.
+-   **센터 소개 → 발표논문**에서는 `publications-data.js` 목록에서 2010년 이후(2010년 포함)에 발행된 논문을 제목·저자·학술지와 발행연도로 검색할 수 있습니다. 목록을 확인할 때는 [부산대 연구실적](https://scholar2.pusan.ac.kr/resources?f%5Bscholar%5D=01a19069-b4f5-7458-878c-da00023bec69&sort=year)과 KCI·PubMed의 개별 논문 정보를 대조합니다.
 -   확인한 논문의 제목, 저자, 학술지, 연도와 DOI·PMID·KCI 상세 링크·공식 URL 중 하나를 `publications-data.js`에 추가합니다. 사례 설명과 연결 논문은 `research.js`에서 수정합니다.
 
 ### 발표논문 후보 수집

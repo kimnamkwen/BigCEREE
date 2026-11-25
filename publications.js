@@ -75,7 +75,9 @@ function showPublications(section) {
   const year = section.querySelector('select[name="year"]');
   const feedback = section.querySelector('.publication-feedback');
   const list = section.querySelector('#publications-list');
-  const papers = [...publicationCatalog].sort((a, b) => b.year - a.year || a.title.localeCompare(b.title));
+  const papers = publicationCatalog
+    .filter(paper => paper.year >= 2010)
+    .sort((a, b) => b.year - a.year || a.title.localeCompare(b.title));
   const indexedPapers = papers.map(paper => ({
     paper,
     text: publicationSearchText([paper.title, paper.authors, paper.journal, professorSearchNames].filter(Boolean).join(' ')),
