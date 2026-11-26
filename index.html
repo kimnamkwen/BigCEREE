@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <a class="skip-link" href="#main-content">본문 바로가기</a>
   <div class="container">
     <header class="main-header">
       <div class="logo-section">
@@ -22,21 +23,21 @@
           </div>
         </div>
       </div>
-      <nav class="menu-bar" id="main-menu">
-        <div class="menu-item active" data-menu="center">센터 소개</div>
-        <div class="menu-item" data-menu="clinical">임상 연구</div>
-        <div class="menu-item" data-menu="bigdata">빅데이터 분석</div>
-        <div class="menu-item" data-menu="economic">경제성평가</div>
-        <div class="menu-item" data-menu="lecture">강의</div>
+      <nav class="menu-bar" id="main-menu" aria-label="주 메뉴">
+        <a class="menu-item active" href="#center" data-menu="center" aria-current="location">센터 소개</a>
+        <a class="menu-item" href="#clinical" data-menu="clinical">임상 연구</a>
+        <a class="menu-item" href="#bigdata" data-menu="bigdata">빅데이터 분석</a>
+        <a class="menu-item" href="#economic" data-menu="economic">경제성평가</a>
+        <a class="menu-item" href="#lecture" data-menu="lecture">강의</a>
         <a class="menu-item" href="classes/index.html">수업</a>
-        <div class="menu-item" data-menu="project">프로젝트</div>
+        <a class="menu-item" href="#project" data-menu="project">프로젝트</a>
       </nav>
     </header>
     <div class="layout">
-      <aside class="side-nav" id="side-nav">
+      <aside class="side-nav" id="side-nav" aria-labelledby="side-nav-heading">
         <!-- 좌측 세부 메뉴 동적 생성 -->
       </aside>
-      <main class="main-content" id="main-content">
+      <main class="main-content" id="main-content" tabindex="-1">
         <!-- 메인 내용 동적 생성 -->
       </main>
     </div>
@@ -91,18 +92,45 @@
           {key:"paper", label:"발표논문", content:`
             <section id="publications" class="publications" aria-labelledby="publications-heading">
               <h3 id="publications-heading">발표논문</h3>
-              <div class="publication-filters" role="search" aria-label="발표논문 검색">
-                <label class="publication-filter">
-                  <span>논문 검색</span>
-                  <input type="search" name="query" placeholder="제목, 저자, 학술지" aria-controls="publications-list">
-                </label>
-                <label class="publication-filter">
-                  <span>발행연도</span>
-                  <select name="year" aria-controls="publications-list"><option value="">전체 연도</option></select>
-                </label>
+              <div class="publication-search" role="search" aria-label="발표논문 검색">
+                <input type="search" name="query" aria-label="논문 검색" placeholder="제목, 저자, 학술지"
+                  aria-controls="publications-list" disabled>
               </div>
-              <p class="publication-feedback" role="status"></p>
-              <div id="publications-list"></div>
+              <div class="publication-mobile-controls" hidden>
+                <label>
+                  <span>발행연도</span>
+                  <select name="year" aria-controls="publications-list"></select>
+                </label>
+                <button type="button" data-publication-action="toggle-mobile"
+                  aria-expanded="false" aria-controls="publication-mobile-filters">필터</button>
+              </div>
+              <div id="publication-mobile-filters" class="publication-mobile-panel" hidden></div>
+              <div class="publication-toolbar">
+                <div class="publication-result-summary">
+                  <p class="publication-feedback" role="status" aria-atomic="true">논문 목록을 불러오는 중입니다.</p>
+                  <ul class="publication-chips" aria-label="적용된 필터" hidden></ul>
+                </div>
+                <div class="publication-result-controls" hidden>
+                  <label>정렬
+                    <select name="sort">
+                      <option value="newest">최신순</option>
+                      <option value="oldest">오래된순</option>
+                    </select>
+                  </label>
+                  <label>페이지당
+                    <select name="limit">
+                      <option value="10">10편</option>
+                      <option value="20">20편</option>
+                      <option value="50">50편</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+              <div id="publications-list" tabindex="-1"></div>
+              <nav class="publication-pagination" aria-label="발표논문 페이지" hidden>
+                <p class="publication-range"></p>
+                <div class="publication-pages"></div>
+              </nav>
             </section>
           `},
           {key:"project", label:"연구사업", content:`
@@ -301,34 +329,62 @@
     const mainContentEl = document.getElementById('main-content');
     const publicationsHash = '#center/paper';
     let currentMenu = "center";
-    let currentSubKey = menuData[currentMenu].submenus[0].key;
+    let currentSubKey;
+    let stopPublications;
+
+    function markCurrentLink(link, current, kind) {
+      link.classList.toggle('active', current);
+      if (current) link.setAttribute('aria-current', kind);
+      else link.removeAttribute('aria-current');
+    }
+
+    function markCurrentMenu(menuKey) {
+      for (const link of mainMenuEl.querySelectorAll('[data-menu]')) {
+        markCurrentLink(link, link.dataset.menu === menuKey, 'location');
+      }
+    }
 
     function renderSideNav(menuKey) {
-      sideNavEl.innerHTML = `<h2>${menuData[menuKey].label} 세부 목록</h2>
+      sideNavEl.innerHTML = `<h2 id="side-nav-heading">${menuData[menuKey].label} 세부 목록</h2>
         <ul class="nav-list">
           ${menuData[menuKey].submenus.map(sub => {
             const href = menuKey === 'center' && sub.key === 'paper' ? publicationsHash : '#';
-            return `<li><a class="nav-link${sub.key === currentSubKey ? ' active' : ''}" data-sub="${sub.key}" href="${href}">${sub.label}</a></li>`;
+            const current = sub.key === currentSubKey;
+            return `<li><a class="nav-link${current ? ' active' : ''}" data-sub="${sub.key}" href="${href}"${current ? ' aria-current="page"' : ''}>${sub.label}</a></li>`;
           }).join('')}
         </ul>`;
     }
 
     function renderContent(menuKey, subKey) {
+      stopPublications?.();
+      stopPublications = undefined;
       const submenu = menuData[menuKey].submenus.find(s=>s.key===subKey);
       mainContentEl.innerHTML = submenu ? submenu.content : "<p>해당 내용을 불러올 수 없습니다.</p>";
       if (menuKey === 'center' && subKey === 'paper') {
-        showPublications(document.getElementById('publications'));
+        const section = document.getElementById('publications');
+        if (typeof showPublications === 'function') stopPublications = showPublications(section, sideNavEl);
+        else section.querySelector('.publication-feedback').textContent = '논문 목록을 불러올 수 없습니다.';
       }
     }
 
+    function updateMenuLocation(hash, centerSubmenu) {
+      if (location.hash !== publicationsHash && hash !== publicationsHash) {
+        history.replaceState(null, '', hash);
+        return;
+      }
+      const url = new URL(location.href);
+      if (hash !== publicationsHash && typeof clearPublicationQuery === 'function') clearPublicationQuery(url);
+      url.hash = hash;
+      if (url.href !== location.href) history.pushState({ centerSubmenu }, '', url);
+    }
+
     function handleMainMenuClick(e) {
-      const target = e.target.closest('.menu-item');
-      if (!target) return;
-      Array.from(mainMenuEl.querySelectorAll('.menu-item')).forEach(mi => mi.classList.remove('active'));
-      target.classList.add('active');
-      const menuKey = target.getAttribute('data-menu');
-      if (!menuKey) return; // 링크형 메뉴(수업)는 페이지 이동
-      history.replaceState(null, '', '#' + menuKey);
+      const target = e.target.closest('a[data-menu]');
+      if (!target || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      const menuKey = target.dataset.menu;
+      updateMenuLocation(target.hash);
+      markCurrentMenu(menuKey);
       currentMenu = menuKey;
       currentSubKey = menuData[menuKey].submenus[0].key;
       renderSideNav(menuKey);
@@ -339,38 +395,47 @@
       const link = e.target.closest('.nav-link');
       if (!link) return;
       e.preventDefault();
-      Array.from(sideNavEl.querySelectorAll('.nav-link')).forEach(item => item.classList.remove('active'));
-      link.classList.add('active');
+      for (const item of sideNavEl.querySelectorAll('.nav-link')) markCurrentLink(item, item === link, 'page');
       currentSubKey = link.getAttribute('data-sub');
       if (currentMenu === 'center' && currentSubKey === 'paper') {
-        history.replaceState(null, '', publicationsHash);
+        updateMenuLocation(publicationsHash);
       } else if (location.hash === publicationsHash) {
-        history.replaceState(null, '', '#center');
+        updateMenuLocation('#center', currentSubKey);
       }
       renderContent(currentMenu, currentSubKey);
+      if (e.detail === 0) mainContentEl.focus();
     }
 
     mainMenuEl.addEventListener('click', handleMainMenuClick);
     sideNavEl.addEventListener('click', handleSubMenuClick);
+    document.querySelector('.skip-link').addEventListener('click', event => {
+      event.preventDefault();
+      mainContentEl.focus();
+    });
 
     // 주소의 해시(#lecture 등)로 특정 메뉴를 바로 열 수 있게 함
     // 예: index.html#lecture  → 수업 페이지 등 하위 페이지의 상단 메뉴에서 사용
     function openMenuFromHash() {
       const opensPublications = location.hash === publicationsHash;
-      const key = opensPublications ? 'center' : location.hash.slice(1);
+      const key = opensPublications ? 'center' : location.hash.slice(1) || 'center';
       if (!Object.hasOwn(menuData, key)) return false;
+      const submenus = menuData[key].submenus;
+      const savedSubmenu = key === 'center' && submenus.find(submenu => submenu.key === history.state?.centerSubmenu);
+      const subKey = opensPublications ? 'paper' : (savedSubmenu || submenus[0]).key;
+      if (key === currentMenu && subKey === currentSubKey) return true;
       currentMenu = key;
-      currentSubKey = opensPublications ? 'paper' : menuData[key].submenus[0].key;
-      Array.from(mainMenuEl.querySelectorAll('.menu-item')).forEach(mi =>
-        mi.classList.toggle('active', mi.getAttribute('data-menu') === key));
+      currentSubKey = subKey;
+      markCurrentMenu(key);
       renderSideNav(key);
       renderContent(key, currentSubKey);
       return true;
     }
     window.addEventListener('hashchange', openMenuFromHash);
+    window.addEventListener('popstate', openMenuFromHash);
 
     // 초기 랜더링
     if (!openMenuFromHash()) {
+      currentSubKey = menuData[currentMenu].submenus[0].key;
       renderSideNav(currentMenu);
       renderContent(currentMenu, currentSubKey);
     }
