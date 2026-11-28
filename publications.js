@@ -115,8 +115,7 @@ function publicationYearFilterLabel(year) {
 function getPublicationView(data, state) {
   const terms = publicationSearchText(state.query).split(' ').filter(Boolean);
   const journalFilter = new Set(state.journals);
-  const hasSearch = terms.length || state.indexes.length || journalFilter.size;
-  const year = state.year ?? (hasSearch ? 'all' : data.years[0] ?? 'all');
+  const year = state.year ?? 'all';
   const range = readPublicationYearRange(year, data.maxYear);
   const yearCounts = new Map();
   const indexCounts = new Map();
@@ -203,18 +202,27 @@ function publicationButton(text, action, value, className) {
   return button;
 }
 
-function renderPublications(list, view) {
+function renderPublications(list, view, state, mobile) {
   const content = document.createDocumentFragment();
+  const pageYearCounts = new Map();
+  if (mobile) {
+    for (const { year } of view.rows) {
+      pageYearCounts.set(year, (pageYearCounts.get(year) || 0) + 1);
+    }
+  }
   let year;
   let entries;
   for (const publication of view.rows) {
     const { paper, sources } = publication;
     if (year !== publication.year) {
       year = publication.year;
+      const total = view.resultYearCounts.get(year);
+      const onPage = pageYearCounts.get(year) ?? total;
+      const count = onPage < total ? `${total}편 중 ${onPage}편` : `${total}편`;
       const heading = publicationElement('h4', 'publication-year');
       heading.append(
         publicationElement('span', '', publicationYearLabel(year)),
-        publicationElement('span', 'publication-year-count', `${view.resultYearCounts.get(year)}편`),
+        publicationElement('span', 'publication-year-count', count),
       );
       entries = publicationElement('ul', 'publication-list');
       entries.setAttribute('role', 'list');
@@ -249,10 +257,13 @@ function renderPublications(list, view) {
   if (!view.total) {
     const empty = publicationElement('div', 'publication-empty');
     const actions = publicationElement('div', 'publication-empty-actions');
+    if (state.query) {
+      actions.append(publicationButton('검색어 지우기', 'clear-search', undefined, 'publication-text-button'));
+    }
     if (view.hasResultsWithoutJournals) {
       actions.append(publicationButton('학술지 선택 해제', 'clear-journals', undefined, 'publication-text-button'));
     }
-    actions.append(publicationButton('검색 및 필터 지우기', 'clear', undefined, 'publication-text-button'));
+    actions.append(publicationButton('전체 초기화', 'clear', undefined, 'publication-text-button'));
     empty.append(publicationElement('p', '', '조건에 맞는 논문이 없습니다.'), actions);
     content.append(empty);
   }
@@ -306,8 +317,11 @@ function createPublicationFilters(data) {
   panel.setAttribute('aria-label', '발표논문 필터');
   panel.innerHTML = `
     <div class="publication-facet-header">
-      <span>필터</span>
-      <button type="button" class="publication-text-button" data-publication-action="reset">초기화</button>
+      <span id="publication-filters-heading">논문 필터</span>
+      <div class="publication-filter-actions">
+        <button type="button" class="publication-text-button" data-publication-action="reset">초기화</button>
+        <button type="button" class="publication-mobile-close" data-publication-action="close-mobile" aria-label="필터 닫기">닫기</button>
+      </div>
     </div>
     <details class="publication-facet-group publication-year-group" open>
       <summary>발행연도</summary>
@@ -329,7 +343,6 @@ function createPublicationFilters(data) {
       <button type="button" class="publication-older-toggle" data-publication-action="more-journals"
         aria-expanded="false" aria-controls="publication-journal-options">학술지 더 보기</button>
     </details>
-    <button type="button" class="publication-mobile-close" data-publication-action="close-mobile">필터 닫기</button>
   `;
 
   const recent = panel.querySelector('.publication-year-options');
@@ -364,7 +377,7 @@ function createPublicationFilters(data) {
   };
 }
 
-function renderPublicationFilters(filters, view, state, data, olderExpanded) {
+function renderPublicationFilters(filters, view, state, data, olderExpanded, showYearFilter) {
   const recentRange = readPublicationYearRange(data.recentYears, data.maxYear);
   let recentCount = 0;
   for (let year = recentRange.start; year <= recentRange.end; year++) {
@@ -383,7 +396,7 @@ function renderPublicationFilters(filters, view, state, data, olderExpanded) {
     item.checkbox.disabled = count === 0 && !item.checkbox.checked;
     item.count.textContent = count;
   }
-  filters.reset.disabled = view.year === 'all' && !state.indexes.length && !state.journals.length;
+  filters.reset.disabled = (!showYearFilter || view.year === 'all') && !state.indexes.length && !state.journals.length;
   filters.olderToggle.setAttribute('aria-expanded', String(olderExpanded));
   filters.olderToggle.textContent = olderExpanded ? '이전 연도 접기' : '이전 연도 더 보기';
 }
@@ -432,13 +445,18 @@ function renderPublicationChips(list, state, journalNames) {
   list.hidden = !chips.length;
 }
 
-function renderPublicationPagination(pagination, view) {
-  pagination.hidden = view.totalPages <= 1;
-  if (pagination.hidden) return;
-  pagination.querySelector('.publication-range').textContent =
-    `전체 ${view.total}편 중 ${view.offset + 1}–${view.offset + view.rows.length}편`;
-
+function renderPublicationPagination(pagination, view, mobile) {
+  const range = pagination.querySelector('.publication-range');
   const buttons = pagination.querySelector('.publication-pages');
+  const returnToSearch = pagination.querySelector('.publication-return');
+  const multiplePages = view.totalPages > 1;
+  returnToSearch.hidden = !mobile || !view.total;
+  pagination.hidden = !multiplePages && returnToSearch.hidden;
+  range.hidden = !multiplePages;
+  buttons.hidden = !multiplePages;
+  if (!multiplePages) return;
+
+  range.textContent = `전체 ${view.total}편 중 ${view.offset + 1}–${view.offset + view.rows.length}편`;
   const entries = [];
   function pageButton(text, page, label) {
     const button = publicationButton(text, 'page', page, 'publication-page-button');
@@ -477,17 +495,24 @@ function showPublications(section, sidebar) {
 
   const data = preparePublications(publicationCatalog);
   const search = section.querySelector('input[name="query"]');
+  const searchRegion = search.closest('.publication-search');
   const sort = section.querySelector('select[name="sort"]');
   const pageSize = section.querySelector('select[name="limit"]');
   const mobileControls = section.querySelector('.publication-mobile-controls');
   const mobileYear = mobileControls.querySelector('select');
   const mobileToggle = mobileControls.querySelector('button');
   const mobilePanel = section.querySelector('#publication-mobile-filters');
+  const mobilePanelBody = mobilePanel.querySelector('.publication-sheet-body');
+  const mobilePanelCount = mobilePanel.querySelector('.publication-sheet-count');
+  const viewSettings = section.querySelector('.publication-mobile-view-settings');
+  const resultControls = section.querySelector('.publication-result-controls');
   const chips = section.querySelector('.publication-chips');
   const pagination = section.querySelector('.publication-pagination');
   const filters = createPublicationFilters(data);
+  const facetHeader = filters.panel.querySelector('.publication-facet-header');
+  const mobileClose = facetHeader.querySelector('.publication-mobile-close');
   const yearRange = createPublicationYearForm(data.maxYear);
-  const media = window.matchMedia('(max-width: 900px)');
+  const media = window.matchMedia('(max-width: 900px), (max-width: 960px) and (max-height: 500px)');
   const controller = new AbortController();
   const listener = { signal: controller.signal };
   let state = readPublicationState(new URLSearchParams(window.location.search), data);
@@ -495,28 +520,61 @@ function showPublications(section, sidebar) {
   let journalsExpanded = false;
   let view;
   let searchHistoryTimer;
+  let panelScrollY = 0;
+  let backdropPressed = false;
 
   const mobileCustom = new Option('기간 지정', 'custom');
   const mobileSelectedRange = new Option();
   for (const year of filters.yearButtons.keys()) {
-    const label = year === 'all' ? '전체 연도' : year === data.recentYears ? '최근 3년' : publicationYearLabel(year);
+    const label = year === 'all' ? '전체 연도' : year === data.recentYears ? '최근 3년' : publicationYearFilterLabel(year);
     mobileYear.add(new Option(label, year));
     if (year === data.recentYears) mobileYear.add(mobileCustom);
   }
-  section.querySelector('.publication-result-controls').hidden = false;
+  resultControls.hidden = false;
   search.disabled = false;
 
-  function setMobilePanel(open) {
-    mobilePanel.hidden = !open;
-    mobileToggle.setAttribute('aria-expanded', String(open));
+  function sizeMobilePanel() {
+    const viewport = window.visualViewport;
+    if (!mobilePanel.open || !viewport) return;
+    const inset = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
+    mobilePanel.style.setProperty('--publication-sheet-inset', `${inset}px`);
+    mobilePanel.style.setProperty('--publication-sheet-height', `${viewport.height * 0.9}px`);
+  }
+
+  function openMobilePanel() {
+    if (mobilePanel.open) return;
+    panelScrollY = window.scrollY;
+    mobilePanel.showModal();
+    sizeMobilePanel();
+    mobileToggle.setAttribute('aria-expanded', 'true');
+    mobileClose.focus({ preventScroll: true });
+  }
+
+  function closeMobilePanel(restoreFocus = true) {
+    if (!mobilePanel.open) return;
+    mobilePanel.close();
+    mobileToggle.setAttribute('aria-expanded', 'false');
+    if (restoreFocus) {
+      mobileToggle.focus({ preventScroll: true });
+      window.scrollTo({ top: panelScrollY, behavior: 'instant' });
+    }
   }
 
   function positionFilters() {
     const focused = document.activeElement;
     const restoreYearFocus = yearRange.form.contains(focused);
     mobileControls.hidden = !media.matches;
-    setMobilePanel(false);
-    (media.matches ? mobilePanel : sidebar).append(filters.panel);
+    viewSettings.hidden = !media.matches;
+    if (media.matches) viewSettings.append(resultControls);
+    else viewSettings.after(resultControls);
+    closeMobilePanel(false);
+    if (media.matches) {
+      mobilePanelBody.before(facetHeader);
+      mobilePanelBody.append(filters.panel);
+    } else {
+      filters.panel.prepend(facetHeader);
+      sidebar.append(filters.panel);
+    }
     (media.matches ? mobileControls : filters.rangeToggle).after(yearRange.form);
     if (restoreYearFocus) focused.focus({ preventScroll: true });
   }
@@ -575,11 +633,12 @@ function showPublications(section, sidebar) {
     if (selectedFilters) mobileToggle.setAttribute('aria-label', `필터, ${selectedFilters}개 선택됨`);
     else mobileToggle.removeAttribute('aria-label');
     feedback.textContent = `총 ${view.total}편`;
-    renderPublicationFilters(filters, view, state, data, olderExpanded);
+    if (mobilePanelCount.textContent !== feedback.textContent) mobilePanelCount.textContent = feedback.textContent;
+    renderPublicationFilters(filters, view, state, data, olderExpanded, !media.matches);
     renderPublicationJournals(filters, view, state, journalsExpanded);
     renderPublicationChips(chips, state, data.journals);
-    renderPublications(list, view);
-    renderPublicationPagination(pagination, view);
+    renderPublications(list, view, state, media.matches);
+    renderPublicationPagination(pagination, view, media.matches);
     writePublicationState(state, historyMethod);
   }
 
@@ -670,11 +729,11 @@ function showPublications(section, sidebar) {
         renderPublicationJournals(filters, view, state, journalsExpanded);
         break;
       case 'reset':
-        yearRange.form.hidden = true;
+        if (!media.matches) yearRange.form.hidden = true;
         filters.journalSearch.value = '';
         journalsExpanded = false;
-        update({ year: 'all', indexes: [], journals: [] });
-        if (button.disabled) (media.matches ? mobileYear : filters.panel.querySelector('[value="all"]')).focus();
+        update({ year: media.matches ? state.year : 'all', indexes: [], journals: [] });
+        if (button.disabled) (mobilePanel.open ? mobileClose : filters.yearButtons.get('all').button).focus();
         break;
       case 'remove-year':
         yearRange.form.hidden = true;
@@ -691,7 +750,11 @@ function showPublications(section, sidebar) {
         break;
       case 'clear-journals':
         filters.journalSearch.value = '';
-        update({ year: view.year, journals: [] });
+        update({ journals: [] });
+        search.focus();
+        break;
+      case 'clear-search':
+        update({ query: '' });
         search.focus();
         break;
       case 'clear':
@@ -706,25 +769,39 @@ function showPublications(section, sidebar) {
         list.focus({ preventScroll: true });
         list.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
         break;
+      case 'return-to-search':
+        searchRegion.focus({ preventScroll: true });
+        searchRegion.scrollIntoView({ block: 'start', behavior: 'instant' });
+        break;
       case 'toggle-mobile':
-        setMobilePanel(mobilePanel.hidden);
+        openMobilePanel();
         break;
       case 'close-mobile':
-        setMobilePanel(false);
-        mobileToggle.focus();
+        closeMobilePanel();
         break;
     }
   }, listener);
 
-  mobilePanel.addEventListener('keydown', event => {
-    if (event.key === 'Escape') {
-      setMobilePanel(false);
-      mobileToggle.focus();
-    }
+  mobilePanel.addEventListener('cancel', event => {
+    event.preventDefault();
+    closeMobilePanel();
   }, listener);
-  media.addEventListener('change', positionFilters, listener);
+  mobilePanel.addEventListener('pointerdown', event => {
+    backdropPressed = event.target === mobilePanel;
+  }, listener);
+  mobilePanel.addEventListener('click', event => {
+    if (backdropPressed && event.target === mobilePanel) closeMobilePanel();
+    backdropPressed = false;
+  }, listener);
+  window.visualViewport?.addEventListener('resize', sizeMobilePanel, listener);
+  window.visualViewport?.addEventListener('scroll', sizeMobilePanel, listener);
+  media.addEventListener('change', () => {
+    positionFilters();
+    render('replaceState');
+  }, listener);
   window.addEventListener('popstate', () => {
     if (window.location.hash !== '#center/paper') return;
+    closeMobilePanel();
     finishSearchHistory();
     const restoreFocus = yearRange.form.contains(document.activeElement);
     yearRange.form.hidden = true;
@@ -737,7 +814,9 @@ function showPublications(section, sidebar) {
   render('replaceState');
   return () => {
     finishSearchHistory();
+    closeMobilePanel(false);
     controller.abort();
+    facetHeader.remove();
     filters.panel.remove();
     yearRange.form.remove();
   };

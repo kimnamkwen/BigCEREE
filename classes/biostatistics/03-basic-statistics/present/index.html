@@ -7,6 +7,7 @@
   <title>3. 기초통계학 · 보건의료통계학 수업 | BigCEREE</title>
   <link rel="stylesheet" href="../../../../style.css">
   <script src="../../../../access.js"></script>
+  <script src="../../../../lesson-layout.js" defer></script>
 </head>
 <body class="lesson-body">
 <!--
@@ -216,8 +217,6 @@ pnorm(c(1, 2, 3)) - pnorm(c(-1, -2, -3)) # 정규분포 68-95-99.7 규칙
   const pdfBtn = document.getElementById("btn-pdf");
   if (pdfBtn) pdfBtn.href = LESSON.assetDir + LESSON.slidePdf;
   document.getElementById("btn-print").onclick = () => window.print();
-  document.getElementById("btn-toc").onclick = () =>
-    document.getElementById("lesson-layout").classList.toggle("toc-hidden");
   let scale = 1;
   const applyScale = () => document.querySelector(".lesson-main").style.setProperty("--lesson-scale", scale);
   document.getElementById("btn-font-up").onclick = () => { scale = Math.min(1.5, scale + 0.1); applyScale(); };
