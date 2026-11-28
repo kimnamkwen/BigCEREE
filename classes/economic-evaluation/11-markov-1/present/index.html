@@ -247,7 +247,7 @@ round(c(res, cost_per_LY = res[["Cost"]] / res[["LY"]], cost_per_QALY = res[["Co
   function getWebR() {
     if (!webRPromise) {
       webRPromise = (async () => {
-        const { WebR } = await import("https://webr.r-wasm.org/latest/webr.mjs");
+        const { WebR } = await import("https://webr.r-wasm.org/v0.6.1/webr.mjs");
         const webR = new WebR();
         await webR.init();
         await webR.evalRVoid(SETUP_R);

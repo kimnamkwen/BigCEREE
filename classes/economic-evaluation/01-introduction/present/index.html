@@ -408,7 +408,7 @@ ok$strategy[which.max(ok$qaly)]     # λ에서 선택할 전략
   function getWebR() {
     if (!webRPromise) {
       webRPromise = (async () => {
-        const { WebR } = await import("https://webr.r-wasm.org/latest/webr.mjs");
+        const { WebR } = await import("https://webr.r-wasm.org/v0.6.1/webr.mjs");
         const webR = new WebR();
         await webR.init();
         await webR.evalRVoid(SETUP_R);

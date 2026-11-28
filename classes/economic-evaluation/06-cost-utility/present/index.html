@@ -488,7 +488,7 @@ dC <- mean(trt$cost) - mean(ctrl$cost)
   function getWebR() {
     if (!webRPromise) {
       webRPromise = (async () => {
-        const { WebR } = await import("https://webr.r-wasm.org/latest/webr.mjs");
+        const { WebR } = await import("https://webr.r-wasm.org/v0.6.1/webr.mjs");
         const webR = new WebR();
         await webR.init();
         // 실습 2~4에서 쓰는 함수와 자료를 미리 준비 (실습 1을 건너뛰어도 동작)

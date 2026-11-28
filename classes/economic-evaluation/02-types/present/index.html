@@ -279,7 +279,7 @@ c(ICER_per_LY = round(dC / dLY), delta_QALY = round(dQ, 4))   # Î”QALY &lt; 0 ì
   function getWebR() {
     if (!webRPromise) {
       webRPromise = (async () => {
-        const { WebR } = await import("https://webr.r-wasm.org/latest/webr.mjs");
+        const { WebR } = await import("https://webr.r-wasm.org/v0.6.1/webr.mjs");
         const webR = new WebR();
         await webR.init();
         await webR.evalRVoid(SETUP_R);
