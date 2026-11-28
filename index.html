@@ -6,6 +6,7 @@
   <title>보건의료 빅데이터 및 비교효과연구 경제성평가 센터</title>
   <meta name="description" content="보건의료 빅데이터 및 비교효과연구 경제성평가 센터 — 연구지원, 교육, 컨설팅 포털" />
   <link rel="stylesheet" href="style.css">
+  <script src="site-navigation.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main-content">본문 바로가기</a>
@@ -17,9 +18,9 @@
           <path d="M7 9h10M7 13h6" stroke="#fff" stroke-width="1.5" stroke-linecap="round"></path>
         </svg>
         <div>
-          <h1>보건의료 빅데이터 및 비교효과연구 경제성평가 센터</h1>
+          <a class="home-link" href="#home" data-site-route><h1>보건의료 빅데이터 및 비교효과연구 경제성평가 센터</h1></a>
           <div class="lab-title">
-            BigCEREE Lab (Center for Big data & Comparative Effectiveness Research, Economic Evaluation in Health and Medicine)
+            BigCEREE Lab<span class="lab-title-full"> (Center for Big data &amp; Comparative Effectiveness Research, Economic Evaluation in Health and Medicine)</span>
           </div>
         </div>
       </div>
@@ -42,8 +43,7 @@
       </main>
     </div>
     <footer>
-      <div>문의 및 의뢰: support@example.org | GitHub: <a href="https://github.com/kimnamkwen/Economic_evaluation">kimnamkwen/Economic_evaluation</a></div>
-      <div style="margin-top:8px">홈페이지의 상세 기능 추가 및 연동 요청시 관리자에게 문의 바랍니다.</div>
+      <a href="https://github.com/kimnamkwen/BigCEREE">BigCEREE GitHub</a>
     </footer>
   </div>
   <script src="publications-data.js"></script>
@@ -55,8 +55,9 @@
         submenus: [
           {key:"professor", label:"교수소개", content:`
             <h3>교수소개</h3>
-            <div class="profile-block">
-              <p><span class="profile-title">센터장:</span> 김남권 교수</p>
+            <div class="profile-block professor-profile">
+              <p class="profile-name"><span class="profile-role">센터장</span><strong>김남권 교수</strong></p>
+              <p class="profile-affiliation" lang="en">Center for Big data &amp; Comparative Effectiveness Research, Economic Evaluation in Health and Medicine</p>
               <div class="profile-section">
                 <strong>약력</strong>
                 <ul>
@@ -73,26 +74,15 @@
                 </ul>
               </div>
               <div class="profile-links">
-                자세한 이력 및 연구실적은 <a href="https://drkim.pusan.ac.kr/drkim/index.do" target="_blank" class="profile-link">교수 상세 프로필</a>에서 확인하실 수 있습니다.
-              </div>
-              <div class="profile-additional">
-                <hr>
-                <div class="profile-additional-title"><strong>추가 안내</strong></div>
-                <div class="profile-additional-content">
-                  메뉴에서 <strong>교수소개</strong> 클릭 시, 화면에 <span class="highlight">교수 상세 프로필</span>을 확인할 수 있습니다.
-                  <ul>
-                    <li>교수 상세 프로필: <a href="https://drkim.pusan.ac.kr/drkim/index.do" target="_blank">https://drkim.pusan.ac.kr/drkim/index.do</a></li>
-                    <li>의한협진모니터링센터: <a href="https://www.mcmc.re.kr/" target="_blank">https://www.mcmc.re.kr/</a></li>
-                    <li>GitHub: <a href="https://github.com/kimnamkwen/BigCEREE" target="_blank">https://github.com/kimnamkwen/BigCEREE</a></li>
-                  </ul>
-                </div>
+                <a href="https://drkim.pusan.ac.kr/drkim/index.do" target="_blank" rel="noopener" class="profile-link">교수 상세 프로필</a>
+                <a href="https://www.mcmc.re.kr/" target="_blank" rel="noopener" class="profile-link">의한협진모니터링센터</a>
               </div>
             </div>
           `},
           {key:"paper", label:"발표논문", content:`
             <section id="publications" class="publications" aria-labelledby="publications-heading">
               <h3 id="publications-heading">발표논문</h3>
-              <div class="publication-search" role="search" aria-label="발표논문 검색">
+              <div class="publication-search" role="search" aria-label="발표논문 검색" tabindex="-1">
                 <input type="search" name="query" aria-label="논문 검색" placeholder="제목, 저자, 학술지"
                   aria-controls="publications-list" disabled>
               </div>
@@ -102,14 +92,23 @@
                   <select name="year" aria-controls="publications-list"></select>
                 </label>
                 <button type="button" data-publication-action="toggle-mobile"
-                  aria-expanded="false" aria-controls="publication-mobile-filters">필터</button>
+                  aria-expanded="false" aria-haspopup="dialog" aria-controls="publication-mobile-filters">필터</button>
               </div>
-              <div id="publication-mobile-filters" class="publication-mobile-panel" hidden></div>
+              <dialog id="publication-mobile-filters" class="publication-mobile-panel" aria-labelledby="publication-filters-heading">
+                <div class="publication-sheet-body"></div>
+                <div class="publication-sheet-footer">
+                  <p class="publication-sheet-count" role="status" aria-atomic="true"></p>
+                  <button type="button" data-publication-action="close-mobile">결과 보기</button>
+                </div>
+              </dialog>
               <div class="publication-toolbar">
                 <div class="publication-result-summary">
                   <p class="publication-feedback" role="status" aria-atomic="true">논문 목록을 불러오는 중입니다.</p>
                   <ul class="publication-chips" aria-label="적용된 필터" hidden></ul>
                 </div>
+                <details class="publication-mobile-view-settings" hidden>
+                  <summary>보기 설정</summary>
+                </details>
                 <div class="publication-result-controls" hidden>
                   <label>정렬
                     <select name="sort">
@@ -127,9 +126,10 @@
                 </div>
               </div>
               <div id="publications-list" tabindex="-1"></div>
-              <nav class="publication-pagination" aria-label="발표논문 페이지" hidden>
+              <nav class="publication-pagination" aria-label="발표논문 목록 탐색" hidden>
                 <p class="publication-range"></p>
                 <div class="publication-pages"></div>
+                <button type="button" class="publication-text-button publication-return" data-publication-action="return-to-search" hidden>검색·필터로 돌아가기</button>
               </nav>
             </section>
           `},
@@ -323,12 +323,45 @@
       }
     };
 
-    // 메인 메뉴 클릭 시 세부 메뉴 및 첫 내용 표시
+    const siteHubs = {
+      home: `
+        <nav class="site-hub site-hub-home" aria-label="홈 바로가기">
+          <div class="site-hub-links">
+            <a href="#center" data-site-route>
+              <strong>센터 소개</strong>
+              <span>센터장과 주요 연구사업 소개</span>
+            </a>
+            <a href="#center/paper" data-site-route>
+              <strong>발표논문</strong>
+              <span>제목, 저자, 학술지로 논문 검색</span>
+            </a>
+            <a href="classes/index.html">
+              <strong>수업</strong>
+              <span>입장 가능한 주차와 수업 자료</span>
+            </a>
+            <a href="#research" data-site-route>
+              <strong>연구 분야</strong>
+              <span>임상 연구, 빅데이터 분석, 경제성평가</span>
+            </a>
+          </div>
+        </nav>`,
+      research: `
+        <section class="site-hub" aria-labelledby="site-hub-title">
+          <h2 id="site-hub-title">연구 분야</h2>
+          <div class="site-hub-links">
+            <a href="#clinical" data-site-route><strong>임상 연구</strong></a>
+            <a href="#bigdata" data-site-route><strong>빅데이터 분석</strong></a>
+            <a href="#economic" data-site-route><strong>경제성평가</strong></a>
+          </div>
+        </section>`
+    };
+
     const mainMenuEl = document.getElementById('main-menu');
     const sideNavEl = document.getElementById('side-nav');
     const mainContentEl = document.getElementById('main-content');
     const publicationsHash = '#center/paper';
-    let currentMenu = "center";
+    const mobileHomeLayout = window.matchMedia('(max-width: 900px), (max-width: 960px) and (max-height: 500px)');
+    let currentMenu;
     let currentSubKey;
     let stopPublications;
 
@@ -345,19 +378,27 @@
     }
 
     function renderSideNav(menuKey) {
+      sideNavEl.hidden = Object.hasOwn(siteHubs, menuKey);
+      if (sideNavEl.hidden) {
+        sideNavEl.replaceChildren();
+        return;
+      }
+      sideNavEl.dataset.sectionLabel = menuData[menuKey].label;
       sideNavEl.innerHTML = `<h2 id="side-nav-heading">${menuData[menuKey].label} 세부 목록</h2>
         <ul class="nav-list">
           ${menuData[menuKey].submenus.map(sub => {
-            const href = menuKey === 'center' && sub.key === 'paper' ? publicationsHash : '#';
             const current = sub.key === currentSubKey;
-            return `<li><a class="nav-link${current ? ' active' : ''}" data-sub="${sub.key}" href="${href}"${current ? ' aria-current="page"' : ''}>${sub.label}</a></li>`;
+            const route = `${menuKey}/${sub.key}`;
+            return `<li><a class="nav-link${current ? ' active' : ''}" data-site-route href="#${route}"${current ? ' aria-current="page"' : ''}>${sub.label}</a></li>`;
           }).join('')}
         </ul>`;
     }
 
     function renderContent(menuKey, subKey) {
-      stopPublications?.();
-      stopPublications = undefined;
+      if (Object.hasOwn(siteHubs, menuKey)) {
+        mainContentEl.innerHTML = siteHubs[menuKey];
+        return;
+      }
       const submenu = menuData[menuKey].submenus.find(s=>s.key===subKey);
       mainContentEl.innerHTML = submenu ? submenu.content : "<p>해당 내용을 불러올 수 없습니다.</p>";
       if (menuKey === 'center' && subKey === 'paper') {
@@ -367,78 +408,45 @@
       }
     }
 
-    function updateMenuLocation(hash, centerSubmenu) {
-      if (location.hash !== publicationsHash && hash !== publicationsHash) {
-        history.replaceState(null, '', hash);
-        return;
-      }
+    document.addEventListener('click', event => {
+      const link = event.target.closest('a[data-site-route], a[data-menu]');
+      if (!link || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
       const url = new URL(location.href);
-      if (hash !== publicationsHash && typeof clearPublicationQuery === 'function') clearPublicationQuery(url);
-      url.hash = hash;
-      if (url.href !== location.href) history.pushState({ centerSubmenu }, '', url);
-    }
-
-    function handleMainMenuClick(e) {
-      const target = e.target.closest('a[data-menu]');
-      if (!target || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-      e.preventDefault();
-      const menuKey = target.dataset.menu;
-      updateMenuLocation(target.hash);
-      markCurrentMenu(menuKey);
-      currentMenu = menuKey;
-      currentSubKey = menuData[menuKey].submenus[0].key;
-      renderSideNav(menuKey);
-      renderContent(menuKey, currentSubKey);
-    }
-
-    function handleSubMenuClick(e) {
-      const link = e.target.closest('.nav-link');
-      if (!link) return;
-      e.preventDefault();
-      for (const item of sideNavEl.querySelectorAll('.nav-link')) markCurrentLink(item, item === link, 'page');
-      currentSubKey = link.getAttribute('data-sub');
-      if (currentMenu === 'center' && currentSubKey === 'paper') {
-        updateMenuLocation(publicationsHash);
-      } else if (location.hash === publicationsHash) {
-        updateMenuLocation('#center', currentSubKey);
-      }
-      renderContent(currentMenu, currentSubKey);
-      if (e.detail === 0) mainContentEl.focus();
-    }
-
-    mainMenuEl.addEventListener('click', handleMainMenuClick);
-    sideNavEl.addEventListener('click', handleSubMenuClick);
+      url.hash = link.hash;
+      if (url.hash !== publicationsHash && typeof clearPublicationQuery === 'function') clearPublicationQuery(url);
+      if (url.href !== location.href) history.pushState(null, '', url);
+      openMenuFromHash();
+      if (event.detail === 0) mainContentEl.focus({ preventScroll: true });
+    });
     document.querySelector('.skip-link').addEventListener('click', event => {
       event.preventDefault();
       mainContentEl.focus();
     });
 
-    // 주소의 해시(#lecture 등)로 특정 메뉴를 바로 열 수 있게 함
-    // 예: index.html#lecture  → 수업 페이지 등 하위 페이지의 상단 메뉴에서 사용
     function openMenuFromHash() {
-      const opensPublications = location.hash === publicationsHash;
-      const key = opensPublications ? 'center' : location.hash.slice(1) || 'center';
-      if (!Object.hasOwn(menuData, key)) return false;
-      const submenus = menuData[key].submenus;
-      const savedSubmenu = key === 'center' && submenus.find(submenu => submenu.key === history.state?.centerSubmenu);
-      const subKey = opensPublications ? 'paper' : (savedSubmenu || submenus[0]).key;
-      if (key === currentMenu && subKey === currentSubKey) return true;
+      const [requested, submenuKey] = location.hash.slice(1).split('/');
+      let key = Object.hasOwn(menuData, requested) || Object.hasOwn(siteHubs, requested) ? requested : 'home';
+      if (key === 'home' && !mobileHomeLayout.matches) key = 'center';
+      const submenus = Object.hasOwn(menuData, key) ? menuData[key].submenus : [];
+      const legacySubmenu = key === 'center' ? history.state?.centerSubmenu : undefined;
+      const submenu = submenus.find(item => item.key === (submenuKey || legacySubmenu)) ?? submenus[0];
+      const subKey = submenu?.key;
+      if (key === currentMenu && subKey === currentSubKey) return;
+      stopPublications?.();
+      stopPublications = undefined;
       currentMenu = key;
       currentSubKey = subKey;
       markCurrentMenu(key);
       renderSideNav(key);
       renderContent(key, currentSubKey);
-      return true;
+      document.dispatchEvent(new Event('site-navigation-change'));
     }
     window.addEventListener('hashchange', openMenuFromHash);
     window.addEventListener('popstate', openMenuFromHash);
+    mobileHomeLayout.addEventListener('change', openMenuFromHash);
 
-    // 초기 랜더링
-    if (!openMenuFromHash()) {
-      currentSubKey = menuData[currentMenu].submenus[0].key;
-      renderSideNav(currentMenu);
-      renderContent(currentMenu, currentSubKey);
-    }
+    openMenuFromHash();
   </script>
 </body>
 </html>

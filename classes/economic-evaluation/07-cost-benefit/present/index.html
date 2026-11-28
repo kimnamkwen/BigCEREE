@@ -7,6 +7,7 @@
   <title>7. 비용편익분석 · 경제성평가 수업 | BigCEREE</title>
   <link rel="stylesheet" href="../../../../style.css">
   <script src="../../../../access.js"></script>
+  <script src="../../../../lesson-layout.js" defer></script>
 </head>
 <body class="lesson-body">
 <!--
@@ -341,8 +342,6 @@ abline(v = -a / b, lty = 2)
   // ---------- 상단 도구 ----------
   document.getElementById("btn-pdf").href = LESSON.assetDir + LESSON.slidePdf;
   document.getElementById("btn-print").onclick = () => window.print();
-  document.getElementById("btn-toc").onclick = () =>
-    document.getElementById("lesson-layout").classList.toggle("toc-hidden");
   let scale = 1;
   const applyScale = () => document.querySelector(".lesson-main").style.setProperty("--lesson-scale", scale);
   document.getElementById("btn-font-up").onclick = () => { scale = Math.min(1.5, scale + 0.1); applyScale(); };

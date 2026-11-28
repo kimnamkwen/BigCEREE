@@ -6,9 +6,11 @@
   <title>보건의료통계학 · 수업 · 보건의료 빅데이터 및 비교효과연구 경제성평가 센터</title>
   <meta name="description" content="보건의료 빅데이터 및 비교효과연구 경제성평가 센터 — 연구지원, 교육, 컨설팅 포털" />
   <link rel="stylesheet" href="../../style.css">
+  <script src="../../site-navigation.js" defer></script>
   <script src="../../access.js"></script>
 </head>
 <body>
+  <a class="skip-link" href="#main-content">본문 바로가기</a>
   <div class="container">
     <header class="main-header">
       <div class="logo-section">
@@ -19,32 +21,33 @@
         <div>
           <a class="home-link" href="../../index.html"><h1>보건의료 빅데이터 및 비교효과연구 경제성평가 센터</h1></a>
           <div class="lab-title">
-            BigCEREE Lab (Center for Big data &amp; Comparative Effectiveness Research, Economic Evaluation in Health and Medicine)
+            BigCEREE Lab<span class="lab-title-full"> (Center for Big data &amp; Comparative Effectiveness Research, Economic Evaluation in Health and Medicine)</span>
           </div>
         </div>
       </div>
-      <nav class="menu-bar" id="main-menu">
+      <nav class="menu-bar" id="main-menu" aria-label="주 메뉴">
         <a class="menu-item" href="../../index.html#center">센터 소개</a>
         <a class="menu-item" href="../../index.html#clinical">임상 연구</a>
         <a class="menu-item" href="../../index.html#bigdata">빅데이터 분석</a>
         <a class="menu-item" href="../../index.html#economic">경제성평가</a>
         <a class="menu-item" href="../../index.html#lecture">강의</a>
-        <a class="menu-item active" href="../../classes/index.html">수업</a>
+        <a class="menu-item active" href="../../classes/index.html" aria-current="location">수업</a>
         <a class="menu-item" href="../../index.html#project">프로젝트</a>
       </nav>
     </header>
     <div class="layout">
-      <aside class="side-nav">
+      <aside class="side-nav" data-section-label="수업">
         <h2>수업 세부 목록</h2>
         <ul class="nav-list">
           <li><a class="nav-link" href="../../classes/economic-evaluation/index.html">경제성평가</a></li><li><a class="nav-link active" href="../../classes/biostatistics/index.html">보건의료통계학</a><ul class="nav-sub"></ul></li>
         </ul>
       </aside>
-      <main class="main-content">
+      <main class="main-content" id="main-content" tabindex="-1">
         <div class="breadcrumb"><a href="../index.html">수업</a><span class="sep">›</span>보건의료통계학</div>
         <h3>보건의료통계학</h3>
         <p class="course-intro">기술통계와 가설검정, 평균비교·분산분석, 상관·회귀분석, 범주형자료·로지스틱 회귀, 생존분석, 비모수검정 등 보건의료 연구에 필요한 통계 방법을 R 실습과 함께 다룹니다. 과목 안내는 <a href="../../lectures/biostatistics.html">강의 안내 페이지</a>를 참고하세요.</p>
-        <ul class="week-list">
+        <nav class="course-entry" aria-label="입장 가능한 수업" hidden></nav>
+        <ul class="week-list" data-course-weeks="biostatistics">
           <li class="week-item"><span class="week-no">01</span><span class="week-title">강의개요</span><a class="enter-btn" href="01-introduction/present/index.html">입장</a></li>
           <li class="week-item"><span class="week-no">02</span><span class="week-title">통계분석 프로그램 소개</span><a class="enter-btn" href="02-r-intro/present/index.html">입장</a></li>
           <li class="week-item"><span class="week-no">03</span><span class="week-title">기초통계학</span><a class="enter-btn" href="03-basic-statistics/present/index.html">입장</a></li>
@@ -63,8 +66,7 @@
       </main>
     </div>
     <footer>
-      <div>문의 및 의뢰: support@example.org | GitHub: <a href="https://github.com/kimnamkwen/Economic_evaluation">kimnamkwen/Economic_evaluation</a></div>
-      <div style="margin-top:8px">홈페이지의 상세 기능 추가 및 연동 요청시 관리자에게 문의 바랍니다.</div>
+      <a href="https://github.com/kimnamkwen/BigCEREE">BigCEREE GitHub</a>
     </footer>
   </div>
 </body>

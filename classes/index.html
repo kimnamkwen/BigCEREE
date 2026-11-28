@@ -6,9 +6,11 @@
   <title>수업 · 보건의료 빅데이터 및 비교효과연구 경제성평가 센터</title>
   <meta name="description" content="보건의료 빅데이터 및 비교효과연구 경제성평가 센터 — 연구지원, 교육, 컨설팅 포털" />
   <link rel="stylesheet" href="../style.css">
+  <script src="../site-navigation.js" defer></script>
   <script src="../access.js"></script>
 </head>
 <body>
+  <a class="skip-link" href="#main-content">본문 바로가기</a>
   <div class="container">
     <header class="main-header">
       <div class="logo-section">
@@ -19,35 +21,41 @@
         <div>
           <a class="home-link" href="../index.html"><h1>보건의료 빅데이터 및 비교효과연구 경제성평가 센터</h1></a>
           <div class="lab-title">
-            BigCEREE Lab (Center for Big data &amp; Comparative Effectiveness Research, Economic Evaluation in Health and Medicine)
+            BigCEREE Lab<span class="lab-title-full"> (Center for Big data &amp; Comparative Effectiveness Research, Economic Evaluation in Health and Medicine)</span>
           </div>
         </div>
       </div>
-      <nav class="menu-bar" id="main-menu">
+      <nav class="menu-bar" id="main-menu" aria-label="주 메뉴">
         <a class="menu-item" href="../index.html#center">센터 소개</a>
         <a class="menu-item" href="../index.html#clinical">임상 연구</a>
         <a class="menu-item" href="../index.html#bigdata">빅데이터 분석</a>
         <a class="menu-item" href="../index.html#economic">경제성평가</a>
         <a class="menu-item" href="../index.html#lecture">강의</a>
-        <a class="menu-item active" href="../classes/index.html">수업</a>
+        <a class="menu-item active" href="../classes/index.html" aria-current="page">수업</a>
         <a class="menu-item" href="../index.html#project">프로젝트</a>
       </nav>
     </header>
     <div class="layout">
-      <aside class="side-nav">
+      <aside class="side-nav" data-section-label="수업">
         <h2>수업 세부 목록</h2>
         <ul class="nav-list">
           <li><a class="nav-link" href="../classes/economic-evaluation/index.html">경제성평가</a></li><li><a class="nav-link" href="../classes/biostatistics/index.html">보건의료통계학</a></li>
         </ul>
       </aside>
-      <main class="main-content">
+      <main class="main-content" id="main-content" tabindex="-1">
         <h3>수업</h3>
-        <p class="course-intro">과목을 선택하면 주차별 수업 목록으로 이동합니다. 각 수업의 <strong>입장</strong>을 누르면 강의 슬라이드·해설·R 실습이 있는 수업 화면이 열립니다.</p>
+        <p class="course-intro">과목을 선택해 입장 가능한 주차를 확인하세요.</p>
+        <section class="course-entry" data-open-courses aria-label="입장 가능한 수업" hidden></section>
         <div class="course-cards">
           <a class="course-card" href="economic-evaluation/index.html">
             <div class="cc-title">경제성평가</div>
             <div class="cc-meta">보건의료 경제성평가 · 1–14주차</div>
-            <div class="cc-count">공개 13 / 전체 14개 수업</div>
+            <div class="cc-count" data-course-count="economic-evaluation">입장 상태 확인 중</div>
+          </a>
+          <a class="course-card" href="biostatistics/index.html">
+            <div class="cc-title">보건의료통계학</div>
+            <div class="cc-meta">보건의료 통계 · R 실습 · 1–14주차</div>
+            <div class="cc-count" data-course-count="biostatistics">입장 상태 확인 중</div>
           </a>
           <div class="course-card is-soon">
             <div class="cc-title">임상연구개론</div>
@@ -57,11 +65,6 @@
             <div class="cc-title">현대사회와 한의학</div>
             <div class="cc-meta"><a href="../lectures/korean-medicine-society.html">강의 안내</a> · 주차별 수업 준비 중</div>
           </div>
-          <a class="course-card" href="biostatistics/index.html">
-            <div class="cc-title">보건의료통계학</div>
-            <div class="cc-meta">보건의료 통계 · R 실습 · 1–14주차</div>
-            <div class="cc-count">공개 14 / 전체 14개 수업</div>
-          </a>
           <div class="course-card is-soon">
             <div class="cc-title">과학적 사고와 의학연구방법론</div>
             <div class="cc-meta"><a href="../lectures/research-methodology.html">강의 안내</a> · 주차별 수업 준비 중</div>
@@ -71,8 +74,9 @@
             <div class="cc-meta"><a href="../lectures/integrative-medicine.html">강의 안내</a> · 주차별 수업 준비 중</div>
           </div>
         </div>
-        <h3 style="margin-top:34px">경제성평가</h3>
-        <ul class="week-list">
+        <details class="course-week-details">
+          <summary>경제성평가 주차별 수업</summary>
+          <ul class="week-list" data-course-weeks="economic-evaluation">
           <li class="week-item"><span class="week-no">01</span><span class="week-title">경제성평가 연구 개요</span><a class="enter-btn" href="economic-evaluation/01-introduction/present/index.html">입장</a></li>
           <li class="week-item"><span class="week-no">02</span><span class="week-title">경제성평가 연구 종류</span><a class="enter-btn" href="economic-evaluation/02-types/present/index.html">입장</a></li>
           <li class="week-item"><span class="week-no">03</span><span class="week-title">경제성평가 논문 검색</span><a class="enter-btn" href="economic-evaluation/03-literature-search/present/index.html">입장</a></li>
@@ -86,10 +90,12 @@
           <li class="week-item"><span class="week-no">11</span><span class="week-title">Markov model 1</span><a class="enter-btn" href="economic-evaluation/11-markov-1/present/index.html">입장</a></li>
           <li class="week-item"><span class="week-no">12</span><span class="week-title">Markov model 2</span><a class="enter-btn" href="economic-evaluation/12-markov-2/present/index.html">입장</a></li>
           <li class="week-item"><span class="week-no">13</span><span class="week-title">임상연구 병행 경제성평가</span><a class="enter-btn" href="economic-evaluation/13-trial-based-ee/present/index.html">입장</a></li>
-          <li class="week-item"><span class="week-no">14</span><span class="week-title">경제성평가 연구 결과 보고</span><span class="enter-btn is-disabled" title="준비 중">입장</span></li>
-        </ul>
-        <h3 style="margin-top:34px">보건의료통계학</h3>
-        <ul class="week-list">
+          <li class="week-item"><span class="week-no">14</span><span class="week-title">경제성평가 연구 결과 보고</span><span class="enter-btn is-disabled">준비 중</span></li>
+          </ul>
+        </details>
+        <details class="course-week-details">
+          <summary>보건의료통계학 주차별 수업</summary>
+          <ul class="week-list" data-course-weeks="biostatistics">
           <li class="week-item"><span class="week-no">01</span><span class="week-title">강의개요</span><a class="enter-btn" href="biostatistics/01-introduction/present/index.html">입장</a></li>
           <li class="week-item"><span class="week-no">02</span><span class="week-title">통계분석 프로그램 소개</span><a class="enter-btn" href="biostatistics/02-r-intro/present/index.html">입장</a></li>
           <li class="week-item"><span class="week-no">03</span><span class="week-title">기초통계학</span><a class="enter-btn" href="biostatistics/03-basic-statistics/present/index.html">입장</a></li>
@@ -104,12 +110,12 @@
           <li class="week-item"><span class="week-no">12</span><span class="week-title">범주형자료분석·로짓회귀분석</span><a class="enter-btn" href="biostatistics/12-categorical-logistic/present/index.html">입장</a></li>
           <li class="week-item"><span class="week-no">13</span><span class="week-title">생존분석</span><a class="enter-btn" href="biostatistics/13-survival/present/index.html">입장</a></li>
           <li class="week-item"><span class="week-no">14</span><span class="week-title">비모수검정</span><a class="enter-btn" href="biostatistics/14-nonparametric/present/index.html">입장</a></li>
-        </ul>
+          </ul>
+        </details>
       </main>
     </div>
     <footer>
-      <div>문의 및 의뢰: support@example.org | GitHub: <a href="https://github.com/kimnamkwen/Economic_evaluation">kimnamkwen/Economic_evaluation</a></div>
-      <div style="margin-top:8px">홈페이지의 상세 기능 추가 및 연동 요청시 관리자에게 문의 바랍니다.</div>
+      <a href="https://github.com/kimnamkwen/BigCEREE">BigCEREE GitHub</a>
     </footer>
   </div>
 </body>

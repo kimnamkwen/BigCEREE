@@ -16,25 +16,68 @@
     return list.indexOf(week) !== -1;
   }
 
+  function renderEntryList(container, entries) {
+    var status = document.createElement("p");
+    status.textContent = entries.length ? "입장 가능한 수업" : "현재 입장 가능한 수업이 없습니다.";
+    container.appendChild(status);
+    entries.forEach(function (item) {
+      var entry = document.createElement("a");
+      entry.href = item.href;
+      entry.textContent = item.label;
+      container.appendChild(entry);
+    });
+    container.hidden = false;
+  }
+
   function apply(cfg) {
     // 1) 목록 페이지의 '입장' 버튼
-    var links = document.querySelectorAll("a.enter-btn, span.enter-btn[data-href]");
+    var links = document.querySelectorAll("a.enter-btn[href], .nav-sub a[href]");
     for (var i = 0; i < links.length; i++) {
       var el = links[i];
-      var href = el.getAttribute("href") || el.getAttribute("data-href");
+      var href = el.getAttribute("href");
       var m = new URL(href, location.href).pathname.match(LESSON_RE);
       if (!m) continue;
       var open = preview || isOpen(cfg, m[1], m[2]);
-      if (!open && el.tagName === "A") {
+      if (!open) {
         var span = document.createElement("span");
-        span.className = "enter-btn is-disabled";
-        span.title = "수업 시간에 열립니다";
-        span.setAttribute("data-href", href);
-        span.textContent = el.textContent;
+        if (el.classList.contains("enter-btn")) {
+          span.className = "enter-btn is-disabled";
+          span.textContent = "닫힘";
+        } else {
+          span.className = "week-nav-closed";
+          var state = document.createElement("small");
+          state.textContent = "닫힘";
+          span.append(el.textContent + " ", state);
+        }
         el.parentNode.replaceChild(span, el);
       }
     }
-    // 2) 수업 페이지
+    // 2) 과목 카드와 바로 입장 목록은 실제로 활성화된 주차를 기준으로 표시
+    var homeEntries = [];
+    document.querySelectorAll("[data-course-weeks]").forEach(function (weeks) {
+      var enabled = [...weeks.querySelectorAll("a.enter-btn[href]")];
+      var entries = enabled.map(function (link) {
+        var row = link.closest(".week-item");
+        return {
+          href: link.href,
+          label: row.querySelector(".week-no").textContent + "주차 " + row.querySelector(".week-title").textContent.trim()
+        };
+      });
+      var count = document.querySelector('[data-course-count="' + weeks.dataset.courseWeeks + '"]');
+      if (count) {
+        count.textContent = "입장 가능 " + enabled.length + " / 전체 " + weeks.children.length + "개 주차";
+        count.classList.toggle("has-open-weeks", enabled.length > 0);
+        var subject = count.parentElement.querySelector(".cc-title").textContent;
+        entries.forEach(function (item) {
+          homeEntries.push({ href: item.href, label: subject + " " + item.label });
+        });
+      }
+      var quickEntry = weeks.previousElementSibling;
+      if (quickEntry?.classList.contains("course-entry")) renderEntryList(quickEntry, entries);
+    });
+    var homeEntryList = document.querySelector("[data-open-courses]");
+    if (homeEntryList) renderEntryList(homeEntryList, homeEntries);
+    // 3) 수업 페이지
     if (lesson && !preview && !isOpen(cfg, lesson[1], lesson[2])) {
       var layout = document.getElementById("lesson-layout");
       if (layout) layout.remove();
