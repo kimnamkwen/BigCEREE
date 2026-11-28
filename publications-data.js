@@ -496,7 +496,6 @@ const publicationCatalog = [
     "volume": "32",
     "issue": "2",
     "pages": "134–140",
-    "doi": "10.15188/kjopp.2018.02.32.2.134",
     "kciUrl": "https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART002342088"
   },
   {
