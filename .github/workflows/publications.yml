@@ -2,12 +2,15 @@ name: Publication catalog
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '17 10 * * 2'
+      timezone: Asia/Seoul
   pull_request:
     paths:
       - publications-data.js
-      - scripts/publication-sources.mjs
-      - scripts/publications.mjs
-      - scripts/publications.test.mjs
+      - scripts/publication*.mjs
+      - scripts/package.json
+      - scripts/package-lock.json
       - .github/workflows/publications.yml
 
 permissions:
@@ -24,13 +27,45 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: '24'
+      - run: npm ci --prefix scripts --ignore-scripts --no-audit --no-fund
       - name: Validate catalog and matching rules
         run: |
           node scripts/publications.mjs check
-          node --test scripts/publications.test.mjs
+          node --test 'scripts/publication*.test.mjs'
+
+  collect:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: publications
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - run: npm ci --prefix scripts --ignore-scripts --no-audit --no-fund
+      - name: Authenticate for Google Drive
+        if: vars.PUBLICATIONS_DRIVE_WORKLOAD_IDENTITY_PROVIDER != '' && vars.PUBLICATIONS_DRIVE_SERVICE_ACCOUNT != ''
+        id: auth
+        continue-on-error: true
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.PUBLICATIONS_DRIVE_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.PUBLICATIONS_DRIVE_SERVICE_ACCOUNT }}
+          token_format: access_token
+          access_token_scopes: https://www.googleapis.com/auth/drive.readonly
+          create_credentials_file: false
+          export_environment_variables: false
       - name: Collect publication candidates
-        if: github.event_name == 'workflow_dispatch'
         id: collect
+        env:
+          PUBLICATIONS_DRIVE_FOLDER_ID: ${{ secrets.PUBLICATIONS_DRIVE_FOLDER_ID }}
+          PUBLICATIONS_DRIVE_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
         run: node scripts/publications.mjs collect > "$RUNNER_TEMP/publication-candidates.json"
       - name: Upload review report
         if: ${{ !cancelled() && (steps.collect.outcome == 'success' || steps.collect.outcome == 'failure') }}
