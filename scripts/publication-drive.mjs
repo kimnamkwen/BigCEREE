@@ -58,12 +58,26 @@ async function readPdfCitation(bytes) {
     const identifiers = [metadata?.get('prism:doi'), metadata?.get('dc:identifier'), text]
       .flat().filter(value => typeof value === 'string').join(' ');
     const dois = [...new Set(Array.from(identifiers.matchAll(/\b10\.\d{4,9}\/[^\s<>"']+/gi), match =>
-      match[0].replace(/[.,;]+$/, '').toLowerCase(),
+      trimDoi(match[0]).toLowerCase(),
     ))];
     return { text, title: info.Title, dois };
   } finally {
     await task.destroy();
   }
+}
+
+// Removes sentence punctuation and the closing brackets of the surrounding text.
+// A closing bracket stays when the DOI itself opens it, as in 10.1016/s0140-6736(20)30183-5.
+function trimDoi(value) {
+  const openers = { ')': '(', ']': '[' };
+  let doi = value;
+  while (doi) {
+    const last = doi.at(-1);
+    const unmatched = openers[last] && doi.split(last).length > doi.split(openers[last]).length;
+    if (!unmatched && !'.,;'.includes(last)) break;
+    doi = doi.slice(0, -1);
+  }
+  return doi;
 }
 
 function matchesCatalogCitation(paper, titleMatches, pageText) {

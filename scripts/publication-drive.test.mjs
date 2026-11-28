@@ -106,6 +106,30 @@ test('missing Drive permission leaves other source results available', async t =
   assert.equal(result.sources[0].error, 'Google Drive returned HTTP 403');
 });
 
+test('DOI extraction drops surrounding brackets and keeps parentheses that belong to the DOI', async t => {
+  const cases = [
+    ['(doi: 10.1234/round)', '10.1234/round'],
+    ['[https://doi.org/10.1234/square].', '10.1234/square'],
+    ['(see [doi 10.1234/nested]);', '10.1234/nested'],
+    ['10.1234/s0140-6736(20)30183-5', '10.1234/s0140-6736(20)30183-5'],
+    ['(doi: 10.1234/suffix(a))', '10.1234/suffix(a)'],
+  ];
+  const lookups = [];
+  t.mock.method(globalThis, 'fetch', async url => {
+    if (url.hostname === 'api.crossref.org') {
+      lookups.push(decodeURIComponent(url.pathname.slice('/works/'.length)));
+      return new Response(null, { status: 404 });
+    }
+    if (url.pathname.endsWith('/example-folder')) return Response.json({ mimeType: 'application/vnd.google-apps.folder' });
+    if (url.pathname.endsWith('/files')) return Response.json({ files: cases.map((_, index) => ({ id: 'file-' + index })) });
+    return new Response(makePdf(cases[Number(url.pathname.split('-').at(-1))][0]));
+  });
+
+  await loadDrivePublications({ folderId: 'example-folder', accessToken: 'temporary-token' });
+
+  assert.deepEqual(lookups, cases.map(([, doi]) => doi));
+});
+
 test('a full approved KCI citation identifies a duplicate even when Crossref has no DOI record', async t => {
   const approved = {
     title: 'A KCI case report',
